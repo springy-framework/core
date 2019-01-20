@@ -35,6 +35,7 @@
     "autoload": {
         "files": [],
         "psr-4": {
+            "Springy\\": "src/"
         }
     },
     "config": {
