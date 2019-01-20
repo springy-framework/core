@@ -61,8 +61,9 @@ class DIContainer implements ArrayAccess
      * @param string|\Closure $key   key of the registered parameter or a treatment function.
      * @param mixed           $value parameter or treatment function that returns the parameter.
      *
-     * @return mixed
      * @throws InvalidArgumentException
+     *
+     * @return mixed
      */
     public function raw($key, $value = null)
     {
@@ -93,8 +94,9 @@ class DIContainer implements ArrayAccess
      *
      * @param mixed $key
      *
-     * @return mixed
      * @throws InvalidArgumentException
+     *
+     * @return mixed
      */
     public function param($key)
     {
@@ -127,8 +129,9 @@ class DIContainer implements ArrayAccess
      * @param mixed $key
      * @param array $params
      *
-     * @return mixed
      * @throws InvalidArgumentException
+     *
+     * @return mixed
      */
     public function make($key, array $params = [])
     {
@@ -159,8 +162,9 @@ class DIContainer implements ArrayAccess
      * @param mixed   $key
      * @param Closure $extension
      *
-     * @return void
      * @throws InvalidArgumentException
+     *
+     * @return void
      */
     public function extend($key, Closure $extension)
     {
@@ -177,8 +181,9 @@ class DIContainer implements ArrayAccess
      * @param string|Closure $key
      * @param mixed          $instance
      *
-     * @return mixed
      * @throws InvalidArgumentException
+     *
+     * @return mixed
      */
     public function instance($key, $instance = null)
     {
@@ -207,8 +212,9 @@ class DIContainer implements ArrayAccess
      *
      * @param mixed $key
      *
-     * @return void
      * @throws InvalidArgumentException
+     *
+     * @return void
      */
     public function shared($key)
     {
@@ -242,8 +248,9 @@ class DIContainer implements ArrayAccess
      *
      * @param mixed $key
      *
-     * @return mixed
      * @throws InvalidArgumentException
+     *
+     * @return mixed
      */
     public function resolve($key)
     {
