@@ -57,11 +57,11 @@ class ArrayUtils
     }
 
     /**
-     * Cria um array com todos os valures de uma determinada chave de um array associativo multidimencional.
+     * Creates an array with all the values of a given key in a multidimensional associative array.
      *
      * @param array $array
-     * @param [type] $value key of desired values.
-     * @param [type] $key   key of the value to be used as key of the elements of the new array.
+     * @param mixed $value key of desired values.
+     * @param mixed $key   key of the value to be used as key of the elements of the new array.
      *
      * @return array
      */
