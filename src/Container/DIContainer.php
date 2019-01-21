@@ -1,6 +1,6 @@
 <?php
 /**
- * Container class for dependency injection.
+ * Container for dependency injection.
  *
  * @copyright 2014 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -17,7 +17,7 @@ use Closure;
 use InvalidArgumentException;
 
 /**
- * Container class for dependency injection.
+ * Container for dependency injection.
  */
 class DIContainer implements ArrayAccess
 {
@@ -372,7 +372,7 @@ class DIContainer implements ArrayAccess
      *
      * Useful for chaining.
      *
-     * @return ArrayUtils
+     * @return DIContainer
      */
     public static function newInstance()
     {

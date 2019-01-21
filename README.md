@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/springy-framework/core.svg?branch=master)](https://travis-ci.org/springy-framework/core)
+[![StyleCI](https://styleci.io/repos/166688147/shield)](https://styleci.io/repos/166688147)
+
 # About Springy
 
 A micro framework for smart PHP developers.
