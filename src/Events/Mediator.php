@@ -266,7 +266,7 @@ class Mediator
     }
 
     /**
-     * Extracts the name of the event in which the master handler will be 'listening'
+     * Extracts the name of the event in which the master handler will be 'listening'.
      *
      * @param string $event
      *
@@ -280,7 +280,7 @@ class Mediator
     }
 
     /**
-     * Returns the handlers for the requested event
+     * Returns the handlers for the requested event.
      *
      * @param string $event
      *
@@ -299,7 +299,7 @@ class Mediator
     }
 
     /**
-     * Returns the masters handlers for the indicated event
+     * Returns the masters handlers for the indicated event.
      *
      * @param string $event
      *
