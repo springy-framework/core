@@ -7,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/springy-framework/core/blob/master/LICENSE MIT
  *
- * @version    1.0.0
+ * @version   1.0.0
  */
 use PHPUnit\Framework\TestCase;
 use Springy\Container\DIContainer;

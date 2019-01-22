@@ -75,7 +75,7 @@ class Mediator
      *
      * @return void
      */
-    public function registerHandlerFor($events, $handler, $priority = 0)
+    public function registerHandlerFor($events, $handler, int $priority = 0)
     {
         foreach ((array) $events as $event) { // Para cada nom de evento
             if (strpos($event, '.*') !== false) { // Se houver '*' é um masterHandler
