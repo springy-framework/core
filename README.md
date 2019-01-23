@@ -1,5 +1,10 @@
 [![Build Status](https://travis-ci.org/springy-framework/core.svg?branch=master)](https://travis-ci.org/springy-framework/core)
 [![StyleCI](https://styleci.io/repos/166688147/shield)](https://styleci.io/repos/166688147)
+[![Latest Stable Version](https://poser.pugx.org/springy-framework/core/v/stable)](https://packagist.org/packages/springy-framework/core)
+[![Total Downloads](https://poser.pugx.org/springy-framework/core/downloads)](https://packagist.org/packages/springy-framework/core)
+[![License](https://poser.pugx.org/springy-framework/core/license)](https://packagist.org/packages/springy-framework/core)
+
+[![Latest Unstable Version](https://poser.pugx.org/springy-framework/core/v/unstable)](https://packagist.org/packages/springy-framework/core)
 
 # About Springy
 
@@ -13,10 +18,10 @@ It was created based upon the KISS principle in which the simplicity is the base
 
 ## Requirements
 
-* PHP 7.0.8+
-* [Composer](https://getcomposer.org/) Dependency Manager for PHP
+- PHP 7.0.8+
+- [Composer](https://getcomposer.org/) Dependency Manager for PHP
 
 ## Language dependencies
 
-* [Multibyte String](http://php.net/manual/en/intro.mbstring.php) library
+- [Multibyte String](http://php.net/manual/en/intro.mbstring.php) library
 

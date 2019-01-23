@@ -3,8 +3,8 @@
  * Application dependency container.
  *
  * @copyright 2014 Fernando Val
- * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Allan Marques <allan.marques@ymail.com>
+ * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/springy-framework/core/blob/master/LICENSE MIT
  *
  * @version   1.0.0
