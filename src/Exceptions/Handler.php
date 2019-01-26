@@ -8,6 +8,7 @@
  *
  * @version   1.0.0
  */
+
 namespace Springy\Exceptions;
 
 use Exception;

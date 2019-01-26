@@ -9,6 +9,7 @@
  *
  * @version   3.0.0
  */
+
 namespace Springy\HTTP;
 
 // use Springy\Utils\Strings_ANSI;
@@ -60,7 +61,7 @@ class URI
     public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self;
+            self::$instance = new self();
         }
 
         return self::$instance;

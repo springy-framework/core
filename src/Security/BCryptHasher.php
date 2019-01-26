@@ -76,7 +76,7 @@ class BCryptHasher implements HasherInterface
     /**
      * Returns array of options for the BCrypt hash function.
      *
-     * @param integer $times number of times the algorithm should be executed.
+     * @param int $times number of times the algorithm should be executed.
      *
      * @return array
      */

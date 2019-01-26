@@ -9,10 +9,11 @@
  *
  * @version   3.0.0
  */
+
 namespace Springy\Core;
 
-use Springy\HTTP\URI;
 use Springy\Exceptions\Handler;
+use Springy\HTTP\URI;
 
 class Kernel
 {
@@ -292,7 +293,7 @@ class Kernel
     public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self;
+            self::$instance = new self();
         }
 
         return self::$instance;
