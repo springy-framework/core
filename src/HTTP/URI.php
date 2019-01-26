@@ -16,21 +16,21 @@ namespace Springy\HTTP;
 
 class URI
 {
-    // URI globally instance
-    private static $instance;
+    /** @var self URI globally instance */
+    protected static $instance;
 
     /// String da URI
-    private static $uri_string = '';
+    protected static $uri_string = '';
     /// Array dos segmentos da URI
-    private static $segments = [];
+    protected static $segments = [];
     /// Array dos segmentos ignorados
-    private static $ignored_segments = [];
+    protected static $ignored_segments = [];
     /// Array da relação dos parâmetros recebidos por GET
-    private static $get_params = [];
+    protected static $get_params = [];
     /// Índice do segmento que determina a página atual
-    private static $segment_page = 0;
+    protected static $segment_page = 0;
     /// Nome da classe da controller
-    private static $class_controller = null;
+    protected static $class_controller = null;
 
     /**
      * Return the current host with protocol.

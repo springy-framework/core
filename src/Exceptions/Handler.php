@@ -18,16 +18,16 @@ class Handler
     const HT_EXCEPTION = 2;
 
     /** @var mixed previous error handler */
-    private $prevErrorHandler;
+    protected $prevErrorHandler;
     /** @var mixed previous exception handler */
-    private $prevExceptionHandler;
+    protected $prevExceptionHandler;
 
     /** @var int type of the last handler throwed */
-    private $handlerType;
+    protected $handlerType;
     /** @var Exception last exception throwed */
-    private $exception;
+    protected $exception;
     /** @var array list of ignored errors */
-    private $ignoredErrors;
+    protected $ignoredErrors;
 
     /**
      * Constructor.
@@ -53,6 +53,37 @@ class Handler
         if ($this->prevExceptionHandler) {
             restore_exception_handler();
         }
+    }
+
+    /**
+     * Returns the error name.
+     *
+     * @param int $errNo
+     *
+     * @return string
+     */
+    protected function errorName(int $errNo): string
+    {
+        $errorNames = [
+            E_ERROR             => 'Error',
+            E_WARNING           => 'Warning',
+            E_PARSE             => 'Parse Error',
+            E_NOTICE            => 'Notice',
+            E_CORE_ERROR        => 'Core Error',
+            E_CORE_WARNING      => 'Core Warning',
+            E_COMPILE_ERROR     => 'Compile Error',
+            E_COMPILE_WARNING   => 'Compile Warning',
+            E_USER_ERROR        => 'User Error',
+            E_USER_WARNING      => 'User Warning',
+            E_USER_NOTICE       => 'User Notice',
+            E_STRICT            => 'Fatal Error',
+            1044                => 'Access Denied to Database',
+            E_DEPRECATED        => 'Deprecated',
+            E_USER_DEPRECATED   => 'Deprecated',
+            E_RECOVERABLE_ERROR => 'Fatal Error',
+        ];
+
+        return $errorNames[$errNo] ?? 'Unknown Error ('.$errNo.')';
     }
 
     /**
@@ -173,6 +204,21 @@ class Handler
             )) {
             return;
         }
+
+        // DB::rollBackAll();
+
+        // Gets the error code.
+        $errCode = $this->exception->getCode();
+
+        // Is a deprecated warning and is configured to ignore deprecations?
+        if (in_array($errCode, [E_DEPRECATED, E_USER_DEPRECATED])) {
+            return;
+        }
+
+        $errorName = $this->errorName($errCode);
+
+        echo $errorName;
+        exit(1);
 
         return true;
     }

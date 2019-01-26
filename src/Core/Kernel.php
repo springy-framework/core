@@ -37,23 +37,23 @@ class Kernel
     const PATH_CLASS = self::PATH_CLASSES;
 
     /** @var self Kernel globally instance */
-    private static $instance;
+    protected static $instance;
 
     /** @var string System name */
-    private static $name = '';
+    protected static $name = '';
     /** @var array System version */
-    private static $version = [0, 0, 0];
+    protected static $version = [0, 0, 0];
     /** @var string Project code name */
-    private static $projName = '';
+    protected static $projName = '';
     /** @var string System environment */
-    private static $environment = '';
+    protected static $environment = '';
     /** @var string System charset */
-    private static $charset = 'UTF-8';
+    protected static $charset = 'UTF-8';
 
     /** @var float Application started time */
-    private static $startime;
+    protected static $startime;
     /** @var Handler Application error/exception handler */
-    private static $errorHandler;
+    protected static $errorHandler;
 
     /// Determina o root de controladoras
     private static $controller_root = [];
