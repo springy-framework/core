@@ -12,9 +12,6 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Utils\ArrayUtils;
 
-/**
- * Test case for Springy\Utils\ArrayUtils class.
- */
 class ArrayUtilsTest extends TestCase
 {
     public function setUp()

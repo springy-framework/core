@@ -12,9 +12,6 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Application;
 
-/**
- * Test case for Springy\Core\Application class.
- */
 class ApplicationTest extends TestCase
 {
     private $app;

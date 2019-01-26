@@ -12,9 +12,6 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Utils\MessageContainer;
 
-/**
- * Test case for Springy\Utils\MessageContainer class.
- */
 class MessageContainerTest extends TestCase
 {
     protected $msgContainer;

@@ -11,9 +11,6 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Kernel;
 
-/**
- * Test case for Springy\Core\Kernel class.
- */
 class KernelTest extends TestCase
 {
     public $conf;

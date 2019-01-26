@@ -12,9 +12,6 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Security\BCryptHasher as Hasher;
 
-/**
- * Springy\Security\BCryptHasher
- */
 class HasherTest extends TestCase
 {
     public $hasher;
