@@ -12,6 +12,7 @@
 namespace Springy\Core;
 
 use Springy\HTTP\URI;
+use Springy\Exceptions\Handler;
 
 class Kernel
 {
@@ -35,11 +36,25 @@ class Kernel
     const PATH_SYSTEM = self::PATH_APPLICATION;
     const PATH_CLASS = self::PATH_CLASSES;
 
-    // Kernel globally instance
+    /** @var self Kernel globally instance */
     private static $instance;
 
-    /// Start time
-    private static $startime = null;
+    /** @var string System name */
+    private static $name = '';
+    /** @var array System version */
+    private static $version = [0, 0, 0];
+    /** @var string Project code name */
+    private static $projName = '';
+    /** @var string System environment */
+    private static $environment = '';
+    /** @var string System charset */
+    private static $charset = 'UTF-8';
+
+    /** @var float Application started time */
+    private static $startime;
+    /** @var Handler Application error/exception handler */
+    private static $errorHandler;
+
     /// Determina o root de controladoras
     private static $controller_root = [];
     /// Caminho do namespace do controller
@@ -51,21 +66,9 @@ class Kernel
     /// Run global pre-controller switch
     private static $runGlobal = true;
 
-    /// System environment
-    private static $environment = '';
-    /// System name
-    private static $name = '';
-    /// System version
-    private static $version = [0, 0, 0];
-    /// Project code name
-    private static $projName = '';
     /// System path
     private static $paths = [];
-    /// System charset
-    private static $charset = 'UTF-8';
 
-    /// List of ignored errors
-    private static $ignoredErrors = [];
     /// List of error hook functions
     private static $errorHooks = [];
 
@@ -168,6 +171,16 @@ class Kernel
     }
 
     /**
+     * Returns the application error and exception handler.
+     *
+     * @return Handler
+     */
+    public function errorHandler()
+    {
+        return self::$errorHandler;
+    }
+
+    /**
      * A path of the system.
      *
      * @param string $component the component constant.
@@ -204,7 +217,14 @@ class Kernel
 
     public function run(float $startime = null)
     {
+        // Can be executed once
+        if (self::$startime !== null) {
+            return;
+        }
+
         self::$startime = $startime ?? microtime(true);
+        self::$errorHandler = new Handler();
+
 
         return self::getInstance();
     }

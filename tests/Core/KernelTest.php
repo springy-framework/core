@@ -56,6 +56,11 @@ class KernelTest extends TestCase
         $this->assertEquals('cli', $this->kernel->environment('', [], ''));
     }
 
+    public function testErrorHandler()
+    {
+        $this->assertNull($this->kernel->errorHandler());
+    }
+
     public function testPaths()
     {
         $this->assertEquals(__DIR__, $this->kernel->path(Kernel::PATH_ROOT));
