@@ -14,9 +14,6 @@ namespace Springy\HTTP;
 // use Springy\Utils\Strings_ANSI;
 // use Springy\Utils\Strings_UTF8;
 
-/**
- * URI handler class.
- */
 class URI
 {
     // URI globally instance

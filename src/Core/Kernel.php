@@ -13,9 +13,6 @@ namespace Springy\Core;
 
 use Springy\HTTP\URI;
 
-/**
- * Framework kernel class.
- */
 class Kernel
 {
     // Framework version
@@ -38,7 +35,7 @@ class Kernel
     const PATH_SYSTEM = self::PATH_APPLICATION;
     const PATH_CLASS = self::PATH_CLASSES;
 
-    // Kernell globally instance
+    // Kernel globally instance
     private static $instance;
 
     /// Start time
@@ -148,7 +145,7 @@ class Kernel
                 }
 
                 $env = empty($env) ? (
-                    (php_sapi_name() === 'cli') ? 'cli' : URI::host()
+                    (php_sapi_name() === 'cli') ? 'cli' : URI::getInstance()->host()
                 ) : $env;
 
                 // Verify if has an alias for host

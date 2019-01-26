@@ -1,6 +1,6 @@
 <?php
 /**
- * Interface for authentication drivers.
+ * Interface to standardize identity authentication drivers.
  *
  * @copyright 2014 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
@@ -8,14 +8,9 @@
  * @license   https://github.com/springy-framework/core/blob/master/LICENSE MIT
  *
  * @version   1.0.0
- *
- *  \brief      Interface para padronizar os drivers de autenticação de identidades.
  */
 namespace Springy\Security;
 
-/**
- * Interface for authentication drivers.
- */
 interface AuthDriverInterface
 {
     /**
