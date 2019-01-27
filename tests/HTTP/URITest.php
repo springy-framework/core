@@ -20,6 +20,16 @@ class URITest extends TestCase
         $this->uri = URI::getInstance();
     }
 
+    public function testGetSegments()
+    {
+        $this->assertCount(0, $this->uri->getSegments());
+    }
+
+    public function testGetURIString()
+    {
+        $this->assertEmpty($this->uri->getURIString());
+    }
+
     public function testHost()
     {
         $this->assertEquals('cli', $this->uri->host());

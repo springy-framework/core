@@ -13,6 +13,7 @@
 namespace Springy\Core;
 
 use Springy\Exceptions\Handler;
+use Springy\HTTP\Request;
 use Springy\HTTP\URI;
 
 class Kernel
@@ -20,7 +21,9 @@ class Kernel
     // Framework version
     const VERSION = '5.0.0';
 
-    // Path constants
+    // Constants path
+    const PATH_WEB_ROOT = 'ROOT';
+
     const PATH_PROJECT = 'PROJ';
     const PATH_CONF = 'CONF';
     const PATH_APPLICATION = 'APP';
@@ -29,7 +32,6 @@ class Kernel
     const PATH_CONTROLLER = 'CONTROLLER';
     const PATH_LIBRARY = 'LIB';
     const PATH_ROOT = 'ROOT';
-    const PATH_WEB_ROOT = 'ROOT';
     const PATH_VENDOR = 'VENDOR';
     const PATH_MIGRATION = 'MIGRATION';
     // Path constants to back compatibility
@@ -40,21 +42,23 @@ class Kernel
     /** @var self Kernel globally instance */
     protected static $instance;
 
-    /** @var string System name */
+    /** @var string the application name */
     protected static $name = '';
-    /** @var array System version */
+    /** @var array the application version */
     protected static $version = [0, 0, 0];
-    /** @var string Project code name */
+    /** @var string the project code name */
     protected static $projName = '';
-    /** @var string System environment */
+    /** @var string environment of the application */
     protected static $environment = '';
-    /** @var string System charset */
+    /** @var string default charset of the application */
     protected static $charset = 'UTF-8';
 
-    /** @var float Application started time */
+    /** @var float application started time */
     protected static $startime;
-    /** @var Handler Application error/exception handler */
+    /** @var Handler the application error/exception handler */
     protected static $errorHandler;
+    /** @var Request the application HTTP request instance */
+    protected static $httpRequest;
 
     /// Determina o root de controladoras
     private static $controller_root = [];
@@ -182,6 +186,16 @@ class Kernel
     }
 
     /**
+     * Returns the application HTTP request instance.
+     *
+     * @return Request
+     */
+    public function httpRequest()
+    {
+        return self::$httpRequest;
+    }
+
+    /**
      * A path of the system.
      *
      * @param string $component the component constant.
@@ -225,9 +239,22 @@ class Kernel
 
         self::$startime = $startime ?? microtime(true);
         self::$errorHandler = new Handler();
+        self::$httpRequest = new Request();
 
+        $uri = URI::getInstance();
 
-        return self::getInstance();
+        if (self::$httpRequest->method() == 'HEAD' && $uri->host() == '') {
+            new Header([
+                'Pragma: no-cache' => true,
+                'Expires: 0' => true,
+                'Cache-Control: must-revalidate, post-check=0, pre-check=0' => true,
+                'Cache-Control: private' => false,
+            ]);
+
+            return self::$instance;
+        }
+
+        return self::$instance;
     }
 
     /**

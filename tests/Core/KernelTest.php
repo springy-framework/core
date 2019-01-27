@@ -61,6 +61,11 @@ class KernelTest extends TestCase
         $this->assertNull($this->kernel->errorHandler());
     }
 
+    public function testHttpRequest()
+    {
+        $this->assertNull($this->kernel->httpRequest());
+    }
+
     public function testPaths()
     {
         $this->assertEquals(__DIR__, $this->kernel->path(Kernel::PATH_ROOT));
