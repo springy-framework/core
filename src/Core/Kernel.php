@@ -22,9 +22,9 @@ class Kernel
     // Framework version
     const VERSION = '5.0.0';
 
-    // Application type constants
-    const APP_TYPE_CLI = 'cli';
-    const APP_TYPE_WEB = 'web';
+    // Execution environment type constants
+    const ENV_TYPE_CLI = 'cli';
+    const ENV_TYPE_WEB = 'web';
 
     // Constants path
     const PATH_WEB_ROOT = 'ROOT';
@@ -60,8 +60,8 @@ class Kernel
 
     /** @var float application started time */
     protected static $startime;
-    /** @var string the application type */
-    protected static $appType;
+    /** @var string the execution environment type */
+    protected static $envType;
     /** @var Handler the application error/exception handler */
     protected static $errorHandler;
     /** @var Request the application HTTP request object */
@@ -102,14 +102,14 @@ class Kernel
             return;
         }
 
-        self::$appType = self::APP_TYPE_WEB;
+        self::$envType = self::ENV_TYPE_WEB;
 
         self::$errorHandler = new Handler();
         self::$httpRequest = new Request();
         self::$httpResponse = new Response();
 
         if (php_sapi_name() === 'cli') {
-            self::$appType = self::APP_TYPE_CLI;
+            self::$envType = self::ENV_TYPE_CLI;
         }
     }
 
@@ -205,7 +205,7 @@ class Kernel
 
     protected function resolveCliController()
     {
-        if (self::$appType === self::APP_TYPE_WEB) {
+        if (self::$envType === self::ENV_TYPE_WEB) {
             return;
         }
 
@@ -217,7 +217,7 @@ class Kernel
 
     protected function resolveWebController()
     {
-        if (self::$appType === self::APP_TYPE_CLI) {
+        if (self::$envType === self::ENV_TYPE_CLI) {
             return;
         }
 
@@ -236,16 +236,6 @@ class Kernel
             'App\\Controllers\\Web\\',
             $uri->getSegments()
         );
-    }
-
-    /**
-     * Returns the application type.
-     *
-     * @return string
-     */
-    public function applicationType(): string
-    {
-        return self::$appType;
     }
 
     /**
@@ -319,7 +309,7 @@ class Kernel
                 }
 
                 $env = empty($env) ? (
-                    (self::$appType === self::APP_TYPE_CLI) ? 'cli' : URI::getInstance()->host()
+                    (self::$envType === self::ENV_TYPE_CLI) ? 'cli' : URI::getInstance()->host()
                 ) : $env;
 
                 // Verify if has an alias for host
@@ -339,6 +329,16 @@ class Kernel
         }
 
         return self::$environment;
+    }
+
+    /**
+     * Returns the application type.
+     *
+     * @return string
+     */
+    public function environmentType(): string
+    {
+        return self::$envType;
     }
 
     /**

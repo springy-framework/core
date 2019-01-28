@@ -32,11 +32,6 @@ class KernelTest extends TestCase
         $this->kernel = Kernel::getInstance()->config($this->conf);
     }
 
-    public function testApplicationType()
-    {
-        $this->assertEquals(Kernel::APP_TYPE_CLI, $this->kernel->applicationType());
-    }
-
     public function testCharset()
     {
         $this->assertEquals($this->conf['CHARSET'], $this->kernel->charset());
@@ -59,6 +54,11 @@ class KernelTest extends TestCase
 
         // Test environment configuration by setting empty
         $this->assertEquals('cli', $this->kernel->environment('', [], ''));
+    }
+
+    public function testEnvironmentType()
+    {
+        $this->assertEquals(Kernel::ENV_TYPE_CLI, $this->kernel->environmentType());
     }
 
     public function testErrorHandler()
