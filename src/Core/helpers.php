@@ -16,6 +16,9 @@
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
+if (!defined('LF')) {
+    define('LF', "\n");
+}
 
 /**
  * Get shared container application instance.
@@ -34,4 +37,23 @@ function app($service = null)
     }
 
     return Springy\Core\Application::sharedInstance();
+}
+
+/**
+ * A var_dump and die help function.
+ *
+ * @param mixed   $var
+ * @param boolean $die
+ *
+ * @return void
+ */
+function dd($var, $die = true)
+{
+    echo '<pre>';
+    var_dump($var);
+    echo '</pre>';
+
+    if ($die) {
+        die;
+    }
 }

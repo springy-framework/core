@@ -159,16 +159,12 @@ class Handler
     /**
      * Exception handler method.
      *
-     * @param Exception $err
+     * @param Exception|Error|Throwable $err
      *
      * @return void
      */
-    public function exceptionHandler(Exception $err)
+    public function exceptionHandler($err)
     {
-        if (!($err instanceof Exception)) {
-            return;
-        }
-
         $this->handlerType = self::HT_EXCEPTION;
         $this->exception = $err;
 
@@ -218,7 +214,7 @@ class Handler
 
         $errorName = $this->errorName($errCode);
 
-        echo $errorName;
+        echo $errorName.' - '.$this->exception->getMessage();
         exit(1);
 
         return true;

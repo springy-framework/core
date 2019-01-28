@@ -59,6 +59,8 @@ class Kernel
     protected static $errorHandler;
     /** @var Request the application HTTP request instance */
     protected static $httpRequest;
+    /** @var mixed the controller object */
+    protected static $controller;
 
     /// Determina o root de controladoras
     private static $controller_root = [];
@@ -81,6 +83,125 @@ class Kernel
     private static $templateVars = [];
     /// Default template functions
     private static $templateFuncs = [];
+
+    protected function findController(string $baseNS, array $segments)
+    {
+        do {
+            // Finds an Index controller
+            $index = $segments;
+            $index[] = 'Index';
+            $base = $this->normalizeNamePath($index);
+            if ($this->loadController($baseNS.$base)) {
+                return;
+            }
+
+            // Finds the full qualified name controller
+            $base = $this->normalizeNamePath($segments);
+            if ($this->loadController($baseNS.$base)) {
+                return;
+            }
+
+            array_pop($segments);
+        } while (count($segments));
+    }
+
+    /**
+     * Tryes to load a full qualified name controller class.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    protected function loadController(string $name): bool
+    {
+        try {
+            self::$controller = new $name();
+        } catch (\Throwable $th) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Normalizes the array of segments to a class namespace.
+     *
+     * @param array $segments
+     *
+     * @return string
+     */
+    protected function normalizeNamePath(array $segments): string
+    {
+        $count = count($segments) - 1;
+        $normalized = [];
+        foreach ($segments as $index => $value) {
+            $normalized[] = $this->normalizeSegment($value, $index == $count);
+        }
+
+        return implode('\\', $normalized);
+    }
+
+    /**
+     * Normalizes the segment name to StudlyCaps.
+     *
+     * @param string $name
+     * @param bool   $last
+     *
+     * @return string
+     */
+    protected function normalizeSegment(string $name, bool $last): string
+    {
+        $normalized = [];
+        $segments = explode('-', $name);
+        foreach ($segments as $value) {
+            if ($last) {
+                $normalized[] = $value ? ucwords($value, '_') : '-';
+
+                continue;
+            }
+
+            $normalized[] = $value ?? '-';
+        }
+
+        return implode('', $normalized);
+    }
+
+    protected function resolveCliController(array $segments)
+    {
+        if ($this->httpRequest()->method() != 'cli') {
+            return;
+        }
+
+        $this->findController(
+            'App\\Controllers\\Cli\\',
+            []
+        );
+    }
+
+    protected function resolveWebController()
+    {
+        if ($this->httpRequest()->method() == 'cli') {
+            return;
+        }
+
+        $uri = URI::getInstance();
+
+        if (self::$httpRequest->method() == 'HEAD' && $uri->host() == '') {
+            new Header([
+                'Pragma: no-cache' => true,
+                'Expires: 0' => true,
+                'Cache-Control: must-revalidate, post-check=0, pre-check=0' => true,
+                'Cache-Control: private' => false,
+            ]);
+
+            return;
+        }
+
+        $this->findController(
+            'App\\Controllers\\Web\\',
+            $uri->getSegments()
+        );
+    }
 
     /**
      * The system charset.
@@ -243,15 +364,12 @@ class Kernel
 
         $uri = URI::getInstance();
 
-        if (self::$httpRequest->method() == 'HEAD' && $uri->host() == '') {
-            new Header([
-                'Pragma: no-cache' => true,
-                'Expires: 0' => true,
-                'Cache-Control: must-revalidate, post-check=0, pre-check=0' => true,
-                'Cache-Control: private' => false,
-            ]);
 
-            return self::$instance;
+        $this->resolveCliController();
+        $this->resolveWebController();
+
+        if (self::$controller === null) {
+            dd('404 Not found');
         }
 
         return self::$instance;
