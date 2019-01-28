@@ -13,38 +13,38 @@ namespace Springy\HTTP;
 
 class Header
 {
+    /** @var array the list of headers to be sent */
+    protected $headers;
+    /** @var int the HTTP response code */
+    protected $httpResponseCode;
+
     /**
      * Constructor.
      *
      * @param array $headers
      */
-    public function __construct(array $headers = [])
+    public function __construct(array $headers = [], $httpResponseCode = 200)
     {
-        foreach ($headers as $header => $replace) {
-            if (!$this->header($header, $replace)) {
-                break;
-            }
-        }
+        $this->headers = [];
+        $this->httpResponseCode = $httpResponseCode;
     }
 
     /**
      * Send HTTP header if was not sent yet.
      *
      * @param string $header
+     * @param string $value
      * @param bool   $replace
-     * @param int    $httpResposeCode
      *
-     * @return bool
+     * @return void
      */
-    private function header(string $header, bool $replace = true, int $httpResposeCode = null): bool
+    private function header(string $header, string $value, bool $replace = true)
     {
-        if (headers_sent()) {
-            return false;
+        if ($replace) {
+            $this->headers[$header] = [];
         }
 
-        header($header, $replace, $httpResposeCode);
-
-        return true;
+        $this->headers[$header][] = $value;
     }
 
     /**
@@ -53,37 +53,11 @@ class Header
      * @param string $value
      * @param bool   $replace
      *
-     * @return bool
+     * @return void
      */
-    public function cacheControl(string $value, bool $replace = true): bool
+    public function cacheControl(string $value, bool $replace = true)
     {
-        return $this->header('Cache-Control: '.$value, $replace);
-    }
-
-    /**
-     * Sends Expires HTTP header.
-     *
-     * @param string $value
-     * @param bool   $replace
-     *
-     * @return bool
-     */
-    public function expires(string $value, bool $replace = true): bool
-    {
-        return $this->header('Expires: '.$value, $replace);
-    }
-
-    /**
-     * Sends Pragma HTTP header.
-     *
-     * @param string $value
-     * @param bool   $replace
-     *
-     * @return bool
-     */
-    public function pragma(string $value, bool $replace = true): bool
-    {
-        return $this->header('Pragma: '.$value, $replace);
+        $this->header('Cache-Control', $value, $replace);
     }
 
     /**
@@ -93,10 +67,68 @@ class Header
      * @param string $charset
      * @param bool   $replace
      *
+     * @return void
+     */
+    public function contentType(string $type = 'text/html', string $charset = 'UTF-8', bool $replace = true)
+    {
+        $this->header('Content-Type', $type.'; charset='.$charset, $replace);
+    }
+
+    /**
+     * Sends Expires HTTP header.
+     *
+     * @param string $value
+     * @param bool   $replace
+     *
+     * @return void
+     */
+    public function expires(string $value, bool $replace = true)
+    {
+        $this->header('Expires', $value, $replace);
+    }
+
+    public function httpResponseCode(int $httpResponseCode = null): int
+    {
+        if ($httpResponseCode !== null) {
+            $this->httpResponseCode = $httpResponseCode;
+        }
+
+        return $this->httpResponseCode;
+    }
+
+    /**
+     * Sends Pragma HTTP header.
+     *
+     * @param string $value
+     * @param bool   $replace
+     *
+     * @return void
+     */
+    public function pragma(string $value, bool $replace = true)
+    {
+        $this->header('Pragma', $value, $replace);
+    }
+
+    /**
+     * Sends the HTTP headers.
+     *
      * @return bool
      */
-    public function contentType(string $type = 'text/html', string $charset = 'UTF-8', bool $replace = true): bool
+    public function send(): bool
     {
-        return $this->header('Content-Type: '.$type.'; charset='.$charset, $replace);
+        if (headers_sent()) {
+            return false;
+        }
+
+        foreach ($this->headers as $string => $values) {
+            $first = true;
+
+            foreach ($values as $value) {
+                header($string.': '.$value, $first, $this->httpResponseCode);
+                $first = false;
+            }
+        }
+
+        return true;
     }
 }

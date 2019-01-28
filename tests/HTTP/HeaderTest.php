@@ -20,35 +20,37 @@ class HeaderTest extends TestCase
         $this->header = new Header();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testCacheControl()
     {
-        $this->assertTrue($this->header->cacheControl('no-cache'));
+        $this->assertNull($this->header->cacheControl('no-cache'));
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testExpires()
-    {
-        $this->assertTrue($this->header->expires('0'));
-    }
-
-    /**
-     * @runInSeparateProcess
-     */
-    public function testPragma()
-    {
-        $this->assertTrue($this->header->pragma('no-cache'));
-    }
-
-    /**
-     * @runInSeparateProcess
-     */
     public function testContentType()
     {
-        $this->assertTrue($this->header->contentType('text/plain'));
+        $this->assertNull($this->header->contentType('text/plain'));
+    }
+
+    public function testExpires()
+    {
+        $this->assertNull($this->header->expires('0'));
+    }
+
+    public function testHttpResponseCode()
+    {
+        $this->assertEquals(200, $this->header->httpResponseCode());
+        $this->assertEquals(500, $this->header->httpResponseCode(500));
+    }
+
+    public function testPragma()
+    {
+        $this->assertNull($this->header->pragma('no-cache'));
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSend()
+    {
+        $this->assertTrue($this->header->send());
     }
 }
