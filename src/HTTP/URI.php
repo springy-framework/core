@@ -46,7 +46,7 @@ class URI
         self::$uriString = '';
         self::$httpHost = $this->parseHost();
 
-        if (self::$httpHost === 'cli') {
+        if (self::$httpHost === '$') {
             return;
         }
 
@@ -54,10 +54,15 @@ class URI
         $this->parseSegments();
     }
 
+    /**
+     * Parses the $_SERVER['HTTP_HOST] variable.
+     *
+     * @return string
+     */
     protected function parseHost(): string
     {
         if (php_sapi_name() === 'cli') {
-            return 'cli';
+            return '$';
         }
 
         return trim(

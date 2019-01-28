@@ -14,12 +14,17 @@ namespace Springy\Core;
 
 use Springy\Exceptions\Handler;
 use Springy\HTTP\Request;
+use Springy\HTTP\Response;
 use Springy\HTTP\URI;
 
 class Kernel
 {
     // Framework version
     const VERSION = '5.0.0';
+
+    // Application type constants
+    const APP_TYPE_CLI = 'cli';
+    const APP_TYPE_WEB = 'web';
 
     // Constants path
     const PATH_WEB_ROOT = 'ROOT';
@@ -55,10 +60,14 @@ class Kernel
 
     /** @var float application started time */
     protected static $startime;
+    /** @var string the application type */
+    protected static $appType;
     /** @var Handler the application error/exception handler */
     protected static $errorHandler;
-    /** @var Request the application HTTP request instance */
+    /** @var Request the application HTTP request object */
     protected static $httpRequest;
+    /** @var Response the application HTTP response object */
+    protected static $httpResponse;
     /** @var mixed the controller object */
     protected static $controller;
 
@@ -84,6 +93,34 @@ class Kernel
     /// Default template functions
     private static $templateFuncs = [];
 
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        if (self::$instance !== null) {
+            return;
+        }
+
+        self::$appType = self::APP_TYPE_WEB;
+
+        self::$errorHandler = new Handler();
+        self::$httpRequest = new Request();
+        self::$httpResponse = new Response();
+
+        if (php_sapi_name() === 'cli') {
+            self::$appType = self::APP_TYPE_CLI;
+        }
+    }
+
+    /**
+     * Finds the controller.
+     *
+     * @param string $baseNS
+     * @param array  $segments
+     *
+     * @return void
+     */
     protected function findController(string $baseNS, array $segments)
     {
         do {
@@ -168,7 +205,7 @@ class Kernel
 
     protected function resolveCliController()
     {
-        if ($this->httpRequest()->method() != 'cli') {
+        if (self::$appType === self::APP_TYPE_WEB) {
             return;
         }
 
@@ -180,19 +217,17 @@ class Kernel
 
     protected function resolveWebController()
     {
-        if ($this->httpRequest()->method() == 'cli') {
+        if (self::$appType === self::APP_TYPE_CLI) {
             return;
         }
 
         $uri = URI::getInstance();
 
         if (self::$httpRequest->method() == 'HEAD' && $uri->host() == '') {
-            new Header([
-                'Pragma: no-cache' => true,
-                'Expires: 0' => true,
-                'Cache-Control: must-revalidate, post-check=0, pre-check=0' => true,
-                'Cache-Control: private' => false,
-            ]);
+            $this->$httpResponse->header()->pragma('no-cache');
+            $this->$httpResponse->header()->expires('0');
+            $this->$httpResponse->header()->cacheControl('must-revalidate, post-check=0, pre-check=0');
+            $this->$httpResponse->header()->cacheControl('private', false);
 
             return;
         }
@@ -201,6 +236,16 @@ class Kernel
             'App\\Controllers\\Web\\',
             $uri->getSegments()
         );
+    }
+
+    /**
+     * Returns the application type.
+     *
+     * @return string
+     */
+    public function applicationType(): string
+    {
+        return self::$appType;
     }
 
     /**
@@ -274,7 +319,7 @@ class Kernel
                 }
 
                 $env = empty($env) ? (
-                    (php_sapi_name() === 'cli') ? 'cli' : URI::getInstance()->host()
+                    (self::$appType === self::APP_TYPE_CLI) ? 'cli' : URI::getInstance()->host()
                 ) : $env;
 
                 // Verify if has an alias for host
@@ -359,10 +404,6 @@ class Kernel
         }
 
         self::$startime = $startime ?? microtime(true);
-        self::$errorHandler = new Handler();
-        self::$httpRequest = new Request();
-
-        $uri = URI::getInstance();
 
         $this->resolveCliController();
         $this->resolveWebController();

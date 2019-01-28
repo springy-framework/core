@@ -32,6 +32,6 @@ class URITest extends TestCase
 
     public function testHost()
     {
-        $this->assertEquals('cli', $this->uri->host());
+        $this->assertEquals('$', $this->uri->host());
     }
 }

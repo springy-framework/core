@@ -32,6 +32,11 @@ class KernelTest extends TestCase
         $this->kernel = Kernel::getInstance()->config($this->conf);
     }
 
+    public function testApplicationType()
+    {
+        $this->assertEquals(Kernel::APP_TYPE_CLI, $this->kernel->applicationType());
+    }
+
     public function testCharset()
     {
         $this->assertEquals($this->conf['CHARSET'], $this->kernel->charset());
@@ -58,12 +63,12 @@ class KernelTest extends TestCase
 
     public function testErrorHandler()
     {
-        $this->assertNull($this->kernel->errorHandler());
+        $this->assertInstanceOf(Springy\Exceptions\Handler::class, $this->kernel->errorHandler());
     }
 
     public function testHttpRequest()
     {
-        $this->assertNull($this->kernel->httpRequest());
+        $this->assertInstanceOf(Springy\HTTP\Request::class, $this->kernel->httpRequest());
     }
 
     public function testPaths()
