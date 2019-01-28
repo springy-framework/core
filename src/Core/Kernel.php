@@ -166,7 +166,7 @@ class Kernel
         return implode('', $normalized);
     }
 
-    protected function resolveCliController(array $segments)
+    protected function resolveCliController()
     {
         if ($this->httpRequest()->method() != 'cli') {
             return;
@@ -363,7 +363,6 @@ class Kernel
         self::$httpRequest = new Request();
 
         $uri = URI::getInstance();
-
 
         $this->resolveCliController();
         $this->resolveWebController();

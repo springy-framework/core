@@ -42,8 +42,8 @@ function app($service = null)
 /**
  * A var_dump and die help function.
  *
- * @param mixed   $var
- * @param boolean $die
+ * @param mixed $var
+ * @param bool  $die
  *
  * @return void
  */
