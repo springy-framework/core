@@ -19,23 +19,28 @@ class KernelTest extends TestCase
     public function setUp()
     {
         $this->conf = [
-            'SYSTEM_NAME'       => 'Springy Test Case',
+            'SYSTEM_NAME'       => 'Foo',
             'SYSTEM_VERSION'    => [1, 0, 0],
             'PROJECT_CODE_NAME' => 'Alpha',
             'CHARSET'           => 'UTF-8',
             'TIMEZONE'          => 'UTC',
             'ENVIRONMENT'       => 'test',
-            'ROOT_PATH'         => __DIR__,
+            'CONFIG_PATH'       => __DIR__,
             // 'APP_PATH'          => __DIR__.'/../app',
         ];
 
-        $this->kernel = Kernel::getInstance()->config($this->conf);
+        $this->kernel = new Kernel($this->conf);
     }
 
     public function testCharset()
     {
         $this->assertEquals($this->conf['CHARSET'], $this->kernel->charset());
         $this->assertEquals('ISO-8859-1', $this->kernel->charset('ISO-8859-1'));
+    }
+
+    public function testConfiguration()
+    {
+        $this->assertInstanceOf(Springy\Core\Configuration::class, $this->kernel->configuration());
     }
 
     public function testEnvironment()
@@ -71,19 +76,31 @@ class KernelTest extends TestCase
         $this->assertInstanceOf(Springy\HTTP\Request::class, $this->kernel->httpRequest());
     }
 
-    public function testPaths()
+    public function testHttpResponse()
     {
-        $this->assertEquals(__DIR__, $this->kernel->path(Kernel::PATH_ROOT));
-        $this->assertEquals(__DIR__.'/../', $this->kernel->path(Kernel::PATH_ROOT, __DIR__.'/../'));
-
-        // $this->assertEquals(__DIR__.'/../app', $this->kernel->path(Kernel::PATH_APPLICATION));
-        // $this->assertEquals(__DIR__.'/../proj', $this->kernel->path(Kernel::PATH_APPLICATION, __DIR__.'/../proj'));
+        $this->assertInstanceOf(Springy\HTTP\Response::class, $this->kernel->httpResponse());
     }
+
+    // public function testPaths()
+    // {
+    //     $this->assertEquals(__DIR__, $this->kernel->path(Kernel::PATH_ROOT));
+    //     $this->assertEquals(__DIR__.'/../', $this->kernel->path(Kernel::PATH_ROOT, __DIR__.'/../'));
+
+    //     // $this->assertEquals(__DIR__.'/../app', $this->kernel->path(Kernel::PATH_APPLICATION));
+    //     // $this->assertEquals(__DIR__.'/../proj', $this->kernel->path(Kernel::PATH_APPLICATION, __DIR__.'/../proj'));
+    // }
 
     public function testProjectCodeName()
     {
         $this->assertEquals($this->conf['PROJECT_CODE_NAME'], $this->kernel->projectCodeName());
         $this->assertEquals('Beta', $this->kernel->projectCodeName('Beta'));
+    }
+
+    public function testSetUp()
+    {
+        $this->assertTrue($this->kernel->setUp(__DIR__.'/../config.php'));
+        $this->assertNotEquals('Foo', $this->kernel->systemName());
+        $this->assertTrue($this->kernel->setUp($this->conf));
     }
 
     public function testSystemName()

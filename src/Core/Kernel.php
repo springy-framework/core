@@ -16,6 +16,7 @@ use Springy\Exceptions\Handler;
 use Springy\HTTP\Request;
 use Springy\HTTP\Response;
 use Springy\HTTP\URI;
+use Springy\Exceptions\SpringyException;
 
 class Kernel
 {
@@ -48,25 +49,25 @@ class Kernel
     protected static $instance;
 
     /** @var string the application name */
-    protected static $name = '';
+    protected static $name;
     /** @var array the application version */
-    protected static $version = [0, 0, 0];
+    protected static $version;
     /** @var string the project code name */
-    protected static $projName = '';
-    /** @var string environment of the application */
-    protected static $environment = '';
+    protected static $projName;
     /** @var string default charset of the application */
-    protected static $charset = 'UTF-8';
+    protected static $charset;
 
     /** @var float application started time */
     protected static $startime;
     /** @var string the execution environment type */
     protected static $envType;
+    /** @var Configuration the configuration handler */
+    protected static $configuration;
     /** @var Handler the application error/exception handler */
     protected static $errorHandler;
-    /** @var Request the application HTTP request object */
+    /** @var Request the application HTTP request handler */
     protected static $httpRequest;
-    /** @var Response the application HTTP response object */
+    /** @var Response the application HTTP response handler */
     protected static $httpResponse;
     /** @var mixed the controller object */
     protected static $controller;
@@ -96,21 +97,28 @@ class Kernel
     /**
      * Constructor.
      */
-    public function __construct()
+    public function __construct($appConf = null)
     {
         if (self::$instance !== null) {
             return;
         }
 
-        self::$envType = self::ENV_TYPE_WEB;
-
+        self::$name = '';
+        self::$version = [0, 0, 0];
+        self::$projName = '';
+        self::$charset = 'UTF-8';
+        self::$startime = microtime(true);
+        self::$envType = (php_sapi_name() === 'cli') ? self::ENV_TYPE_CLI : self::ENV_TYPE_WEB;
+        self::$configuration = new Configuration();
         self::$errorHandler = new Handler();
         self::$httpRequest = new Request();
         self::$httpResponse = new Response();
 
-        if (php_sapi_name() === 'cli') {
-            self::$envType = self::ENV_TYPE_CLI;
+        if ($appConf === null) {
+            return;
         }
+
+        $this->setUp($appConf);
     }
 
     /**
@@ -232,6 +240,9 @@ class Kernel
             return;
         }
 
+        // Updates the configuration host
+        self::$configuration->configHost($uri->host());
+
         $this->findController(
             'App\\Controllers\\Web\\',
             $uri->getSegments()
@@ -256,38 +267,13 @@ class Kernel
     }
 
     /**
-     * Configures the application.
+     * Returns the configuration handler.
      *
-     * @param array $conf
-     *
-     * @return self
+     * @return Configuration
      */
-    public function config(array $conf): self
+    public function configuration(): Configuration
     {
-        $instance = self::getInstance();
-
-        ini_set('date.timezone', $conf['TIMEZONE'] ?? 'UTC');
-
-        $instance->charset($conf['CHARSET'] ?? 'UTF-8');
-        $instance->systemName($conf['SYSTEM_NAME'] ?? 'Application');
-        $instance->systemVersion($conf['SYSTEM_VERSION']) ?? [1, 0, 0];
-        $instance->projectCodeName($conf['PROJECT_CODE_NAME'] ?? '');
-        $instance->environment(
-            $conf['ENVIRONMENT'] ?? '',
-            $conf['ENVIRONMENT_ALIAS'] ?? [],
-            $conf['ENVIRONMENT_VARIABLE'] ?? 'ENVIRONMENT'
-        );
-
-        // Check basic configuration path
-        if (!isset($conf['ROOT_PATH'])) {
-            throw new \Exception('Document root configuration not found.', E_USER_ERROR);
-        }
-
-        // Define the application paths
-        $instance->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);
-        // self::path(self::PATH_APPLICATION, $conf['APP_PATH'] ?? realpath($conf['ROOT_PATH'].'/../app'));
-
-        return $instance;
+        return self::$configuration;
     }
 
     /**
@@ -325,10 +311,10 @@ class Kernel
                 }
             }
 
-            self::$environment = $env;
+            self::$configuration->environment($env);
         }
 
-        return self::$environment;
+        return self::$configuration->environment();
     }
 
     /**
@@ -346,7 +332,7 @@ class Kernel
      *
      * @return Handler
      */
-    public function errorHandler()
+    public function errorHandler(): Handler
     {
         return self::$errorHandler;
     }
@@ -356,9 +342,19 @@ class Kernel
      *
      * @return Request
      */
-    public function httpRequest()
+    public function httpRequest(): Request
     {
         return self::$httpRequest;
+    }
+
+    /**
+     * Returns the application HTTP response instance.
+     *
+     * @return Response
+     */
+    public function httpResponse(): Response
+    {
+        return self::$httpResponse;
     }
 
     /**
@@ -403,7 +399,8 @@ class Kernel
             return;
         }
 
-        self::$startime = $startime ?? microtime(true);
+        // Overwrites the application started time if defined
+        self::$startime = $startime ?? self::$startime;
 
         $this->resolveCliController();
         $this->resolveWebController();
@@ -423,6 +420,48 @@ class Kernel
     public function runTime(): float
     {
         return microtime(true) - self::$startime;
+    }
+
+    /**
+     * Configures the application.
+     *
+     * @param array|string $conf the array of configuration or
+     *                           the full path name of the configuration file.
+     *
+     * @return bool
+     */
+    public function setUp($conf): bool
+    {
+        if (!is_array($conf) && !is_string($conf)) {
+            throw new SpringyException('Invalid application configuration set.');
+        } elseif (is_string($conf)) {
+            $conf = require $conf;
+        }
+
+        ini_set('date.timezone', $conf['TIMEZONE'] ?? 'UTC');
+
+        $this->charset($conf['CHARSET'] ?? 'UTF-8');
+        $this->systemName($conf['SYSTEM_NAME'] ?? '');
+        $this->systemVersion($conf['SYSTEM_VERSION']) ?? [1, 0, 0];
+        $this->projectCodeName($conf['PROJECT_CODE_NAME'] ?? '');
+        $this->environment(
+            $conf['ENVIRONMENT'] ?? '',
+            $conf['ENVIRONMENT_ALIAS'] ?? [],
+            $conf['ENVIRONMENT_VARIABLE'] ?? 'ENVIRONMENT'
+        );
+
+        // Check basic configuration path
+        if (!isset($conf['CONFIG_PATH'])) {
+            throw new SpringyException('Configuration files path not found.');
+        }
+
+        self::$configuration->configPath($conf['CONFIG_PATH']);
+
+        // Define the application paths
+        // $this->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);
+        // self::path(self::PATH_APPLICATION, $conf['APP_PATH'] ?? realpath($conf['ROOT_PATH'].'/../app'));
+
+        return true;
     }
 
     /**
