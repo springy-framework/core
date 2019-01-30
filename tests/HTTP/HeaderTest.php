@@ -51,6 +51,7 @@ class HeaderTest extends TestCase
      */
     public function testSend()
     {
+        $this->header->contentType('text/plain');
         $this->assertTrue($this->header->send());
     }
 }
