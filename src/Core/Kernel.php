@@ -13,10 +13,10 @@
 namespace Springy\Core;
 
 use Springy\Exceptions\Handler;
+use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Request;
 use Springy\HTTP\Response;
 use Springy\HTTP\URI;
-use Springy\Exceptions\SpringyException;
 
 class Kernel
 {

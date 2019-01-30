@@ -252,7 +252,7 @@ class Configuration
      * No changes will be made to the configuration files.
      *
      * @param string $entry dotted string of the configuration key.
-     * @param mixed $value  new value for configuration.
+     * @param mixed  $value  new value for configuration.
      *
      * @return void
      */
