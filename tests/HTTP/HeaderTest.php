@@ -41,6 +41,12 @@ class HeaderTest extends TestCase
         $this->assertEquals(500, $this->header->httpResponseCode(500));
     }
 
+    public function testNotFound()
+    {
+        $this->header->notFound();
+        $this->assertEquals(404, $this->header->httpResponseCode());
+    }
+
     public function testPragma()
     {
         $this->assertNull($this->header->pragma('no-cache'));

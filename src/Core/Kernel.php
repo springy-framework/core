@@ -65,10 +65,6 @@ class Kernel
     protected static $configuration;
     /** @var Handler the application error/exception handler */
     protected static $errorHandler;
-    /** @var Request the application HTTP request handler */
-    protected static $httpRequest;
-    /** @var Response the application HTTP response handler */
-    protected static $httpResponse;
     /** @var mixed the controller object */
     protected static $controller;
 
@@ -107,12 +103,9 @@ class Kernel
         self::$version = [0, 0, 0];
         self::$projName = '';
         self::$charset = 'UTF-8';
-        self::$startime = microtime(true);
         self::$envType = (php_sapi_name() === 'cli') ? self::ENV_TYPE_CLI : self::ENV_TYPE_WEB;
         self::$configuration = new Configuration();
         self::$errorHandler = new Handler();
-        self::$httpRequest = new Request();
-        self::$httpResponse = new Response();
 
         if ($appConf === null) {
             return;
@@ -122,43 +115,97 @@ class Kernel
     }
 
     /**
+     * Calls the controller endpoint.
+     *
+     * @param array $arguments
+     *
+     * @return bool
+     */
+    protected function callEndpoint(array $arguments): bool
+    {
+        // Checks if has no arguments of first argument is not an endpoint
+        if (!$endpoint = $this->getEndpoint($arguments)) {
+            // Injects index as first argument
+            array_unshift($arguments, 'index');
+            // Checks if index is an endpoint
+            $endpoint = $this->getEndpoint($arguments);
+        }
+
+        // Returns false if has no callable endpoint
+        if (!$endpoint) {
+            return false;
+        }
+
+        // Removes the fist argument
+        array_shift($arguments);
+
+        // Call the endpoint method and passes the rest of arguments
+        self::$controller->$endpoint($arguments);
+
+        return true;
+    }
+
+    /**
      * Finds the controller.
      *
      * @param string $baseNS
      * @param array  $segments
      *
-     * @return void
+     * @return int
      */
-    protected function findController(string $baseNS, array $segments)
+    protected function findController(string $baseNS, array $segments): int
     {
         do {
+            $elements = count($segments);
+
             // Finds an Index controller
             $index = $segments;
             $index[] = 'Index';
-            $base = $this->normalizeNamePath($index);
-            if ($this->loadController($baseNS.$base)) {
-                return;
+            if ($this->loadController($baseNS, $index)) {
+                return $elements;
             }
 
             // Finds the full qualified name controller
-            $base = $this->normalizeNamePath($segments);
-            if ($this->loadController($baseNS.$base)) {
-                return;
+            if ($elements && $this->loadController($baseNS, $segments)) {
+                return $elements;
             }
 
             array_pop($segments);
         } while (count($segments));
+
+        return -1;
+    }
+
+    /**
+     * Gets the controller endpoint name.
+     *
+     * @param array $arguments
+     *
+     * @return string|bool
+     */
+    protected function getEndpoint(array $arguments)
+    {
+        // Gets first segment of arguments as endpoint method, if has
+        $endpoint = array_shift($arguments);
+        if ($endpoint && is_callable([self::$controller, $endpoint])) {
+            return $endpoint;
+        }
+
+        return false;
     }
 
     /**
      * Tryes to load a full qualified name controller class.
      *
-     * @param string $name
+     * @param string $baseNS
+     * @param array  $segments
      *
      * @return bool
      */
-    protected function loadController(string $name): bool
+    protected function loadController(string $baseNS, array $segments): bool
     {
+        $name = $baseNS.$this->normalizeNamePath($segments);
+
         try {
             self::$controller = new $name();
         } catch (\Throwable $th) {
@@ -211,16 +258,27 @@ class Kernel
         return implode('', $normalized);
     }
 
+    protected function notFound()
+    {
+        if (self::$envType == self::ENV_TYPE_WEB) {
+            Response::getInstance()->notFound();
+        }
+    }
+
     protected function resolveCliController()
     {
         if (self::$envType === self::ENV_TYPE_WEB) {
             return;
         }
 
-        $this->findController(
-            'App\\Controllers\\Cli\\',
-            []
-        );
+        $segment = $this->findController('App\\Controllers\\Cli\\', []);
+        if ($segment < 0) {
+            return;
+        }
+
+        if ($this->callEndpoint([])) {
+            $this->notFound();
+        }
     }
 
     protected function resolveWebController()
@@ -230,12 +288,14 @@ class Kernel
         }
 
         $uri = URI::getInstance();
+        $request = Request::getInstance();
 
-        if (self::$httpRequest->method() == 'HEAD' && $uri->host() == '') {
-            $this->$httpResponse->header()->pragma('no-cache');
-            $this->$httpResponse->header()->expires('0');
-            $this->$httpResponse->header()->cacheControl('must-revalidate, post-check=0, pre-check=0');
-            $this->$httpResponse->header()->cacheControl('private', false);
+        if ($request->method() == 'HEAD' && $uri->host() == '') {
+            $response = Response::getInstance();
+            $response->header()->pragma('no-cache');
+            $response->header()->expires('0');
+            $response->header()->cacheControl('must-revalidate, post-check=0, pre-check=0');
+            $response->header()->cacheControl('private', false);
 
             return;
         }
@@ -243,10 +303,18 @@ class Kernel
         // Updates the configuration host
         self::$configuration->configHost($uri->host());
 
-        $this->findController(
-            'App\\Controllers\\Web\\',
-            $uri->getSegments()
-        );
+        $segments = $uri->getSegments();
+        $segment = $this->findController('App\\Controllers\\Web\\', $segments);
+        if ($segment < 0) {
+            return;
+        }
+
+        // Extracts extra segments as arguments
+        $arguments = array_slice($segments, $segment);
+        array_splice($segments, $segment);
+        if (!$this->callEndpoint($arguments)) {
+            $this->notFound();
+        }
     }
 
     /**
@@ -344,7 +412,7 @@ class Kernel
      */
     public function httpRequest(): Request
     {
-        return self::$httpRequest;
+        return Request::getInstance();
     }
 
     /**
@@ -354,7 +422,7 @@ class Kernel
      */
     public function httpResponse(): Response
     {
-        return self::$httpResponse;
+        return Response::getInstance();
     }
 
     /**
@@ -406,7 +474,7 @@ class Kernel
         $this->resolveWebController();
 
         if (self::$controller === null) {
-            dd('404 Not found');
+            $this->notFound();
         }
 
         return self::$instance;
@@ -420,6 +488,17 @@ class Kernel
     public function runTime(): float
     {
         return microtime(true) - self::$startime;
+    }
+
+    public function send()
+    {
+        if (self::$envType == self::ENV_TYPE_WEB) {
+            $response = Response::getInstance();
+            $response->header()->send();
+            echo $response->body();
+
+            return;
+        }
     }
 
     /**

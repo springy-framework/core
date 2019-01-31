@@ -97,6 +97,16 @@ class Header
     }
 
     /**
+     * Sets http response code to 404 - page not found.
+     *
+     * @return void
+     */
+    public function notFound()
+    {
+        $this->httpResponseCode = 404;
+    }
+
+    /**
      * Sends Pragma HTTP header.
      *
      * @param string $value
@@ -118,6 +128,10 @@ class Header
     {
         if (headers_sent()) {
             return false;
+        }
+
+        if (!count($this->headers)) {
+            $this->contentType();
         }
 
         foreach ($this->headers as $string => $values) {

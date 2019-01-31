@@ -13,18 +13,21 @@ namespace Springy\HTTP;
 
 class Response
 {
+    /** @var self globally instance */
+    protected static $instance;
+
     /** @var Header the HTTP header object */
-    protected $header;
+    protected static $header;
     /** @var string the body content */
-    protected $body;
+    protected static $body;
 
     /**
      * Constructor.
      */
     public function __construct()
     {
-        $this->header = new Header();
-        $this->body = '';
+        self::$header = new Header();
+        self::$body = '';
     }
 
     /**
@@ -35,10 +38,10 @@ class Response
     public function body(string $content = null): string
     {
         if ($content !== null) {
-            $this->body = $content;
+            self::$body = $content;
         }
 
-        return $this->body;
+        return self::$body;
     }
 
     /**
@@ -48,6 +51,28 @@ class Response
      */
     public function header(): Header
     {
-        return $this->header;
+        return self::$header;
+    }
+
+    public function notFound()
+    {
+        self::$header->notFound();
+    }
+
+    public function send()
+    {}
+
+    /**
+     * Returns current instance.
+     *
+     * @return self
+     */
+    public static function getInstance(): self
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 }

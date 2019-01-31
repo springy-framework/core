@@ -17,7 +17,7 @@ class ResponseTest extends TestCase
 
     public function setUp()
     {
-        $this->response = new Response();
+        $this->response = Response::getInstance();
     }
 
     public function testBody()
