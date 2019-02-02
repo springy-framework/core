@@ -1,0 +1,129 @@
+<?php
+/**
+ * Driver for standard session store system.
+ *
+ * @copyright 2019 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   1.0.0
+ */
+
+namespace Springy\HTTP\SessionDrivers;
+
+use Springy\Core\Configuration;
+
+class Standard implements SessionDriverInterface
+{
+    /** @var array the session data array */
+    protected $data;
+    /** @var string the session name */
+    protected $domain;
+    /** @var string the session id */
+    protected $sessId;
+
+    /**
+     * Constructor.
+     *
+     * @param Configuration $config
+     */
+    public function __construct(Configuration $config)
+    {
+        $this->data = [];
+        $this->domain = $config->get('session.domain', '');
+    }
+
+    /**
+     * Checks whether a session variable is set.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function defined(string $name): bool
+    {
+        return isset($this->data[$name]);
+    }
+
+    /**
+     * Gets the session id.
+     *
+     * @return string
+     */
+    public function getId(): string
+    {
+        return session_id();
+    }
+
+    /**
+     * Gets a session variable.
+     *
+     * @param string $name
+     * @param mixed  $default
+     *
+     * @return void
+     */
+    public function get(string $name, $default = null)
+    {
+        return $this->data[$name] ?? $default;
+    }
+
+    /**
+     * Sets a session variable.
+     *
+     * @param string $name
+     * @param mixed  $value
+     *
+     * @return void
+     */
+    public function set(string $name, $value = null)
+    {
+        $this->data[$name] = $value;
+        $_SESSION['_'][$name] = $value;
+    }
+
+    /**
+     * Sets the session id.
+     *
+     * @param string $id
+     *
+     * @return void
+     */
+    public function setId(string $sessId)
+    {
+        session_id($sessId);
+    }
+
+    /**
+     * Starts the session.
+     *
+     * @return bool
+     */
+    public function start(): bool
+    {
+        session_set_cookie_params(0, '/', $this->domain, false, false);
+
+        $started = session_start();
+        $this->data = $_SESSION['_'] ?? [];
+        $this->sessId = session_id();
+
+        return $started;
+    }
+
+    /**
+     * Unsets a session variable.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public function unset(string $name)
+    {
+        if (!$this->defined($name)) {
+            return;
+        }
+
+        unset($this->data[$name]);
+        unset($_SESSION['_'][$name]);
+    }
+}
