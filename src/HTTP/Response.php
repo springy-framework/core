@@ -60,7 +60,8 @@ class Response
     }
 
     public function send()
-    {}
+    {
+    }
 
     /**
      * Returns current instance.

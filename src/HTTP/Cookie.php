@@ -26,7 +26,7 @@ class Cookie
     protected function scrubKey($key): string
     {
         if (!is_array($key)) {
-            return (string)$key;
+            return (string) $key;
         }
 
         return key($key).'['.current($key).']';
