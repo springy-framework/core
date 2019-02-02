@@ -2,6 +2,8 @@
 /**
  * Test case for Springy\Utils\ArrayUtils class.
  *
+ * @SuppressWarnings(PHPMD)
+ *
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -50,8 +52,6 @@ class ArrayUtilsTest extends TestCase
 
     public function testAddsANewValueOnlyIfKeyIsNotAlreadySet()
     {
-        $data = $this->data[0];
-
         $expected = ['key1' => 'val1', 'key2' => 'val2', 'key3' => 'val3'];
 
         $actual = $this->arrayUtils->add($expected, 'key3', 'val3');
@@ -154,7 +154,8 @@ class ArrayUtilsTest extends TestCase
         $expected = ['name' => 'Name 2', 'language' => 'python'];
 
         $actual = $this->arrayUtils->firstThatPasses($data, function ($key, $val) {
-            return $val['language'] == 'python';
+
+            return $key == 1 && $val['language'] == 'python';
         });
 
         $this->assertEquals($expected, $actual);

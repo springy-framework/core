@@ -42,6 +42,8 @@ function app($service = null)
 /**
  * A var_dump and die help function.
  *
+ * @SuppressWarnings(PHPMD.ExitExpression)
+ *
  * @param mixed $var
  * @param bool  $die
  *

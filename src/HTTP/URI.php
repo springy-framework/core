@@ -112,7 +112,6 @@ class URI
      */
     protected function parseSegments()
     {
-        $uriString = '';
         foreach (explode('/', trim(self::$uriString, '/')) as $segment) {
             $segment = trim($segment);
 

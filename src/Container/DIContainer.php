@@ -40,7 +40,7 @@ class DIContainer implements ArrayAccess
     /// Array que armazena as instâncias compartilhadas registradas no container
     protected $sharedInstances;
     /// Array que armazena os factories que se tornarão instâncias  compartilhadas quando chamadas (lazy load)
-    protected $sharedInstancesFactories;
+    protected $sharedInstFactories;
 
     /**
      * Constructor.
@@ -52,7 +52,7 @@ class DIContainer implements ArrayAccess
         $this->factories = [];
         $this->factoriesExtensions = [];
         $this->sharedInstances = [];
-        $this->sharedInstancesFactories = [];
+        $this->sharedInstFactories = [];
     }
 
     /**
@@ -195,7 +195,7 @@ class DIContainer implements ArrayAccess
         $this->registeredKeys[$key] = static::TYPE_SHARED;
 
         if ($instance instanceof Closure) { // Se instância for uma closure, então a instância a ser registrada será o resutado dessa closure.
-            $this->sharedInstancesFactories[$key] = $instance;
+            $this->sharedInstFactories[$key] = $instance;
 
             return;
         } elseif (!is_object($instance)) { // Somente instâncias de classes são permitidas, exceção é disparada
@@ -218,10 +218,10 @@ class DIContainer implements ArrayAccess
      */
     public function shared($key)
     {
-        if (isset($this->sharedInstancesFactories[$key])) { // Lazy loading as instancias compartilhadas.
-            $this->sharedInstances[$key] = call_user_func($this->sharedInstancesFactories[$key], $this);
+        if (isset($this->sharedInstFactories[$key])) { // Lazy loading as instancias compartilhadas.
+            $this->sharedInstances[$key] = call_user_func($this->sharedInstFactories[$key], $this);
 
-            unset($this->sharedInstancesFactories[$key]);
+            unset($this->sharedInstFactories[$key]);
         }
 
         if (isset($this->sharedInstances[$key])) {

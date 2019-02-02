@@ -21,9 +21,9 @@ class Header
     /**
      * Constructor.
      *
-     * @param array $headers
+     * @param integer $httpResponseCode
      */
-    public function __construct(array $headers = [], $httpResponseCode = 200)
+    public function __construct($httpResponseCode = 200)
     {
         $this->headers = [];
         $this->httpResponseCode = $httpResponseCode;

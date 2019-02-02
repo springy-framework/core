@@ -36,6 +36,8 @@ class Application extends DIContainer
     /**
      * Registers an event handler with the given priority.
      *
+     * @SuppressWarnings(PHPMD.ShortMethod)
+     *
      * @param string $event
      * @param mixed  $handler
      * @param int    $priority

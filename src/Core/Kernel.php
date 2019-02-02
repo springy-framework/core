@@ -68,27 +68,8 @@ class Kernel
     /** @var mixed the controller object */
     protected static $controller;
 
-    /// Determina o root de controladoras
-    private static $controller_root = [];
-    /// Caminho do namespace do controller
-    private static $controller_namespace = null;
-    /// The controller file path name
-    private static $controllerFile = null;
-    /// The controller file class name
-    private static $controllerName = null;
-    /// Run global pre-controller switch
-    private static $runGlobal = true;
-
     /// System path
     private static $paths = [];
-
-    /// List of error hook functions
-    private static $errorHooks = [];
-
-    /// Default template vars
-    private static $templateVars = [];
-    /// Default template functions
-    private static $templateFuncs = [];
 
     /**
      * Constructor.
