@@ -2,8 +2,6 @@
 /**
  * Test case for Springy\Utils\ArrayUtils class.
  *
- * @SuppressWarnings(PHPMD)
- *
  * @copyright 2015 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -14,6 +12,9 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Utils\ArrayUtils;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class ArrayUtilsTest extends TestCase
 {
     public function setUp()
