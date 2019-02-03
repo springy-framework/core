@@ -154,7 +154,6 @@ class ArrayUtilsTest extends TestCase
         $expected = ['name' => 'Name 2', 'language' => 'python'];
 
         $actual = $this->arrayUtils->firstThatPasses($data, function ($key, $val) {
-
             return $key == 1 && $val['language'] == 'python';
         });
 

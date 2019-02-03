@@ -21,7 +21,7 @@ class Header
     /**
      * Constructor.
      *
-     * @param integer $httpResponseCode
+     * @param int $httpResponseCode
      */
     public function __construct($httpResponseCode = 200)
     {
