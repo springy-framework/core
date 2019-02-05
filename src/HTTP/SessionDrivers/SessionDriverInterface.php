@@ -18,6 +18,8 @@ interface SessionDriverInterface
 {
     public function defined(string $name): bool;
 
+    public function forget(string $name);
+
     public function get(string $name, $default = null);
 
     public function getId(): string;
@@ -27,6 +29,4 @@ interface SessionDriverInterface
     public function setId(string $sessId);
 
     public function start(): bool;
-
-    public function unset(string $name);
 }

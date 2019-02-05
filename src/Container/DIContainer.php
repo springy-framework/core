@@ -126,6 +126,8 @@ class DIContainer implements ArrayAccess
     /**
      * Performs a service and returns the result of the factory and its extensions.
      *
+     * @SuppressWarnings(PHPMD.ElseExpression)
+     *
      * @param mixed $key
      * @param array $params
      *

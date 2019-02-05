@@ -46,6 +46,15 @@ class SessionTest extends TestCase
     /**
      * @runInSeparateProcess
      */
+    public function testForget()
+    {
+        $this->session->configure($this->config);
+        $this->assertNull($this->session->forget('foo'));
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
     public function testGet()
     {
         $this->session->configure($this->config);
@@ -87,14 +96,5 @@ class SessionTest extends TestCase
     {
         $this->session->configure($this->config);
         $this->assertTrue($this->session->start());
-    }
-
-    /**
-     * @runInSeparateProcess
-     */
-    public function testUnset()
-    {
-        $this->session->configure($this->config);
-        $this->assertNull($this->session->unset('foo'));
     }
 }

@@ -106,6 +106,20 @@ class Session
     }
 
     /**
+     * Unsets a session variable.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public function forget(string $name)
+    {
+        $this->start();
+
+        self::$engine->forget($name);
+    }
+
+    /**
      * Gets a session variable.
      *
      * @param string $name
@@ -184,20 +198,6 @@ class Session
         self::$started = self::$engine->start();
 
         return self::$started;
-    }
-
-    /**
-     * Unsets a session variable.
-     *
-     * @param string $name
-     *
-     * @return void
-     */
-    public function unset(string $name)
-    {
-        $this->start();
-
-        self::$engine->unset($name);
     }
 
     /**

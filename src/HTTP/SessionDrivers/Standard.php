@@ -46,6 +46,23 @@ class Standard implements SessionDriverInterface
     }
 
     /**
+     * Unsets a session variable.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public function forget(string $name)
+    {
+        if (!$this->defined($name)) {
+            return;
+        }
+
+        unset($this->data[$name]);
+        unset($_SESSION['_'][$name]);
+    }
+
+    /**
      * Gets the session id.
      *
      * @return string
@@ -108,22 +125,5 @@ class Standard implements SessionDriverInterface
         $this->sessId = session_id();
 
         return $started;
-    }
-
-    /**
-     * Unsets a session variable.
-     *
-     * @param string $name
-     *
-     * @return void
-     */
-    public function unset(string $name)
-    {
-        if (!$this->defined($name)) {
-            return;
-        }
-
-        unset($this->data[$name]);
-        unset($_SESSION['_'][$name]);
     }
 }
