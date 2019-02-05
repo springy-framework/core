@@ -29,6 +29,8 @@
 -   The `Kernel` class is now a singleton class and its methods is no more static
 -   The `Session` class was moved to `Springy\HTTP` namespace
 -   The `Session` class is now a singleton class and its methods is no more static
+-   The `UploadedFile` class was moved to `Springy\HTTP` namespace
+-   The `File` class was moved to `Springy\Utils` namespace
 -   The `URI` class was moved to `Springy\HTTP` namespace
 -   The `URI` class is now a singleton class and its methods is no more static
 -   Method `addIgnoredError` moved from `Kernel` to `Handler`

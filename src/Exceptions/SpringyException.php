@@ -11,9 +11,9 @@
 
 namespace Springy\Exceptions;
 
-use Exception;
+use RuntimeException;
 
-class SpringyException extends Exception
+class SpringyException extends RuntimeException
 {
     /** @var array|null error context */
     protected $context;

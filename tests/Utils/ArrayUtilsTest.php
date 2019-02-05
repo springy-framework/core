@@ -12,9 +12,6 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Utils\ArrayUtils;
 
-/**
- * @SuppressWarnings(PHPMD)
- */
 class ArrayUtilsTest extends TestCase
 {
     public function setUp()
