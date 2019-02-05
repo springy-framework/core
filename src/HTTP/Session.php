@@ -164,18 +164,18 @@ class Session
     /**
      * Sets the session id.
      *
-     * @param string $id
+     * @param string $sessId
      *
      * @return void
      */
-    public function setId(string $id)
+    public function setId(string $sessId)
     {
         if (self::$started) {
             throw new SpringyException('Can\'t set session id because already started');
         }
 
         $this->checkConfig();
-        self::$engine->setId($id);
+        self::$engine->setId($sessId);
     }
 
     /**

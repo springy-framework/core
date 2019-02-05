@@ -14,11 +14,28 @@
         <exclude name="BooleanArgumentFlag" />
         <exclude name="StaticAccess" />
     </rule>
-    <rule ref="rulesets/naming.xml/ShortMethodName">
+
+    <rule ref="rulesets/codesize.xml">
+        <exclude name="ExcessiveClassComplexity" />
+        <exclude name="TooManyPublicMethods" />
+    </rule>
+    <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity">
         <properties>
-            <property name="minimum" value="2"/>
+            <property name="maximum" description="The maximum WMC tolerable for a class." value="100"/>
         </properties>
     </rule>
+
+    <rule ref="rulesets/controversial.xml">
+        <exclude name="Superglobals" />
+    </rule>
+
+    <rule ref="rulesets/design.xml" />
+
+    <rule ref="rulesets/naming.xml">
+        <exclude name="ShortMethodName" />
+    </rule>
+
+    <rule ref="rulesets/unusedcode.xml" />
 
     <exclude-pattern>tests/*</exclude-pattern>
     <exclude-pattern>vendor/*</exclude-pattern>

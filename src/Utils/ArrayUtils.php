@@ -206,8 +206,8 @@ class ArrayUtils
     {
         $results = [];
 
-        array_walk_recursive($array, function ($v) use (&$results) {
-            $results[] = $v;
+        array_walk_recursive($array, function ($val) use (&$results) {
+            $results[] = $val;
         });
 
         return $results;

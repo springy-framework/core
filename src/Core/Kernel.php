@@ -543,7 +543,8 @@ class Kernel
     /**
      * The system version.
      *
-     * @param mixed $major if defined, set the major part of the system version. Can be an array with all parts.
+     * @param mixed $major if defined, set the major part of the system version.
+     *                     Can be an array with all three parts.
      * @param mixed $minor if defined, set the minor part of the system version.
      * @param mixed $build if defined, set the build part of the system version.
      *
@@ -556,14 +557,12 @@ class Kernel
                 $major[0] ?? 1,
                 $major[1] ?? 0,
                 $major[2] ?? 0);
-        }
-
-        if (!is_null($major) && !is_null($minor) && !is_null($build)) {
-            self::$version = [$major, $minor, $build];
-        } elseif (!is_null($major) && !is_null($minor)) {
-            self::$version = [$major, $minor];
-        } elseif (!is_null($major)) {
-            self::$version = [$major];
+        } elseif (!is_null($major) || !is_null($minor) || !is_null($build)) {
+            self::$version = [
+                $major ?? 1,
+                $minor ?? 0,
+                $build ?? 0,
+            ];
         }
 
         return is_array(self::$version) ? implode('.', self::$version) : self::$version;

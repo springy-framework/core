@@ -24,15 +24,6 @@ class URI
     /** @var array the URI segments */
     protected static $segments;
 
-    /// Array dos segmentos ignorados
-    protected static $ignored_segments = [];
-    /// Array da relação dos parâmetros recebidos por GET
-    protected static $get_params = [];
-    /// Índice do segmento que determina a página atual
-    protected static $segment_page = 0;
-    /// Nome da classe da controller
-    protected static $class_controller = null;
-
     /**
      * Constructor.
      */
