@@ -11,9 +11,6 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Utils\UUID;
 
-/**
- * Test case for Springy\Utils\UUID class.
- */
 class UUIDTest extends TestCase
 {
     public function testRandomUUID()

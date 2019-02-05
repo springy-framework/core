@@ -13,9 +13,6 @@ use PHPUnit\Framework\TestCase;
 use Springy\Container\DIContainer;
 use Springy\Events\Mediator;
 
-/**
- * Test case for Springy\Events\Mediator class.
- */
 class MediatorTest extends TestCase
 {
     protected $mediator;

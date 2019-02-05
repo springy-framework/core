@@ -12,9 +12,6 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Container\DIContainer;
 
-/**
- * Test case for Springy\Container\DIContainer class.
- */
 class DIContainerTest extends TestCase
 {
     private $data;
