@@ -20,7 +20,7 @@ use Springy\Exceptions\SpringyException;
 class File extends SplFileInfo
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $filename  full pathname of the file.
      * @param bool   $checkFile checks if the file exists.
@@ -102,6 +102,8 @@ class File extends SplFileInfo
      *
      * @param string $path
      * @param string $name
+     *
+     * @throws SpringyException
      *
      * @return self
      */

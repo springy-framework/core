@@ -59,8 +59,14 @@ class FileTest extends TestCase
         $file = new File($fileName);
         $this->assertEquals($targetName, $file->moveTo($path, 'target.txt'));
 
-        if (is_file($targetName)) @unlink($targetName);
-        if (is_file($fileName)) @unlink($fileName);
-        if (is_dir($path)) @rmdir($path);
+        if (is_file($targetName)) {
+            @unlink($targetName);
+        }
+        if (is_file($fileName)) {
+            @unlink($fileName);
+        }
+        if (is_dir($path)) {
+            @rmdir($path);
+        }
     }
 }

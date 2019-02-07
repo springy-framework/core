@@ -25,12 +25,12 @@
 -   The `Cookie` class is now a singleton class and its methods is no more static
 -   The `Configuration` class was moved to `Springy\Core` namespace
 -   The `Configuration` class is no more static
+-   The `File` class was moved to `Springy\Utils` namespace
 -   The `Kernel` class was moved to `Springy\Core` namespace
 -   The `Kernel` class is now a singleton class and its methods is no more static
 -   The `Session` class was moved to `Springy\HTTP` namespace
 -   The `Session` class is now a singleton class and its methods is no more static
 -   The `UploadedFile` class was moved to `Springy\HTTP` namespace
--   The `File` class was moved to `Springy\Utils` namespace
 -   The `URI` class was moved to `Springy\HTTP` namespace
 -   The `URI` class is now a singleton class and its methods is no more static
 -   Method `addIgnoredError` moved from `Kernel` to `Handler`
