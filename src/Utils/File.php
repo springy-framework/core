@@ -12,7 +12,6 @@
 
 namespace Springy\Utils;
 
-use finfo;
 use InvalidArgumentException;
 use SplFileInfo;
 use Springy\Exceptions\SpringyException;
@@ -92,7 +91,7 @@ class File extends SplFileInfo
      */
     public function getMimeType(): string
     {
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
 
         return $finfo->file($this->getPathname());
     }

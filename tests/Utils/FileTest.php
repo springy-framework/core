@@ -8,7 +8,6 @@
  *
  * @version   1.0.0
  */
-use finfo;
 use PHPUnit\Framework\MockObject\RuntimeException;
 use PHPUnit\Framework\TestCase;
 use Springy\Utils\File;
