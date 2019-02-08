@@ -182,7 +182,7 @@ class UploadedFile extends File
      *
      * @return self
      */
-    public function moveTo($directory, $name = null)
+    public function moveTo(string $directory, string $name = null)
     {
         if ($this->isValid()) {
             $target = $this->getTargetFile($directory, $name);

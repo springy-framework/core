@@ -11,6 +11,9 @@
 use PHPUnit\Framework\TestCase;
 use Springy\HTTP\Cookie;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class CookieTest extends TestCase
 {
     public $cookie;
@@ -23,9 +26,6 @@ class CookieTest extends TestCase
         $this->cookie = Cookie::getInstance();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testDelete()
     {
         $this->cookie->delete('foo');
@@ -49,9 +49,6 @@ class CookieTest extends TestCase
         $this->assertEquals('foo', $this->cookie->get(['bar' => 'foo']));
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testSet()
     {
         $this->assertTrue($this->cookie->set('foo', 'bar'));

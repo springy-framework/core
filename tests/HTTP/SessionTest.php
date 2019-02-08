@@ -18,13 +18,12 @@ use Springy\HTTP\Session;
 class SessionTest extends TestCase
 {
     public $session;
-    public $config;
 
     public function setUp()
     {
-        $this->config = new Configuration(__DIR__.'/../conf', 'test');
+        $config = new Configuration(__DIR__.'/../conf', 'test');
         $this->session = Session::getInstance();
-        $this->session->configure($this->config);
+        $this->session->configure($config);
     }
 
     public function testDefined()
