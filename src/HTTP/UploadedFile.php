@@ -15,7 +15,6 @@ namespace Springy\HTTP;
 use Springy\Exceptions\SpringyException;
 use Springy\Utils\File;
 
-
 class UploadedFile extends File
 {
     /** @var string the original name of the uploaded file */
@@ -58,6 +57,34 @@ class UploadedFile extends File
         $this->error = $error ?? UPLOAD_ERR_OK;
 
         parent::__construct($filename, UPLOAD_ERR_OK === $this->error);
+    }
+
+    /**
+     * Convert an array item to UploadedFile object.
+     *
+     * @param array $file
+     *
+     * @return self
+     */
+    protected static function arrayToUploadedFile(array $file): self
+    {
+        if (is_array($file['tmp_name'])) {
+            $keys = array_keys($file['tmp_name']);
+            $files = [];
+            foreach ($keys as $key) {
+                $files[$key] = [
+                    'name'     => $file['name'][$key],
+                    'tmp_name' => $file['tmp_name'][$key],
+                    'type'     => $file['type'][$key],
+                    'size'     => $file['size'][$key],
+                    'error'    => $file['error'][$key],
+                ];
+            }
+
+            return self::arrayToUploadedFiles($files);
+        }
+
+        return new self($file['tmp_name'], $file['name'], $file['type'], $file['size'], $file['error']);
     }
 
     /**
@@ -155,7 +182,7 @@ class UploadedFile extends File
      *
      * @return self
      */
-    public function moveTo($directory, $name = null): self
+    public function moveTo($directory, $name = null)
     {
         if ($this->isValid()) {
             $target = $this->getTargetFile($directory, $name);
@@ -179,5 +206,49 @@ class UploadedFile extends File
         }
 
         throw new SpringyException($this->getErrorMessage());
+    }
+
+    /**
+     * Gets the max file size uploadable.
+     *
+     * @return int
+     */
+    public static function getMaxFilesize(): int
+    {
+        $iniMax = strtolower(ini_get('upload_max_filesize'));
+
+        if ('' === $iniMax) {
+            return PHP_INT_MAX;
+        }
+
+        $max = intval(ltrim($iniMax, '+'));
+
+        switch (substr($iniMax, -1)) {
+            case 't': $max *= 1024;
+            case 'g': $max *= 1024;
+            case 'm': $max *= 1024;
+            case 'k': $max *= 1024;
+        }
+
+        return $max;
+    }
+
+    /**
+     * Converts a mutidimentional array like superglobal $_FILES
+     * to a collection of UploadedFile objects.
+     *
+     * @param array $files
+     *
+     * @return array
+     */
+    public static function arrayToUploadedFiles(array $files): array
+    {
+        $convertedFiles = [];
+
+        foreach ($files as $name => $info) {
+            $convertedFiles[$name] = self::arrayToUploadedFile($info);
+        }
+
+        return $convertedFiles;
     }
 }

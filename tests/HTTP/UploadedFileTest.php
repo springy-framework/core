@@ -126,4 +126,18 @@ class UploadedFileTest extends TestCase
             @unlink($targetName);
         }
     }
+
+    public function testGetMaxFilesize()
+    {
+        $this->assertGreaterThan(0, UploadedFile::getMaxFilesize());
+    }
+
+    public function testArrayToUploadedFiles()
+    {
+        $files = UploadedFile::arrayToUploadedFiles($_FILES);
+
+        $this->assertCount(1, $files);
+        $this->assertInstanceOf(UploadedFile::class, $files['file']);
+        $this->assertTrue($files['file']->isValid());
+    }
 }
