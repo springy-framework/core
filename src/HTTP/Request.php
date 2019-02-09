@@ -18,6 +18,8 @@ class Request
 
     /** @var string HTTP request method */
     protected static $method;
+    /** @var string HTTP_X_REQUESTED_WITH value */
+    protected static $requestedWith;
 
     /**
      * Constructor.
@@ -25,6 +27,37 @@ class Request
     public function __construct()
     {
         self::$method = $_SERVER['REQUEST_METHOD'] ?? null;
+        self::$requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+    }
+
+    /**
+     * Checks whether the request method was an Ajax.
+     *
+     * @return bool
+     */
+    public function isAjax(): bool
+    {
+        return strtolower(self::$requestedWith) === 'xmlhttprequest';
+    }
+
+    /**
+     * Checks whether the request method was a GET.
+     *
+     * @return bool
+     */
+    public function isGet(): bool
+    {
+        return self::$method === 'GET';
+    }
+
+    /**
+     * Checks whether the request method was a POST.
+     *
+     * @return bool
+     */
+    public function isPost(): bool
+    {
+        return self::$method === 'POST';
     }
 
     /**
