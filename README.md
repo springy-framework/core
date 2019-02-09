@@ -10,7 +10,7 @@
 
 A micro framework for smart PHP developers.
 
-> **WARNING!** This project is still a work in progress and.
+> **WARNING!** This project is still a work in progress.
 
 > **Note** This repository contains the core code of the Springy framework. If you want to build an application using Springy, visit the project skeleton [repository](https://github.com/springy-framework/skeleton).
 

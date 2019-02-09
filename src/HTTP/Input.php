@@ -228,7 +228,7 @@ class Input
      */
     public function storeForNextRequest()
     {
-        if (count($this->data)) {
+        if (!empty($this->data)) {
             Session::getInstance()->set(self::OLD_DATA_SESSION, $this->all());
         }
     }
