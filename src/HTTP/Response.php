@@ -11,6 +11,9 @@
 
 namespace Springy\HTTP;
 
+use Springy\Core\Debug;
+
+
 class Response
 {
     /** @var self globally instance */
@@ -59,8 +62,17 @@ class Response
         self::$header->notFound();
     }
 
-    public function send()
+    public function send(bool $debug = false)
     {
+        $this->header()->send();
+
+        if ($debug) {
+            echo Debug::getInstance()->inject(self::$body) ;
+
+            return;
+        }
+
+        echo self::$body;
     }
 
     /**

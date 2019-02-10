@@ -473,10 +473,8 @@ class Kernel
 
     public function send()
     {
-        if (self::$envType == self::ENV_TYPE_WEB) {
-            $response = Response::getInstance();
-            $response->header()->send();
-            echo $response->body();
+        if (self::$envType === self::ENV_TYPE_WEB) {
+            Response::getInstance()->send();
 
             return;
         }
