@@ -65,7 +65,6 @@ function dd($var, $die = true)
  * A helper to set a debug data.
  *
  * @param mixed $data
- * @param bool  $highlight
  * @param bool  $revert
  * @param bool  $saveBacktrace
  * @param int   $backtraceLimit
@@ -74,11 +73,9 @@ function dd($var, $die = true)
  */
 function debug(
     $data,
-    bool $highlight = true,
     bool $revert = true,
     bool $saveBacktrace = true,
     int $backtraceLimit = 3
-)
-{
-    Springy\Core\Debug::getInstance()->add($data, $highlight, $revert, $saveBacktrace, $backtraceLimit);
+) {
+    Springy\Core\Debug::getInstance()->add($data, $revert, $saveBacktrace, $backtraceLimit, 1);
 }

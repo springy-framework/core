@@ -449,7 +449,7 @@ class Kernel
         }
 
         // Overwrites the application started time if defined
-        self::$startime = $startime ?? self::$startime;
+        self::$startime = $startime ?? microtime(true);
 
         $this->resolveCliController();
         $this->resolveWebController();
@@ -474,7 +474,9 @@ class Kernel
     public function send()
     {
         if (self::$envType === self::ENV_TYPE_WEB) {
-            Response::getInstance()->send();
+            Response::getInstance()->send(
+                self::$configuration->get('system.debug')
+            );
 
             return;
         }

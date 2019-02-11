@@ -67,7 +67,7 @@ class Response
         $this->header()->send();
 
         if ($debug) {
-            echo Debug::getInstance()->inject(self::$body) ;
+            echo Debug::getInstance()->inject(self::$body);
 
             return;
         }

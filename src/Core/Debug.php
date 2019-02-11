@@ -38,31 +38,39 @@ class Debug
      * Adds an information to the debug collection.
      *
      * @param mixed $data
-     * @param bool  $highlight
      * @param bool  $revert
      * @param bool  $saveBacktrace
-     * @param intr  $backtraceLimit
+     * @param int   $backtraceLimit
+     * @param int   $jumptrace
      *
      * @return void
      */
     public function add(
         $data,
-        bool $highlight = true,
         bool $revert = true,
         bool $saveBacktrace = true,
-        int $backtraceLimit = 3
+        int $backtraceLimit = 3,
+        int $jumptrace = 0
     ) {
         $backtrace = [];
         if ($saveBacktrace) {
-            $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, $backtraceLimit);
+            $backtrace = debug_backtrace(
+                DEBUG_BACKTRACE_PROVIDE_OBJECT,
+                $backtraceLimit ? $backtraceLimit + 1 + ($jumptrace > 0 ? $jumptrace : 0) : $backtraceLimit
+            );
             array_shift($backtrace);
+            while ($jumptrace) {
+                array_shift($backtrace);
+                $jumptrace -= 1;
+            }
         }
 
         $debug = [
             memory_get_usage(true),
-            $highlight,
+            Kernel::getInstance()->runTime(),
             $data,
             $backtrace,
+            $saveBacktrace ? $backtraceLimit : -1,
         ];
 
         if ($revert) {
@@ -77,65 +85,97 @@ class Debug
     /**
      * Gets the string model for each debug information.
      *
+     * @param int $backtrace
+     *
      * @return string
      */
-    protected function outputFormat(): string
+    protected function outputFormat(int $backtrace = 0): string
     {
         if (self::$cliOutput) {
-            return '- Alocated memory: %s'.LF.
-                '- >>> %s'.LF.
-                '- Backtrace:'.
-                '%s'.LF.LF;
+            return '> Time: %.6d  Memory: %s'.LF
+                .'> %s'.LF
+                . ($backtrace
+                    ? '> Backtrace (%s):'.LF.'%s'.LF.LF
+                    : ''
+                );
         }
 
-        return '<div class="spring-debug-info">'.
-            '<p>Allocated memory: %s</p>'.
-            '<div>%s</div>'.
-            '<div class="spring-debug-backtrace-title">Debug backtrace</div>'.
-            '<div class="spring-debug-backtrace-data">%s</div>'.
-            '</div>';
+        return '<div class="springy-debug-info"><div class="springy-debug-time"><strong>Time:</strong>'
+            .' %.6f s | <strong>Memory:</strong> %s <a href="javascript:;" class="springy-debug-remove" title="Delete"></a></div>'
+            .'<div class="springy-debug-value">%s</div>'
+            .($backtrace > 0
+                ? '<a class="spring-debug-backtrace-btn">Backtrace (%s) <i class="springy-arrow down"></i></a>'
+                    .'<div class="spring-debug-backtrace-data">%s</div>'
+                : ''
+            )
+            .'</div>';
     }
 
-    public function backtrace(array $debug = [], int $limit = 10)
+    /**
+     * Parses the backtrace to HTML string.
+     *
+     * @param array $debug
+     *
+     * @return string
+     */
+    public function backtrace(array $backtrace = []): string
     {
-        $aDados = [];
-
-        foreach ($debug as $value) {
-            if (empty($value['line']) || strpos($value['file'], 'Errors.php') > 0) {
-                continue;
-            }
-
-            $linhas = explode('<br />', str_replace('<br /></span>', '</span><br />', highlight_string(file_get_contents($value['file']), true)));
-            $aDados[] = [
-                'file'    => $value['file'],
-                'line'    => $value['line'],
-                'args'    => isset($value['args']) ? $value['args'] : [],
-                'content' => trim(preg_replace('/^(&nbsp;)+/', '', $linhas[$value['line'] - 1])),
-            ];
+        if (empty($backtrace)) {
+            return '';
         }
 
-        $result = '<ul style="font-family:Arial, Helvetica, sans-serif; font-size:12px">';
-        $htmlLI = 0;
+        $result = '<ul>';
+        $translated = [];
 
-        foreach ($aDados as $backtrace) {
-            if ($backtrace['line'] > 0) {
-                $backtrace['content'] = preg_replace('/^<\/span>/', '', trim($backtrace['content']));
-                if (!preg_match('/<\/span>$/', $backtrace['content'])) {
-                    $backtrace['content'] .= '</span>';
-                }
+        // Translates the backtrace array to internal backtrace array
+        foreach ($backtrace as &$value) {
+            $file = $value['file'] ?? null;
+            $line = $value['line'] ?? 1;
 
-                $line = sprintf('[%05d]', $backtrace['line']);
-                $result .= '<li style="margin-bottom: 5px; '.($htmlLI + 1 < count($aDados) ? 'border-bottom:1px dotted #000; padding-bottom:5px' : '').'"><span><b>'.$line.'</b>&nbsp;<b>'.$backtrace['file'].'</b></span><br />'.$backtrace['content'];
+            $lines = $file ? explode(
+                '<br />',
+                str_replace(
+                    '<br /></span>',
+                    '</span><br />',
+                    highlight_file($file, true)
+                )
+            ) : ['unknown file'];
 
-                if (count($backtrace['args'])) {
-                    $result .= is_array($backtrace['args'])
-                        ? '<div>'.$this->highligh($backtrace['args']).'</div>'
-                        : $backtrace['args'];
-                }
+            $translated[] = [
+                'file'    => $file,
+                'line'    => $line,
+                'args'    => $value['args'] ?? [],
+                'content' => trim(preg_replace('/^(&nbsp;)+/', '', $lines[$line - 1])),
+            ];
 
-                $result .= '</li>';
-                $htmlLI++;
+            // Releasing memory
+            $lines = null;
+            $value = null;
+        }
+
+        // Build the backtrace HTML
+        foreach ($translated as $trace) {
+            $trace['content'] = preg_replace('/^<\/span>/', '', trim($trace['content']));
+            if (!preg_match('/<\/span>$/', $trace['content'])) {
+                $trace['content'] .= '</span>';
             }
+
+            $line = sprintf('[%05d]', $trace['line']);
+            $result .= '<li><p><strong>'.$line.'</strong> '
+                .$trace['file'].'</p><div class="springy-debug-backtrace-content">'
+                .$trace['content'].'</div>';
+
+            if (count($trace['args'])) {
+                $result .= '<ul class="springy-debug-backtrace-args">';
+
+                foreach ($trace['args'] as $key => $arg) {
+                    $result .= '<li>'.$this->highligh($arg).'</li>';
+                }
+
+                $result .= '</ul>';
+            }
+
+            $result .= '</li>';
         }
 
         return $result.'</ul>';
@@ -148,7 +188,6 @@ class Debug
      */
     public function get(): string
     {
-        $format = $this->outputFormat();
         $return = [];
 
         foreach (self::$debug as $debug) {
@@ -156,14 +195,16 @@ class Debug
             $memory = round($debug[0] / pow(1024, ($idx = floor(log($debug[0], 1024)))), 2).' '.$unit[$idx];
 
             $return[] = sprintf(
-                $format,
+                $this->outputFormat($debug[4]),
+                $debug[1],
                 $memory,
-                $debug[1] ? $this->highligh($debug[2]) : $debug[2],
+                $this->highligh($debug[2]),
+                $debug[4] > 0 ? 'last '.$debug[4] : 'all',
                 $this->backtrace($debug[3])
             );
         }
 
-        return implode(self::$cliOutput ? LF : '<hr />', $return);
+        return implode(self::$cliOutput ? LF : '', $return);
     }
 
     /**
@@ -175,27 +216,29 @@ class Debug
      */
     public function highligh($data): string
     {
+        ob_start();
+        var_dump($data);
+        $xpto = ob_get_clean();
+        $export = $xpto;
+        $export = preg_replace('/\s*\bNULL\b/m', 'null', $export); // Cleanup NULL
+        $export = preg_replace('/\s*\bbool\((true|false)\)/m', '$1', $export); // Cleanup booleans
+        $export = preg_replace('/\s*\bint\((\d+)\)/m', '$1', $export); // Cleanup integers
+        $export = preg_replace('/\s*\bfloat\(([\d.e-]+)\)/mi', '$1', $export); // Cleanup floats
+        $export = preg_replace('/\s*\bstring\(\d+\) /m', '', $export); // Cleanup strings
+        $export = preg_replace('/object\((\w+)\)(#\d+) (\(\d+\))/m', '$1', $export); // Cleanup objects definition
+        // //@todo array cleaning
+        $export = preg_replace('/=>\s*/m', ' => ', $export); // No new line between array/object keys and properties
+        $export = preg_replace('/\[([\w": ]+)\]/', '$1 ', $export); // remove square brackets in array/object keys
+        // $export = preg_replace('/\[([\w": ]+)\]/', ', $1 ', $export); // remove square brackets in array/object keys
+        // $export = preg_replace('/([{(]\s+), /', '$1  ', $export); // remove first coma in array/object properties listing
+        $export = preg_replace('/\{\s+\}/m', '{}', $export);
+        $export = preg_replace('/\s+$/m', '', $export); // Trim end spaces/new line
+
+        $export = preg_replace('/(array\(\d+\) ){([^}]+)}/m', '$1[$2]', $export); // Cleanup objects definition
+        $export = preg_replace('/(.+=>.+)/m', '$1,', $export); // Cleanup objects definition
+
         if (self::$cliOutput) {
-            return print_r($data, true);
-        }
-
-        if (is_object($data)) {
-            if (method_exists($data, '__toString')) {
-                return str_replace(
-                    '&lt;?php&nbsp;',
-                    '',
-                    str_replace(
-                        '&nbsp;?&gt;',
-                        '',
-                        highlight_string(
-                            '<?php '.var_export($data->__toString(), true),
-                            true
-                        )
-                    )
-                );
-            }
-
-            return '<pre>'.print_r($data, true).'</pre>';
+            return $export;
         }
 
         return str_replace(
@@ -204,32 +247,38 @@ class Debug
             str_replace(
                 '&nbsp;?&gt;',
                 '',
-                highlight_string('<?php '.print_r($data, true), true)
+                highlight_string('<?php '.$export, true)
             )
         );
     }
 
+    /**
+     * Injects the debug data into HTML page.
+     *
+     * @param string $content
+     *
+     * @return void
+     */
     public function inject(string $content)
     {
-        // if (self::$cliOutput) {
-        //     return $content;
-        // }
+        if (self::$cliOutput) {
+            return $content;
+        }
 
         $size = memory_get_peak_usage(true);
         $unit = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
         $memory = round($size / pow(1024, ($idx = floor(log($size, 1024)))), 2).' '.$unit[$idx];
         unset($unit, $size);
 
-        $this->add('Runtime execution time: '.
-            Kernel::getInstance()->runTime().
-            ' seconds'.LF.
-            'Maximum memory consumption: '.$memory,
-            true, false, false
+        $this->add('Execution time: '.
+            sprintf('%.8f', Kernel::getInstance()->runTime()).
+            ' seconds'.LF.'Maximum memory used: '.$memory,
+            true, false
         );
         unset($memory);
 
         $htmlDebug = '';
-        $debugTemplate = __DIR__.DS.'view'.DS.'debug.html';
+        $debugTemplate = __DIR__.DS.'assets'.DS.'debug.html';
         if (file_exists($debugTemplate) && $htmlDebug = file_get_contents($debugTemplate)) {
             $htmlDebug = preg_replace(
                 [
@@ -245,7 +294,7 @@ class Debug
                     "/>\n/",
                     "/\{\s*?\n/",
                     "/\}\n/",
-                    "/;\n/"
+                    "/;\n/",
                 ], [
                     $this->get(),
                     '',
@@ -259,7 +308,7 @@ class Debug
                     '>',
                     '{',
                     '} ',
-                    ';'
+                    ';',
                 ], $htmlDebug
             );
         }

@@ -39,11 +39,18 @@ class DebugTest extends TestCase
         );
     }
 
+    public function testBacktrace()
+    {
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+
+        $this->assertStringStartsWith('<ul>', $this->debug->backtrace($backtrace));
+    }
+
     public function testGet()
     {
         $this->debug->add('Bar', false);
         $this->debug->add('Foo', true, false);
-        $this->assertStringStartsWith('- Alocated memory', $this->debug->get());
+        $this->assertStringStartsWith('> Time:', $this->debug->get());
     }
 
     public function testHighlight()
@@ -53,12 +60,12 @@ class DebugTest extends TestCase
         $arrayVar = ['Foo', 'Bar'];
 
         $this->assertEquals('0', $this->debug->highligh($intVar));
-        $this->assertEquals('Foo', $this->debug->highligh($stringVar));
-        $this->assertStringStartsWith('Array', $this->debug->highligh($arrayVar));
+        $this->assertEquals('"Foo"', $this->debug->highligh($stringVar));
+        $this->assertStringStartsWith('array(2)', $this->debug->highligh($arrayVar));
     }
 
     public function testInject()
     {
-        $this->assertStringStartsWith('Foo', $this->debug->inject('Bar'));
+        $this->assertStringStartsWith('Bar', $this->debug->inject('Bar'));
     }
 }
