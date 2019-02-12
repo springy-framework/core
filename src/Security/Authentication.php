@@ -108,8 +108,7 @@ class Authentication
         string $password,
         bool $remember = false,
         bool $saveSession = true
-    ): bool
-    {
+    ): bool {
         if ($this->driver->isValid($login, $password)) {
             if ($saveSession) {
                 $this->login($this->driver->getLastValidIdentity(), $remember);
