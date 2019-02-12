@@ -41,7 +41,6 @@ class Kernel
     const PATH_VENDOR = 'VENDOR';
     const PATH_MIGRATION = 'MIGRATION';
     // Path constants to back compatibility
-    const PATH_CONFIGURATION = self::PATH_CONF;
     const PATH_SYSTEM = self::PATH_APPLICATION;
     const PATH_CLASS = self::PATH_CLASSES;
 
@@ -471,6 +470,11 @@ class Kernel
         return microtime(true) - self::$startime;
     }
 
+    /**
+     * Sends the application output.
+     *
+     * @return void
+     */
     public function send()
     {
         if (self::$envType === self::ENV_TYPE_WEB) {

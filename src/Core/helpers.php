@@ -40,6 +40,18 @@ function app($service = null)
 }
 
 /**
+ * Gets a application configuration var.
+ *
+ * @param string $key
+ *
+ * @return mixed
+ */
+function config_get(string $key)
+{
+    return Springy\Core\Kernel::getInstance()->configuration()->get($key);
+}
+
+/**
  * A var_dump and die help function.
  *
  * @SuppressWarnings(PHPMD.DevelopmentCodeFragment)

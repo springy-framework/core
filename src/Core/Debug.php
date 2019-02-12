@@ -94,7 +94,7 @@ class Debug
         if (self::$cliOutput) {
             return '> Time: %.6d  Memory: %s'.LF
                 .'> %s'.LF
-                . ($backtrace
+                .($backtrace
                     ? '> Backtrace (%s):'.LF.'%s'.LF.LF
                     : ''
                 );
@@ -168,7 +168,7 @@ class Debug
             if (count($trace['args'])) {
                 $result .= '<ul class="springy-debug-backtrace-args">';
 
-                foreach ($trace['args'] as $key => $arg) {
+                foreach ($trace['args'] as $arg) {
                     $result .= '<li>'.$this->highligh($arg).'</li>';
                 }
 

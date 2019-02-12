@@ -13,7 +13,6 @@ namespace Springy\HTTP;
 
 use Springy\Core\Debug;
 
-
 class Response
 {
     /** @var self globally instance */
@@ -62,6 +61,13 @@ class Response
         self::$header->notFound();
     }
 
+    /**
+     * Sends the response header and content to default outpou.
+     *
+     * @param bool $debug
+     *
+     * @return void
+     */
     public function send(bool $debug = false)
     {
         $this->header()->send();
