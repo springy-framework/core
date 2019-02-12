@@ -185,7 +185,7 @@ class User implements IdentityInterface, AclUserInterface
         return [];
     }
 
-    public function getPermissionFor(string $aclObjectName): bool
+    public function hasPermissionFor(string $aclObjectName): bool
     {
         return false;
     }
