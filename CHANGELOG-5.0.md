@@ -39,6 +39,7 @@
 -   Method `addIgnoredError` moved from `Kernel` to `Handler`
 -   Method `delIgnoredError` moved from `Kernel` to `Handler`
 -   Method `getIgnoredError` moved from `Kernel` to `Handler`
+-   Method `AclUserInterface->getPermissionFor` renamed to `AclUserInterface->hasPermissionFor`
 -   Method `Debug::print_rc` renamed to `Debug->highligh`
 -   Method `Debug::printOut` renamed to `Debug->inject`
 -   Method `Session::setSessionId` renamed to `Session->setId`
