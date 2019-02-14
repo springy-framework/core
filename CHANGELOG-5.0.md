@@ -8,6 +8,7 @@
 -   Added `Configuration->configPath` method
 -   Added `Configuration->environment` method
 -   Added `Cookie::getInstance` method
+-   Added `Copyright::getInstance` method
 -   Added `Debug::getInstance` method
 -   Added `Kernel::getInstance` method
 -   Added `Kernel->configuration` method
@@ -45,6 +46,7 @@
 -   Method `Session::setSessionId` renamed to `Session->setId`
 -   Method `Session::unregister` renamed to `Session->unset`
 -   Method `URI::getAllSegments` renamed to `URI->getSegments`
+-   Method `Copyright->printCopyright` renamed to `Copyright->content`
 -   Environment alias configuration `'cmd.shell'` renamed to `'cli'`
 -   The `URI` class is no longer responsible for determining the controller. This becomes the responsibility of the `Kernel` class.
 

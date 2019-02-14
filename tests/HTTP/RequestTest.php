@@ -30,6 +30,11 @@ class RequestTest extends TestCase
         $this->assertFalse($this->request->isGet());
     }
 
+    public function testIsHead()
+    {
+        $this->assertFalse($this->request->isHead());
+    }
+
     public function testIsPost()
     {
         $this->assertFalse($this->request->isPost());

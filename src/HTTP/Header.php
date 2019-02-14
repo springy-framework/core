@@ -38,7 +38,7 @@ class Header
      *
      * @return void
      */
-    private function header(string $header, string $value, bool $replace = true)
+    protected function header(string $header, string $value, bool $replace = true)
     {
         if ($replace) {
             $this->headers[$header] = [];
@@ -87,6 +87,19 @@ class Header
         $this->header('Expires', $value, $replace);
     }
 
+    public function headers(): array
+    {
+        $headers = [];
+
+        foreach ($this->headers as $string => $values) {
+            foreach ($values as $value) {
+                $headers[] = $string.': '.$value;
+            }
+        }
+
+        return $headers;
+    }
+
     public function httpResponseCode(int $httpResponseCode = null): int
     {
         if ($httpResponseCode !== null) {
@@ -94,6 +107,16 @@ class Header
         }
 
         return $this->httpResponseCode;
+    }
+
+    /**
+     * Checks whether the header array is empty.
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return empty($this->headers);
     }
 
     /**
@@ -130,7 +153,7 @@ class Header
             return false;
         }
 
-        if (!count($this->headers)) {
+        if ($this->isEmpty()) {
             $this->contentType();
         }
 

@@ -35,10 +35,20 @@ class HeaderTest extends TestCase
         $this->assertNull($this->header->expires('0'));
     }
 
+    public function testHeaders()
+    {
+        $this->assertEmpty($this->header->headers());
+    }
+
     public function testHttpResponseCode()
     {
         $this->assertEquals(200, $this->header->httpResponseCode());
         $this->assertEquals(500, $this->header->httpResponseCode(500));
+    }
+
+    public function testIsEmpty()
+    {
+        $this->assertTrue($this->header->isEmpty());
     }
 
     public function testNotFound()

@@ -126,6 +126,92 @@ class Kernel
     }
 
     /**
+     * Tries to discover a command line controller.
+     *
+     * @return void
+     */
+    protected function discoverCliController()
+    {
+        if (self::$envType === self::ENV_TYPE_WEB) {
+            return false;
+        }
+
+        $segment = $this->findController('App\\Controllers\\Cli\\', []);
+        if ($segment < 0) {
+            return false;
+        }
+
+        return $this->callEndpoint([]);
+    }
+
+    /**
+     * Tries to discover an internal magic endpoint.
+     *
+     * @return bool
+     */
+    protected function discoverMagic(): bool
+    {
+        if (!Request::getInstance()->isGet()) {
+            return false;
+        }
+
+        $segments = URI::getInstance()->getSegments();
+
+        if (empty(($segments)) || $segments[0] !== 'springy') {
+            return false;
+        }
+
+        $response = Response::getInstance();
+
+        if (count($segments) == 2 && $segments[1] == 'about') {
+            $response->body(Copyright::getInstance()->content());
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Tries to discover a web controller from the URI segments.
+     *
+     * @return bool
+     */
+    protected function discoverWebController(): bool
+    {
+        if (self::$envType === self::ENV_TYPE_CLI) {
+            return false;
+        }
+
+        $uri = URI::getInstance();
+
+        if (Request::getInstance()->isHead() && $uri->host() == '') {
+            $response = Response::getInstance();
+            $response->header()->pragma('no-cache');
+            $response->header()->expires('0');
+            $response->header()->cacheControl('must-revalidate, post-check=0, pre-check=0');
+            $response->header()->cacheControl('private', false);
+
+            return true;
+        }
+
+        // Updates the configuration host
+        self::$configuration->configHost($uri->host());
+
+        $segments = $uri->getSegments();
+        $segment = $this->findController('App\\Controllers\\Web\\', $segments);
+        if ($segment < 0) {
+            return false;
+        }
+
+        // Extracts extra segments as arguments
+        $arguments = array_slice($segments, $segment);
+        array_splice($segments, $segment);
+
+        return $this->callEndpoint($arguments);
+    }
+
+    /**
      * Finds the controller.
      *
      * @param string $baseNS
@@ -242,58 +328,6 @@ class Kernel
     {
         if (self::$envType == self::ENV_TYPE_WEB) {
             Response::getInstance()->notFound();
-        }
-    }
-
-    protected function resolveCliController()
-    {
-        if (self::$envType === self::ENV_TYPE_WEB) {
-            return;
-        }
-
-        $segment = $this->findController('App\\Controllers\\Cli\\', []);
-        if ($segment < 0) {
-            return;
-        }
-
-        if ($this->callEndpoint([])) {
-            $this->notFound();
-        }
-    }
-
-    protected function resolveWebController()
-    {
-        if (self::$envType === self::ENV_TYPE_CLI) {
-            return;
-        }
-
-        $uri = URI::getInstance();
-        $request = Request::getInstance();
-
-        if ($request->method() == 'HEAD' && $uri->host() == '') {
-            $response = Response::getInstance();
-            $response->header()->pragma('no-cache');
-            $response->header()->expires('0');
-            $response->header()->cacheControl('must-revalidate, post-check=0, pre-check=0');
-            $response->header()->cacheControl('private', false);
-
-            return;
-        }
-
-        // Updates the configuration host
-        self::$configuration->configHost($uri->host());
-
-        $segments = $uri->getSegments();
-        $segment = $this->findController('App\\Controllers\\Web\\', $segments);
-        if ($segment < 0) {
-            return;
-        }
-
-        // Extracts extra segments as arguments
-        $arguments = array_slice($segments, $segment);
-        array_splice($segments, $segment);
-        if (!$this->callEndpoint($arguments)) {
-            $this->notFound();
         }
     }
 
@@ -450,10 +484,7 @@ class Kernel
         // Overwrites the application started time if defined
         self::$startime = $startime ?? microtime(true);
 
-        $this->resolveCliController();
-        $this->resolveWebController();
-
-        if (self::$controller === null) {
+        if (!$this->discoverCliController() && !$this->discoverWebController() && !$this->discoverMagic()) {
             $this->notFound();
         }
 

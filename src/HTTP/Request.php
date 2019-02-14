@@ -51,6 +51,16 @@ class Request
     }
 
     /**
+     * Checks whether the request method was a HEAD.
+     *
+     * @return bool
+     */
+    public function isHead(): bool
+    {
+        return self::$method === 'HEAD';
+    }
+
+    /**
      * Checks whether the request method was a POST.
      *
      * @return bool
