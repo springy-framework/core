@@ -8,8 +8,6 @@
  * @license   https://github.com/springy-framework/core/blob/master/LICENSE MIT
  *
  * @version   1.1.0
- *
- * Gerenciador de autenticação de identidades.
  */
 
 namespace Springy\Security;
@@ -17,9 +15,6 @@ namespace Springy\Security;
 use Springy\HTTP\Cookie;
 use Springy\HTTP\Session;
 
-/**
- * Authentication identity manager.
- */
 class Authentication
 {
     /** @var AuthDriverInterface the authentication driver */

@@ -40,7 +40,7 @@ function app($service = null)
 }
 
 /**
- * Gets a application configuration var.
+ * Gets an application configuration var.
  *
  * @param string $key
  *
@@ -49,6 +49,19 @@ function app($service = null)
 function config_get(string $key)
 {
     return Springy\Core\Kernel::getInstance()->configuration()->get($key);
+}
+
+/**
+ * Sets an application configuration var.
+ *
+ * @param string $key
+ * @param mixed  $val
+ *
+ * @return void
+ */
+function config_set(string $key, $val)
+{
+    return Springy\Core\Kernel::getInstance()->configuration()->set($key, $val);
 }
 
 /**

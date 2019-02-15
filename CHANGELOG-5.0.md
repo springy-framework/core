@@ -53,6 +53,7 @@
 ### Removed
 -   Removed `contents` method from `Cookie`
 -   Removed `del` method from `Cookie`
+-   Removed `generateHash` method from `BasicHasher`
 -   Removed `getAll` method from `Session`
 -   Removed `getParams` method from `URI` now you must uses `Input` class to get query string values
 -   Removed `parseURI` method from `URI`

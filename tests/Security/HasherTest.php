@@ -26,13 +26,7 @@ class HasherTest extends TestCase
         $hash = $this->hasher->make('password');
 
         $this->assertGreaterThanOrEqual(60, strlen($hash));
-    }
-
-    public function testThatHasherCanVerifyTheHashedString()
-    {
-        $hash = $this->hasher->make('password');
-
-        $this->assertTrue($this->hasher->verify('password', $hash));
+        $this->assertStringStartsWith('$2y$', $hash);
     }
 
     public function testThatHasherTellsIfAHashNeedsRehashing()
@@ -40,5 +34,12 @@ class HasherTest extends TestCase
         $hash = $this->hasher->make('password', 5);
 
         $this->assertTrue($this->hasher->needsRehash($hash, 10));
+    }
+
+    public function testThatHasherCanVerifyTheHashedString()
+    {
+        $hash = $this->hasher->make('password');
+
+        $this->assertTrue($this->hasher->verify('password', $hash));
     }
 }
