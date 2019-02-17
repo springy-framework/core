@@ -9,7 +9,6 @@
  * @version   1.0.0
  */
 use PHPUnit\Framework\TestCase;
-use Springy\Core\Configuration;
 use Springy\Core\Debug;
 
 /**

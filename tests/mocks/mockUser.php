@@ -8,7 +8,6 @@
  *
  * @version   1.0.0
  */
-
 use Springy\Security\AclUserInterface;
 use Springy\Security\AuthDriverInterface;
 use Springy\Security\IdentityInterface;

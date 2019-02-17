@@ -58,6 +58,11 @@ class Handler
         }
     }
 
+    /**
+     * Displays the application error page.
+     *
+     * @return void
+     */
     protected function displayError()
     {
         $response = Response::getInstance();
@@ -85,13 +90,16 @@ class Handler
         $response->send($config->get('system.debug'));
     }
 
+    /**
+     * Shows a 4xx error.
+     *
+     * @return void
+     */
     protected function httpError()
     {
         Response::getInstance()->header()->httpResponseCode($this->exception->getCode());
 
         $this->displayError();
-
-        return;
     }
 
     /**
@@ -230,6 +238,11 @@ class Handler
         $this->prevExceptionHandler = set_exception_handler([$this, 'exceptionHandler']);
     }
 
+    /**
+     * Triggers the error or exception.
+     *
+     * @return void
+     */
     public function trigger()
     {
         if ($this->handlerType === null

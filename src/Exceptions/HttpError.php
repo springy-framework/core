@@ -1,6 +1,6 @@
 <?php
 /**
- * Springy Exception class.
+ * Springy HTTP error class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
