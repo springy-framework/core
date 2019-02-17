@@ -12,7 +12,7 @@
 
 namespace Springy\Security;
 
-use Springy\Core\Kernel;
+use Springy\Core\ControllerInterface;
 
 class AclManager
 {
@@ -27,48 +27,15 @@ class AclManager
      * Constructor.
      *
      * @param AclUserInterface $user
+     * @param array            $segments
      */
-    public function __construct(AclUserInterface $user)
+    public function __construct(AclUserInterface $user, ControllerInterface $controller, array $segments)
     {
         $this->user = $user;
-
-        $kernel = Kernel::getInstance();
-        $controller = $kernel->controller();
-        $parameters = $kernel->parameters();
-        if ($controller === null) {
-            return;
-        }
-
         $this->module = array_merge(
             explode('\\', get_class($controller)),
-            $parameters
+            $segments
         );
-    }
-
-    /**
-     * Defines current ACL object.
-     *
-     * @return void
-     */
-    private function setupCurrentAclObject()
-    {
-        $this->module = substr(
-            Kernel::controllerNamespace(),
-            strlen($this->modulePrefix)
-        ) or $this->defaultModule;
-        $this->controller = URI::getControllerClass();
-        // $this->action = URI::getSegment(0);
-
-        $segments = [];
-        $ind = 0;
-        do {
-            $segment = URI::getSegment($ind++);
-            if ($segment !== false) {
-                $segments[] = $segment;
-            }
-        } while ($segment !== false);
-
-        $this->action = implode($this->separator, $segments);
     }
 
     /**

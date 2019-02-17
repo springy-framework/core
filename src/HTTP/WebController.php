@@ -13,46 +13,48 @@
 
 namespace Springy\HTTP;
 
+use Springy\Core\ControllerInterface;
 use Springy\Exceptions\SpringyException;
 use Springy\Security\AclManager;
 
-class WebController
+class WebController implements ControllerInterface
 {
     /** @var AclManager the ACL manager object */
     protected $aclManager;
     /** @var bool the controller is restricted to signed in users */
     protected $authNeeded = false;
+    /** @var bool the controller is forbidden for the caller */
+    protected $hasPermission;
+    /** @var mixed */
+    protected $redirectUnsigned = false;
     /** @var AclUserInterface the current user object */
     protected $user;
 
     /**
      * The constructor method.
      */
-    public function __construct()
+    public function __construct(array $segments)
     {
-        $this->aclManager = new AclManager($this->_getAuthManager());
-        $this->$user = $this->aclManager->getAclUser();
+        $this->user = $this->_getAuthManager();
+        $this->aclManager = new AclManager($this->user, $this, $segments);
+        $this->hasPermission = $this->_hasAuthorization();
+    }
 
-        // Do nothing if is free for unsigned users
+    /**
+     * Checks the user permission for the called method.
+     *
+     * @return bool
+     */
+    protected function _hasAuthorization(): bool
+    {
+        // Authorize if unsigned users has access
         if (!$this->authNeeded) {
-            return;
+            return true;
         }
 
-        // Verify if is an authenticated user
-        if ($this->user->isLoaded()) {
-            // Call user special verifications
-            if (!$this->_userSpecialVerifications()) {
-                $this->_forbidden();
-            }
-
-            // Check if the controller and respective method is permitted to the user
-            $this->_authorizationCheck();
-
-            return;
-        }
-
-        // Kill the application with the 403 forbidden page.
-        $this->_forbidden();
+        return $this->user->getId()
+            && $this->_userSpecialVerifications()
+            && $this->aclManager->hasPermission();
     }
 
     /**
@@ -72,7 +74,6 @@ class WebController
         } catch (\Throwable $th) {
         }
 
-
         try {
             $authIdentity = app('user.auth.identity');
         } catch (\Throwable $th) {
@@ -80,5 +81,43 @@ class WebController
         }
 
         return $authIdentity;
+    }
+
+    /**
+     * Does all user special verifications.
+     *
+     * This method can be extended in child controller to checks special
+     * verification you need to do on user account to grant access to the
+     * resourse.
+     *
+     * Example: if you need to checks the user account is blocked.
+     *
+     * @return bool true if user can access the module or false if not.
+     */
+    protected function _userSpecialVerifications()
+    {
+        return true;
+    }
+
+    /**
+     * Throws a HTTP "403 - Forbidden" error or redirects the user to another page.
+     *
+     * @throws Exception
+     *
+     * @return void
+     */
+    public function _forbidden()
+    {
+        throw new SpringyException('403 - Forbidden', 403, __FILE__, __LINE__);
+    }
+
+    /**
+     * Checks whether the user has permission to the resource.
+     *
+     * @return bool
+     */
+    public function _hasPermission(): bool
+    {
+        return $this->hasPermission;
     }
 }

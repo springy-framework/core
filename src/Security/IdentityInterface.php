@@ -12,9 +12,6 @@
 
 namespace Springy\Security;
 
-/**
- * Interface for user identity session.
- */
 interface IdentityInterface
 {
     /**

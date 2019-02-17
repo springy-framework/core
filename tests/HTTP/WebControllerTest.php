@@ -29,9 +29,10 @@ class WebControllerTest extends TestCase
             Kernel::getInstance()->configuration()
         );
 
+        // Starts authentication driver
         $app = app();
         $app->bind('user.auth.identity', function () {
-            return new User();
+            return new TstUser();
         });
         $app->bind('user.auth.driver', function ($c) {
             $user = $c['user.auth.identity'];
@@ -42,14 +43,32 @@ class WebControllerTest extends TestCase
             return new Authentication($c['user.auth.driver']);
         });
 
-        $this->controller = new WebController();
+        // Login the user
+        $driver = app('user.auth.driver');
+        $user = $driver->getIdentityById('test');
+        app('user.auth.manager')->login($user, false);
+
+        $this->controller = new TstController([
+            'test',
+            'controller',
+        ]);
     }
 
-    public function testIncomplete()
+    public function testHasPermission()
     {
-        $this->markTestIncomplete(
-            'This test has not been fully implemented yet.'
-        );
+        $this->assertTrue($this->controller->_hasPermission());
     }
 }
 
+class TstController extends WebController
+{
+    protected $authNeeded = true;
+}
+
+class TstUser extends User
+{
+    public function hasPermissionFor(string $aclObjectName): bool
+    {
+        return $aclObjectName === 'TstController|test|controller';
+    }
+}

@@ -26,7 +26,13 @@
     </rule>
 
     <rule ref="rulesets/controversial.xml">
+        <exclude name="CamelCaseMethodName" />
         <exclude name="Superglobals" />
+    </rule>
+    <rule ref="rulesets/controversial.xml/CamelCaseMethodName">
+        <properties>
+            <property name="allow-underscore" description="Allow an optional, single underscore at the beginning." value="true"/>
+        </properties>
     </rule>
 
     <rule ref="rulesets/design.xml" />

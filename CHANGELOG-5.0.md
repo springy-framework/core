@@ -1,15 +1,11 @@
 ## v5.0.0
 
 ### Added
--   Added `Handler` class with namespace `Springy\Exceptions`
--   Added `Request` class with namespace `Springy\HTTP`
--   Added `Response` class with namespace `Springy\HTTP`
--   Added `SpringyException` class with namespace `Springy\Exceptions`
 -   Added `Springy\Core\Configuration->configHost` method
 -   Added `Springy\Core\Configuration->configPath` method
 -   Added `Springy\Core\Configuration->getEnvironment` method
 -   Added `Springy\Core\Configuration->setEnvironment` method
--   Added `Springy\HTTP\Cookie::getInstance` method
+-   Added `Springy\Core\ControllerInterface` interface
 -   Added `Springy\Core\Copyright::getInstance` method
 -   Added `Springy\Core\Debug::getInstance` method
 -   Added `Springy\Core\Kernel::getInstance` method
@@ -19,30 +15,37 @@
 -   Added `Springy\Core\Kernel->httpRequest` method
 -   Added `Springy\Core\Kernel->httpResponse` method
 -   Added `Springy\Core\Kernel->setUp` method
+-   Added `Springy\Exceptions\Handler` class
+-   Added `Springy\Exceptions\SpringyException` class
+-   Added `Springy\HTTP\Cookie::getInstance` method
+-   Added `Springy\HTTP\Request` class
+-   Added `Springy\HTTP\Response` class
 -   Added `Springy\HTTP\Session::getInstance` method
 -   Added `Springy\HTTP\Session->configure` method
+-   Added `Springy\HTTP\WebController` class
 -   Added `Springy\HTTP\URI::getInstance` method
--   Added constants `ENV_TYPE_CLI` and `ENV_TYPE_WEB` to `Kernel`
+-   Added constants `Springy\Core\Kernel::ENV_TYPE_CLI` and `Springy\Core\Kernel::ENV_TYPE_WEB`
 
 ### Changed
 -   Added parameters type declaration and return type declaration for several methods
+-   Due to deprecation of `Springy\Controller` class the web controllers must extends new class `Springy\Core\WebController`
 -   Environment alias configuration `'cmd.shell'` renamed to `'cli'`
--   The `Configuration` class was moved to `Springy\Core` namespace
--   The `Controller` class was moved to `Springy\HTTP\WebController` and does not extends `Springy\Security\AclManager` anymore
--   The `Cookie` class was moved to `Springy\HTTP` namespace
--   The `File` class was moved to `Springy\Utils` namespace
--   The `Input` class was moved to `Springy\HTTP` namespace
--   The `Kernel` class was moved to `Springy\Core` namespace
--   The `Session` class was moved to `Springy\HTTP` namespace
--   The `UploadedFile` class was moved to `Springy\HTTP` namespace
--   The `URI` class was moved to `Springy\HTTP` namespace
--   The `Springy\HTTP\Cookie` class is no more static and has a `getInstance` static method to get its instance object
+-   The `Springy\Configuration` class was moved to `Springy\Core` namespace
+-   The `Springy\Controller` class was moved to `Springy\HTTP\WebController` and does not extends `Springy\Security\AclManager` anymore
+-   The `Springy\Cookie` class was moved to `Springy\HTTP` namespace
+-   The `Springy\Core\Input` class was moved to `Springy\HTTP` namespace
 -   The `Springy\Core\Configuration` class is no more static
 -   The `Springy\Core\Debug` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\Core\Kernel` class is no more static and has a `getInstance` static method to get its instance object
+-   The `Springy\Files\File` class was moved to `Springy\Utils` namespace
+-   The `Springy\Files\UploadedFile` class was moved to `Springy\HTTP` namespace
+-   The `Springy\HTTP\Cookie` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\HTTP\Session` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\HTTP\URI` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\HTTP\URI` class is no longer responsible for determining the controller. This becomes the responsibility of the `Kernel` class.
+-   The `Springy\Kernel` class was moved to `Springy\Core` namespace
+-   The `Springy\Session` class was moved to `Springy\HTTP` namespace
+-   The `Springy\URI` class was moved to `Springy\HTTP` namespace
 -   Method `addIgnoredError` moved from `Springy\Core\Kernel` to `Springy\Exceptions\Handler`
 -   Method `delIgnoredError` moved from `Springy\Core\Kernel` to `Springy\Exceptions\Handler`
 -   Method `getIgnoredError` moved from `Springy\Core\Kernel` to `Springy\Exceptions\Handler`
@@ -61,6 +64,7 @@
 -   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `hasPermissionFor`
 
 ### Removed
+-   Removed `Springy\Controller` class
 -   Removed `contents` method from `Springy\HTTP\Cookie`
 -   Removed `del` method from `Springy\HTTP\Cookie`
 -   Removed `generateHash` method from `Springy\Security\BasicHasher`

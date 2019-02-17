@@ -12,9 +12,6 @@
 
 namespace Springy\Security;
 
-/**
- * ACL identity user interface.
- */
 interface AclUserInterface
 {
     /**

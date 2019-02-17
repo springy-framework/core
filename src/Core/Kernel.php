@@ -66,7 +66,6 @@ class Kernel
     protected static $errorHandler;
     /** @var mixed the controller object */
     protected static $controller;
-    protected static $parameters;
 
     /// System path
     private static $paths = [];
@@ -87,7 +86,6 @@ class Kernel
         self::$envType = (php_sapi_name() === 'cli') ? self::ENV_TYPE_CLI : self::ENV_TYPE_WEB;
         self::$configuration = new Configuration();
         self::$errorHandler = new Handler();
-        self::$parameters = [];
         self::$instance = $this;
 
         if ($appConf !== null) {
@@ -104,6 +102,12 @@ class Kernel
      */
     protected function callEndpoint(array $arguments): bool
     {
+        if (!self::$controller->_hasPermission()) {
+            self::$controller->_forbidden();
+
+            return true;
+        }
+
         // Checks if has no arguments of first argument is not an endpoint
         if (!$endpoint = $this->getEndpoint($arguments)) {
             // Injects index as first argument
@@ -116,8 +120,6 @@ class Kernel
         if (!$endpoint) {
             return false;
         }
-
-        self::$parameters = $arguments;
 
         // Removes the fist argument
         array_shift($arguments);
@@ -224,22 +226,26 @@ class Kernel
      */
     protected function findController(string $baseNS, array $segments): int
     {
+        $arguments = [];
+
         do {
             $elements = count($segments);
 
             // Finds an Index controller
             $index = $segments;
             $index[] = 'Index';
-            if ($this->loadController($baseNS, $index)) {
+            if ($this->loadController($baseNS, $index, $arguments)) {
                 return $elements;
             }
 
             // Finds the full qualified name controller
-            if ($elements && $this->loadController($baseNS, $segments)) {
+            if ($elements && $this->loadController($baseNS, $segments, $arguments)) {
                 return $elements;
             }
 
-            array_pop($segments);
+            // Moves the last segment to the arguments array
+            // and pop it from the segments array
+            array_unshift($arguments, array_pop($segments));
         } while (count($segments));
 
         return -1;
@@ -267,16 +273,17 @@ class Kernel
      * Tryes to load a full qualified name controller class.
      *
      * @param string $baseNS
-     * @param array  $segments
+     * @param array  $path
+     * @param array  $arguments
      *
      * @return bool
      */
-    protected function loadController(string $baseNS, array $segments): bool
+    protected function loadController(string $baseNS, array $path, array $arguments): bool
     {
-        $name = $baseNS.$this->normalizeNamePath($segments);
+        $name = $baseNS.$this->normalizeNamePath($path);
 
         try {
-            self::$controller = new $name();
+            self::$controller = new $name($arguments);
         } catch (\Throwable $th) {
             return false;
         }
@@ -331,6 +338,8 @@ class Kernel
     {
         if (self::$envType == self::ENV_TYPE_WEB) {
             Response::getInstance()->notFound();
+
+            throw new SpringyException('404 - Not found', 404, __FILE__, __LINE__);
         }
     }
 
@@ -347,10 +356,6 @@ class Kernel
     public function controller()
     {
         return self::$controller;
-    }
-    public function parameters()
-    {
-        return self::$parameters;
     }
 
     /**

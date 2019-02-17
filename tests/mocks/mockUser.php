@@ -96,6 +96,7 @@ class AuthDriver implements AuthDriverInterface
 
     public function getLastValidIdentity(): IdentityInterface
     {
+        return $this->identity;
     }
 
     public function getIdentityById($iid): IdentityInterface
