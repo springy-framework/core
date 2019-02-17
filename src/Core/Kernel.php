@@ -482,16 +482,6 @@ class Kernel
     }
 
     /**
-     * Returns the application HTTP response instance.
-     *
-     * @return Response
-     */
-    public function httpResponse(): Response
-    {
-        return Response::getInstance();
-    }
-
-    /**
      * A path of the system.
      *
      * @param string $component the component constant.

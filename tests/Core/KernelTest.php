@@ -76,11 +76,6 @@ class KernelTest extends TestCase
         $this->assertInstanceOf(Springy\HTTP\Request::class, $this->kernel->httpRequest());
     }
 
-    public function testHttpResponse()
-    {
-        $this->assertInstanceOf(Springy\HTTP\Response::class, $this->kernel->httpResponse());
-    }
-
     public function testSetCharset()
     {
         $this->kernel->setCharset('ISO-8859-1');
