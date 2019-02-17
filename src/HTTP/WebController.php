@@ -14,6 +14,7 @@
 namespace Springy\HTTP;
 
 use Springy\Core\ControllerInterface;
+use Springy\Exceptions\Http403Error;
 use Springy\Exceptions\SpringyException;
 use Springy\Security\AclManager;
 
@@ -108,7 +109,7 @@ class WebController implements ControllerInterface
      */
     public function _forbidden()
     {
-        throw new SpringyException('403 - Forbidden', 403, __FILE__, __LINE__);
+        throw new Http403Error();
     }
 
     /**

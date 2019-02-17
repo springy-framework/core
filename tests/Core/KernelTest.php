@@ -18,7 +18,7 @@ class KernelTest extends TestCase
 
     public function setUp()
     {
-        $this->conf = require(__DIR__.'/../config.php');
+        $this->conf = require __DIR__.'/../config.php';
         $this->kernel = Kernel::getInstance();
     }
 

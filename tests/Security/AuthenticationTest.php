@@ -12,7 +12,6 @@ use PHPUnit\Framework\TestCase;
 use Springy\Core\Kernel;
 use Springy\HTTP\Session;
 use Springy\Security\Authentication;
-use Springy\Security\IdentityInterface;
 
 require_once __DIR__.'/../mocks/mockUser.php';
 

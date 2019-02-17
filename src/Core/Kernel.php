@@ -13,6 +13,7 @@
 namespace Springy\Core;
 
 use Springy\Exceptions\Handler;
+use Springy\Exceptions\Http404Error;
 use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Request;
 use Springy\HTTP\Response;
@@ -66,6 +67,8 @@ class Kernel
     protected static $errorHandler;
     /** @var mixed the controller object */
     protected static $controller;
+    /** @var mixed the hook object */
+    protected static $hook;
 
     /// System path
     private static $paths = [];
@@ -91,6 +94,18 @@ class Kernel
         if ($appConf !== null) {
             $this->setUp($appConf);
         }
+    }
+
+    /**
+     * Destructor.
+     */
+    public function __destruct()
+    {
+        if (self::$hook === null || !is_callable([self::$hook, 'shutdown'])) {
+            return;
+        }
+
+        self::$hook->shutdown();
     }
 
     /**
@@ -281,14 +296,40 @@ class Kernel
     protected function loadController(string $baseNS, array $path, array $arguments): bool
     {
         $name = $baseNS.$this->normalizeNamePath($path);
-
-        try {
-            self::$controller = new $name($arguments);
-        } catch (\Throwable $th) {
+        if (!class_exists($name)) {
             return false;
         }
 
+        // Loads the hook controller if exists
+        $this->loadHookController($baseNS, $arguments);
+
+        // Creates the controller
+        self::$controller = new $name($arguments);
+
         return true;
+    }
+
+    /**
+     * Loads the application hook controller.
+     *
+     * @param string $baseNS
+     * @param array  $arguments
+     *
+     * @return void
+     */
+    protected function loadHookController(string $baseNS, array $arguments)
+    {
+        $hook = array_slice(explode('\\', trim($baseNS, '\\')), 0, 2);
+        $hook[] = 'Hook';
+        $name = $this->normalizeNamePath($hook);
+        if (!class_exists($name)) {
+            return;
+        }
+
+        self::$hook = new $name($baseNS, $arguments);
+        if (is_callable([self::$hook, 'startup'])) {
+            self::$hook->startup();
+        }
     }
 
     /**
@@ -337,9 +378,7 @@ class Kernel
     protected function notFound()
     {
         if (self::$envType == self::ENV_TYPE_WEB) {
-            Response::getInstance()->notFound();
-
-            throw new SpringyException('404 - Not found', 404, __FILE__, __LINE__);
+            throw new Http404Error();
         }
     }
 

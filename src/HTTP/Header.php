@@ -61,6 +61,16 @@ class Header
     }
 
     /**
+     * Clears the headers.
+     *
+     * @return void
+     */
+    public function clear()
+    {
+        $this->headers = [];
+    }
+
+    /**
      * Sends Content-Type HTTP header.
      *
      * @param string $type

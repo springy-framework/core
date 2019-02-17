@@ -12,6 +12,7 @@
 namespace Springy\HTTP;
 
 use Springy\Core\Configuration;
+use Springy\Core\Kernel;
 use Springy\Exceptions\SpringyException;
 
 class Session
@@ -190,6 +191,10 @@ class Session
     {
         if (self::$started) {
             return self::$started;
+        }
+
+        if (self::$engine === null) {
+            $this->configure(Kernel::getInstance()->configuration());
         }
 
         self::$name = $name ?? self::$name;
