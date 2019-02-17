@@ -6,7 +6,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   3.0.0
+ * @version   1.0.0
  */
 
 namespace Springy\HTTP;
@@ -28,6 +28,7 @@ class Request
     {
         self::$method = $_SERVER['REQUEST_METHOD'] ?? null;
         self::$requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+        self::$instance = $this;
     }
 
     /**
@@ -88,7 +89,7 @@ class Request
     public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            new self();
         }
 
         return self::$instance;

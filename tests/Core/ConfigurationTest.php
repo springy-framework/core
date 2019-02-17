@@ -32,12 +32,6 @@ class ConfigurationTest extends TestCase
         $this->assertEquals(__DIR__, $this->conf->configPath(__DIR__));
     }
 
-    public function testEnvironment()
-    {
-        $this->assertEquals('test', $this->conf->environment());
-        $this->assertEquals('foo', $this->conf->environment('foo'));
-    }
-
     public function testGet()
     {
         $this->assertEquals(1989, $this->conf->get('foo.simpsons', 1989));
@@ -51,11 +45,22 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('beer', $this->conf->get('foo.homer'));
     }
 
+    public function testGetEnvironment()
+    {
+        $this->assertEquals('test', $this->conf->getEnvironment());
+    }
+
     public function testSet()
     {
         $this->assertEquals('beer', $this->conf->get('foo.homer'));
         $this->conf->set('foo.homer', 'food');
         $this->assertEquals('food', $this->conf->get('foo.homer'));
+    }
+
+    public function testSetEnvironment()
+    {
+        $this->conf->setEnvironment('foo');
+        $this->assertEquals('foo', $this->conf->getEnvironment());
     }
 
     public function testSave()
@@ -64,7 +69,7 @@ class ConfigurationTest extends TestCase
         $this->conf->set('simpsons.dog', 'Sant\'s Little Helper');
         $this->conf->save('simpsons');
 
-        $fileName = $this->conf->configPath().DS.$this->conf->environment().DS.'simpsons.json';
+        $fileName = $this->conf->configPath().DS.$this->conf->getEnvironment().DS.'simpsons.json';
 
         $this->assertFileExists($fileName);
         unlink($fileName);

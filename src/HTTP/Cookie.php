@@ -17,6 +17,14 @@ class Cookie
     protected static $instance;
 
     /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        self::$instance = $this;
+    }
+
+    /**
      * Converts the cookie name to string.
      *
      * @param mixed $key
@@ -184,7 +192,7 @@ class Cookie
     public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            new self();
         }
 
         return self::$instance;

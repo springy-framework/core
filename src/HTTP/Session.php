@@ -33,6 +33,7 @@ class Session
         }
 
         self::$started = false;
+        self::$instance = $this;
     }
 
     protected function checkConfig()
@@ -208,7 +209,7 @@ class Session
     public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            new self();
         }
 
         return self::$instance;

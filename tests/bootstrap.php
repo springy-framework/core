@@ -14,3 +14,5 @@ require __DIR__.'/../vendor/autoload.php';
 
 // Sets the default timezone
 date_default_timezone_set('UTC');
+
+$app = new Springy\Core\Kernel(__DIR__.'/config.php');

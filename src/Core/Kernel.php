@@ -66,6 +66,7 @@ class Kernel
     protected static $errorHandler;
     /** @var mixed the controller object */
     protected static $controller;
+    protected static $parameters;
 
     /// System path
     private static $paths = [];
@@ -86,12 +87,12 @@ class Kernel
         self::$envType = (php_sapi_name() === 'cli') ? self::ENV_TYPE_CLI : self::ENV_TYPE_WEB;
         self::$configuration = new Configuration();
         self::$errorHandler = new Handler();
+        self::$parameters = [];
+        self::$instance = $this;
 
-        if ($appConf === null) {
-            return;
+        if ($appConf !== null) {
+            $this->setUp($appConf);
         }
-
-        $this->setUp($appConf);
     }
 
     /**
@@ -115,6 +116,8 @@ class Kernel
         if (!$endpoint) {
             return false;
         }
+
+        self::$parameters = $arguments;
 
         // Removes the fist argument
         array_shift($arguments);
@@ -332,23 +335,6 @@ class Kernel
     }
 
     /**
-     * The system charset.
-     *
-     * @param string $charset if defined, set the system charset.
-     *
-     * @return string A string containing the system charset.
-     */
-    public function charset(string $charset = null): string
-    {
-        if ($charset !== null) {
-            self::$charset = $charset;
-            ini_set('default_charset', $charset);
-        }
-
-        return self::$charset;
-    }
-
-    /**
      * Returns the configuration handler.
      *
      * @return Configuration
@@ -358,55 +344,13 @@ class Kernel
         return self::$configuration;
     }
 
-    /**
-     * The system environment.
-     *
-     * @param string $env   if defined, set the system environment.
-     * @param array  $alias
-     * @param string $envar
-     *
-     * @return A string containing the system environment
-     */
-    public function environment(string $env = null, array $alias = [], string $envar = ''): string
+    public function controller()
     {
-        if ($env !== null) {
-            // Define environment by host?
-            if (trim($env) === '') {
-                if (trim($envar) !== '') {
-                    $env = getenv($envar);
-                }
-
-                $env = empty($env) ? (
-                    (self::$envType === self::ENV_TYPE_CLI) ? 'cli' : URI::getInstance()->host()
-                ) : $env;
-
-                // Verify if has an alias for host
-                foreach ($alias as $host => $val) {
-                    if (preg_match('/^'.$host.'$/', $env)) {
-                        $env = $val;
-                        break;
-                    }
-                }
-
-                if (empty($env)) {
-                    $env = 'unknown';
-                }
-            }
-
-            self::$configuration->environment($env);
-        }
-
-        return self::$configuration->environment();
+        return self::$controller;
     }
-
-    /**
-     * Returns the application type.
-     *
-     * @return string
-     */
-    public function environmentType(): string
+    public function parameters()
     {
-        return self::$envType;
+        return self::$parameters;
     }
 
     /**
@@ -417,6 +361,70 @@ class Kernel
     public function errorHandler(): Handler
     {
         return self::$errorHandler;
+    }
+
+    /**
+     * Gets the system charset.
+     *
+     * @return string A string containing the system charset.
+     */
+    public function getCharset(): string
+    {
+        return self::$charset;
+    }
+
+    /**
+     * The system environment.
+     *
+     * @return string
+     */
+    public function getEnvironment(): string
+    {
+        return self::$configuration->getEnvironment();
+    }
+
+    /**
+     * Returns the application type.
+     *
+     * @return string
+     */
+    public function getEnvironmentType(): string
+    {
+        return self::$envType;
+    }
+
+    /**
+     * The project code name.
+     *
+     * @return string A string containing the project code name.
+     *
+     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
+     */
+    public function getProjectCodeName(): string
+    {
+        return self::$projName;
+    }
+
+    /**
+     * The system name.
+     *
+     * @return string
+     */
+    public function getSystemName(): string
+    {
+        return self::$name;
+    }
+
+    /**
+     * The system version.
+     *
+     * @return string
+     */
+    public function getSystemVersion(): string
+    {
+        return is_array(self::$version)
+            ? implode('.', self::$version)
+            : self::$version;
     }
 
     /**
@@ -454,24 +462,6 @@ class Kernel
         }
 
         return self::$paths[$component] ?? '';
-    }
-
-    /**
-     * The project code name.
-     *
-     * @param string $name - if defined, set the project code name.
-     *
-     * @return string A string containing the project code name.
-     *
-     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
-     */
-    public function projectCodeName(string $name = null): string
-    {
-        if ($name !== null) {
-            self::$projName = $name;
-        }
-
-        return self::$projName;
     }
 
     public function run(float $startime = null)
@@ -518,6 +508,111 @@ class Kernel
     }
 
     /**
+     * Sets the system charset.
+     *
+     * @param string $charset if defined, set the system charset.
+     *
+     * @return void
+     */
+    public function setCharset(string $charset)
+    {
+        self::$charset = $charset;
+        ini_set('default_charset', $charset);
+    }
+
+    /**
+     * Sets the system environment.
+     *
+     * @param string $env
+     * @param array  $alias
+     * @param string $envar
+     *
+     * @return void
+     */
+    public function setEnvironment(string $env, array $alias = [], string $envar = '')
+    {
+        // Define environment by host?
+        if (trim($env) === '') {
+            if (trim($envar) !== '') {
+                $env = getenv($envar);
+            }
+
+            $env = empty($env) ? (
+                (self::$envType === self::ENV_TYPE_CLI) ? 'cli' : URI::getInstance()->host()
+            ) : $env;
+
+            // Verify if has an alias for host
+            foreach ($alias as $host => $val) {
+                if (preg_match('/^'.$host.'$/', $env)) {
+                    $env = $val;
+                    break;
+                }
+            }
+
+            if (empty($env)) {
+                $env = 'unknown';
+            }
+        }
+
+        self::$configuration->setEnvironment($env);
+    }
+
+    /**
+     * Sets the project code name.
+     *
+     * @param string $name - if defined, set the project code name.
+     *
+     * @return void
+     */
+    public function setProjectCodeName(string $name = null)
+    {
+        self::$projName = $name;
+    }
+
+    /**
+     * Sets the system name.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public function setSystemName(string $name)
+    {
+        self::$name = $name;
+    }
+
+    /**
+     * Sets the system version.
+     *
+     * @param mixed $major if defined, set the major part of the system version.
+     *                     Can be an array with all three parts.
+     * @param mixed $minor if defined, set the minor part of the system version.
+     * @param mixed $build if defined, set the build part of the system version.
+     *
+     * @return void
+     */
+    public function setSystemVersion($major, $minor = null, $build = null)
+    {
+        if (is_array($major) && is_null($minor) && is_null($build)) {
+            return self::getInstance()->setSystemVersion(
+                $major[0] ?? 1,
+                $major[1] ?? 0,
+                $major[2] ?? 0
+            );
+        }
+
+        if (is_null($major) || is_null($minor) || is_null($build)) {
+            throw new SpringyException('Incorrect number of arguments.');
+        }
+
+        self::$version = [
+            $major ?? 1,
+            $minor ?? 0,
+            $build ?? 0,
+        ];
+    }
+
+    /**
      * Configures the application.
      *
      * @param array|string $conf the array of configuration or
@@ -535,11 +630,11 @@ class Kernel
 
         ini_set('date.timezone', $conf['TIMEZONE'] ?? 'UTC');
 
-        $this->charset($conf['CHARSET'] ?? 'UTF-8');
-        $this->systemName($conf['SYSTEM_NAME'] ?? '');
-        $this->systemVersion($conf['SYSTEM_VERSION']) ?? [1, 0, 0];
-        $this->projectCodeName($conf['PROJECT_CODE_NAME'] ?? '');
-        $this->environment(
+        $this->setCharset($conf['CHARSET'] ?? 'UTF-8');
+        $this->setSystemName($conf['SYSTEM_NAME'] ?? '');
+        $this->setSystemVersion($conf['SYSTEM_VERSION'] ?? [1, 0, 0]);
+        $this->setProjectCodeName($conf['PROJECT_CODE_NAME'] ?? '');
+        $this->setEnvironment(
             $conf['ENVIRONMENT'] ?? '',
             $conf['ENVIRONMENT_ALIAS'] ?? [],
             $conf['ENVIRONMENT_VARIABLE'] ?? 'ENVIRONMENT'
@@ -560,50 +655,6 @@ class Kernel
     }
 
     /**
-     * The system name.
-     *
-     * @param string $name if defined, set the system name.
-     *
-     * @return string A string containing the system name.
-     */
-    public function systemName(string $name = null): string
-    {
-        if ($name !== null) {
-            self::$name = $name;
-        }
-
-        return self::$name;
-    }
-
-    /**
-     * The system version.
-     *
-     * @param mixed $major if defined, set the major part of the system version.
-     *                     Can be an array with all three parts.
-     * @param mixed $minor if defined, set the minor part of the system version.
-     * @param mixed $build if defined, set the build part of the system version.
-     *
-     * @return string A string containing the system version.
-     */
-    public function systemVersion($major = null, $minor = null, $build = null): string
-    {
-        if (is_array($major) && is_null($minor) && is_null($build)) {
-            return self::getInstance()->systemVersion(
-                $major[0] ?? 1,
-                $major[1] ?? 0,
-                $major[2] ?? 0);
-        } elseif (!is_null($major) || !is_null($minor) || !is_null($build)) {
-            self::$version = [
-                $major ?? 1,
-                $minor ?? 0,
-                $build ?? 0,
-            ];
-        }
-
-        return is_array(self::$version) ? implode('.', self::$version) : self::$version;
-    }
-
-    /**
      * Returns current instance.
      *
      * @return self
@@ -611,7 +662,7 @@ class Kernel
     public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            new self();
         }
 
         return self::$instance;

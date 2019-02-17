@@ -21,8 +21,6 @@ class DebugTest extends TestCase
 
     public function setUp()
     {
-        new Configuration(__DIR__.'/../conf', 'test');
-
         $this->debug = Debug::getInstance();
     }
 

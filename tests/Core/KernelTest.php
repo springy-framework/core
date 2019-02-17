@@ -18,57 +18,57 @@ class KernelTest extends TestCase
 
     public function setUp()
     {
-        $this->conf = [
-            'SYSTEM_NAME'       => 'Foo',
-            'SYSTEM_VERSION'    => [1, 0, 0],
-            'PROJECT_CODE_NAME' => 'Alpha',
-            'CHARSET'           => 'UTF-8',
-            'TIMEZONE'          => 'UTC',
-            'ENVIRONMENT'       => 'test',
-            'CONFIG_PATH'       => __DIR__,
-            // 'APP_PATH'          => __DIR__.'/../app',
-        ];
-
-        $this->kernel = new Kernel($this->conf);
-    }
-
-    public function testCharset()
-    {
-        $this->assertEquals($this->conf['CHARSET'], $this->kernel->charset());
-        $this->assertEquals('ISO-8859-1', $this->kernel->charset('ISO-8859-1'));
+        $this->conf = require(__DIR__.'/../config.php');
+        $this->kernel = Kernel::getInstance();
     }
 
     public function testConfiguration()
     {
-        $this->assertInstanceOf(Springy\Core\Configuration::class, $this->kernel->configuration());
-    }
-
-    public function testEnvironment()
-    {
-        $this->assertEquals($this->conf['ENVIRONMENT'], $this->kernel->environment());
-        $this->assertEquals('testcase', $this->kernel->environment('testcase'));
-
-        // Test environment configuration by env_var
-        putenv('ENVIRONMENT=test');
-        $this->assertEquals('test', $this->kernel->environment('', [], 'ENVIRONMENT'));
-
-        // Test environment configuration by host or cli alias
-        $this->assertEquals('testcase', $this->kernel->environment('', [
-            'cli' => 'testcase',
-        ]));
-
-        // Test environment configuration by setting empty
-        $this->assertEquals('cli', $this->kernel->environment('', [], ''));
-    }
-
-    public function testEnvironmentType()
-    {
-        $this->assertEquals(Kernel::ENV_TYPE_CLI, $this->kernel->environmentType());
+        $this->assertInstanceOf(
+            Springy\Core\Configuration::class,
+            $this->kernel->configuration()
+        );
     }
 
     public function testErrorHandler()
     {
         $this->assertInstanceOf(Springy\Exceptions\Handler::class, $this->kernel->errorHandler());
+    }
+
+    public function testGetCharset()
+    {
+        $this->assertEquals($this->conf['CHARSET'], $this->kernel->getCharset());
+    }
+
+    public function testGetEnvironment()
+    {
+        $this->assertEquals($this->conf['ENVIRONMENT'], $this->kernel->getEnvironment());
+    }
+
+    public function testGetEnvironmentType()
+    {
+        $this->assertEquals(Kernel::ENV_TYPE_CLI, $this->kernel->getEnvironmentType());
+    }
+
+    public function testGetProjectCodeName()
+    {
+        $this->assertEquals(
+            $this->conf['PROJECT_CODE_NAME'],
+            $this->kernel->getProjectCodeName()
+        );
+    }
+
+    public function testGetSystemName()
+    {
+        $this->assertEquals($this->conf['SYSTEM_NAME'], $this->kernel->getSystemName());
+    }
+
+    public function testGetSystemVersion()
+    {
+        $this->assertEquals(
+            implode('.', $this->conf['SYSTEM_VERSION']),
+            $this->kernel->GetSystemVersion()
+        );
     }
 
     public function testHttpRequest()
@@ -81,38 +81,58 @@ class KernelTest extends TestCase
         $this->assertInstanceOf(Springy\HTTP\Response::class, $this->kernel->httpResponse());
     }
 
-    // public function testPaths()
-    // {
-    //     $this->assertEquals(__DIR__, $this->kernel->path(Kernel::PATH_ROOT));
-    //     $this->assertEquals(__DIR__.'/../', $this->kernel->path(Kernel::PATH_ROOT, __DIR__.'/../'));
-
-    //     // $this->assertEquals(__DIR__.'/../app', $this->kernel->path(Kernel::PATH_APPLICATION));
-    //     // $this->assertEquals(__DIR__.'/../proj', $this->kernel->path(Kernel::PATH_APPLICATION, __DIR__.'/../proj'));
-    // }
-
-    public function testProjectCodeName()
+    public function testSetCharset()
     {
-        $this->assertEquals($this->conf['PROJECT_CODE_NAME'], $this->kernel->projectCodeName());
-        $this->assertEquals('Beta', $this->kernel->projectCodeName('Beta'));
+        $this->kernel->setCharset('ISO-8859-1');
+        $this->assertEquals('ISO-8859-1', $this->kernel->getCharset());
+    }
+
+    public function testSetEnvironment()
+    {
+        $this->kernel->setEnvironment('testcase');
+        $this->assertEquals('testcase', $this->kernel->getEnvironment());
+
+        // Test environment configuration by env_var
+        putenv('ENVIRONMENT=test');
+        $this->kernel->setEnvironment('', [], 'ENVIRONMENT');
+        $this->assertEquals('test', $this->kernel->getEnvironment());
+
+        // Test environment configuration by host or cli alias
+        $this->kernel->setEnvironment('', [
+            'cli' => 'testcase',
+        ]);
+        $this->assertEquals('testcase', $this->kernel->getEnvironment());
+
+        // Test environment configuration by setting empty
+        $this->kernel->setEnvironment('', [], '');
+        $this->assertEquals('cli', $this->kernel->getEnvironment());
+    }
+
+    public function testSetProjectCodeName()
+    {
+        $this->kernel->setProjectCodeName('Beta');
+        $this->assertEquals('Beta', $this->kernel->getProjectCodeName());
+    }
+
+    public function testSetSystemName()
+    {
+        $this->kernel->setSystemName('Springy Test');
+        $this->assertEquals('Springy Test', $this->kernel->getSystemName());
+    }
+
+    public function testSetSystemVersion()
+    {
+        $this->kernel->setSystemVersion(1, 0, 1);
+        $this->assertEquals('1.0.1', $this->kernel->getSystemVersion());
+
+        $this->kernel->setSystemVersion([1, 0, 2]);
+        $this->assertEquals('1.0.2', $this->kernel->getSystemVersion());
     }
 
     public function testSetUp()
     {
         $this->assertTrue($this->kernel->setUp(__DIR__.'/../config.php'));
-        $this->assertNotEquals('Foo', $this->kernel->systemName());
+        $this->assertEquals('Foo', $this->kernel->getSystemName());
         $this->assertTrue($this->kernel->setUp($this->conf));
-    }
-
-    public function testSystemName()
-    {
-        $this->assertEquals($this->conf['SYSTEM_NAME'], $this->kernel->systemName());
-        $this->assertEquals('Springy Test', $this->kernel->systemName('Springy Test'));
-    }
-
-    public function testSystemVersion()
-    {
-        $this->assertEquals(implode('.', $this->conf['SYSTEM_VERSION']), $this->kernel->systemVersion());
-        $this->assertEquals('1.0.1', $this->kernel->systemVersion(1, 0, 1));
-        $this->assertEquals('1.0.2', $this->kernel->systemVersion([1, 0, 2]));
     }
 }

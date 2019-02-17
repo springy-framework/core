@@ -30,8 +30,9 @@ class Debug
             return;
         }
 
-        self::$cliOutput = Kernel::getInstance()->environmentType() === Kernel::ENV_TYPE_CLI;
+        self::$cliOutput = Kernel::getInstance()->getEnvironmentType() === Kernel::ENV_TYPE_CLI;
         self::$debug = [];
+        self::$instance = $this;
     }
 
     /**
@@ -328,7 +329,7 @@ class Debug
     public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            new self();
         }
 
         return self::$instance;

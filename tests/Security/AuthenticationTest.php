@@ -11,10 +11,10 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Kernel;
 use Springy\HTTP\Session;
-use Springy\Security\AclUserInterface;
-use Springy\Security\AuthDriverInterface;
 use Springy\Security\Authentication;
 use Springy\Security\IdentityInterface;
+
+require_once __DIR__.'/../mocks/mockUser.php';
 
 /**
  * @runTestsInSeparateProcesses
@@ -27,20 +27,8 @@ class AuthenticationTest extends TestCase
 
     public function setUp()
     {
-        $this->conf = [
-            'SYSTEM_NAME'       => 'Foo',
-            'SYSTEM_VERSION'    => [1, 0, 0],
-            'PROJECT_CODE_NAME' => 'Alpha',
-            'CHARSET'           => 'UTF-8',
-            'TIMEZONE'          => 'UTC',
-            'ENVIRONMENT'       => 'test',
-            'CONFIG_PATH'       => __DIR__.'/../conf',
-        ];
-
-        $kernel = new Kernel($this->conf);
-
         Session::getInstance()->configure(
-            $kernel->configuration()
+            Kernel::getInstance()->configuration()
         );
 
         $this->user = new User();
@@ -93,100 +81,5 @@ class AuthenticationTest extends TestCase
     {
         $this->assertFalse($this->authentication->validate('Foo', 'Bar'));
         $this->assertTrue($this->authentication->validate('Homer', 'Duh!'));
-    }
-}
-
-class AuthDriver implements AuthDriverInterface
-{
-    protected $identity;
-
-    public function __construct(IdentityInterface $identity = null)
-    {
-        $this->setDefaultIdentity($identity);
-    }
-
-    public function getIdentitySessionKey(): string
-    {
-        return $this->identity->getSessionKey();
-    }
-
-    public function isValid(string $login, string $password): bool
-    {
-        return $login === 'Homer' && $password === 'Duh!';
-    }
-
-    public function setDefaultIdentity(IdentityInterface $identity)
-    {
-        $this->identity = $identity;
-    }
-
-    public function getDefaultIdentity(): IdentityInterface
-    {
-    }
-
-    public function getLastValidIdentity(): IdentityInterface
-    {
-    }
-
-    public function getIdentityById($iid): IdentityInterface
-    {
-        $this->identity->loadByCredentials([
-            $this->identity->getIdField() => $iid,
-        ]);
-
-        return $this->identity;
-    }
-}
-
-class User implements IdentityInterface, AclUserInterface
-{
-    public $uid;
-    public $name;
-
-    public function loadByCredentials(array $data)
-    {
-        $uid = $data[$this->getIdField()] ?? null;
-
-        if ($uid == 'test') {
-            $this->uid = $uid;
-            $this->name = 'Homer';
-        }
-    }
-
-    public function fillFromSession(array $data)
-    {
-    }
-
-    public function getId()
-    {
-        return $this->uid;
-    }
-
-    public function getIdField(): string
-    {
-        return 'uuid';
-    }
-
-    public function getSessionKey(): string
-    {
-        return 'T35T';
-    }
-
-    public function getSessionData(): array
-    {
-        return [
-            'uuid' => $this->uid,
-            'name' => $this->name,
-        ];
-    }
-
-    public function getCredentials(): array
-    {
-        return [];
-    }
-
-    public function hasPermissionFor(string $aclObjectName): bool
-    {
-        return false;
     }
 }

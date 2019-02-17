@@ -30,6 +30,7 @@ class Response
     {
         self::$header = new Header();
         self::$body = '';
+        self::$instance = $this;
     }
 
     /**
@@ -89,7 +90,7 @@ class Response
     public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            new self();
         }
 
         return self::$instance;

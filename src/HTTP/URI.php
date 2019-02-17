@@ -36,6 +36,7 @@ class URI
         self::$segments = [];
         self::$uriString = '';
         self::$httpHost = $this->parseHost();
+        self::$instance = $this;
 
         if (self::$httpHost === '$') {
             return;
@@ -152,7 +153,7 @@ class URI
     public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            new self();
         }
 
         return self::$instance;

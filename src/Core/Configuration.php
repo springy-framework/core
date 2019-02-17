@@ -164,22 +164,6 @@ class Configuration
     }
 
     /**
-     * Get or set the environment folder.
-     *
-     * @param string $env
-     *
-     * @return string
-     */
-    public function environment(string $env = null): string
-    {
-        if ($env !== null) {
-            $this->envDir = $env;
-        }
-
-        return $this->envDir;
-    }
-
-    /**
      * Gets the configuration entry.
      *
      * @param string $entry   dotted string of the configuration entry.
@@ -196,6 +180,16 @@ class Configuration
         }
 
         return ArrayUtils::newInstance()->dottedGet($this->configSets, $entry, $default);
+    }
+
+    /**
+     * Gets the environment folder.
+     *
+     * @return string
+     */
+    public function getEnvironment(): string
+    {
+        return $this->envDir;
     }
 
     /**
@@ -264,5 +258,17 @@ class Configuration
         $this->prepareSetting($set);
 
         ArrayUtils::newInstance()->dottedSet($this->configSets, $entry, $value);
+    }
+
+    /**
+     * Sets the environment folder.
+     *
+     * @param string $env
+     *
+     * @return void
+     */
+    public function setEnvironment(string $env)
+    {
+        $this->envDir = $env;
     }
 }

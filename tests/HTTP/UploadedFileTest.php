@@ -11,7 +11,7 @@
 use PHPUnit\Framework\TestCase;
 use Springy\HTTP\UploadedFile;
 
-require __DIR__.'/mockUploadedFile.php';
+require __DIR__.'/../mocks/mockUploadedFile.php';
 
 class UploadedFileTest extends TestCase
 {
