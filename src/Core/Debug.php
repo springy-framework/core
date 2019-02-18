@@ -11,6 +11,8 @@
 
 namespace Springy\Core;
 
+use Springy\HTTP\Response;
+
 class Debug
 {
     /** @var self globally singleton instance */
@@ -33,6 +35,175 @@ class Debug
         self::$cliOutput = Kernel::getInstance()->getEnvironmentType() === Kernel::ENV_TYPE_CLI;
         self::$debug = [];
         self::$instance = $this;
+    }
+
+    /**
+     * Formats a ver_dump to a beauty output.
+     *
+     * @param mixed $data
+     *
+     * @return string
+     */
+    protected function dumpData($data): string
+    {
+        ob_start();
+        var_dump($data);
+        $xpto = ob_get_clean();
+        $export = $xpto;
+        $export = preg_replace('/\s*\bNULL\b/m', 'null', $export); // Cleanup NULL
+        $export = preg_replace('/\s*\bbool\((true|false)\)/m', '$1', $export); // Cleanup booleans
+        $export = preg_replace('/\s*\bint\((\d+)\)/m', '$1', $export); // Cleanup integers
+        $export = preg_replace('/\s*\bfloat\(([\d.e-]+)\)/mi', '$1', $export); // Cleanup floats
+        $export = preg_replace('/\s*\bstring\(\d+\) /m', '', $export); // Cleanup strings
+        $export = preg_replace('/object\((\w+)\)(#\d+) (\(\d+\))/m', '$1', $export); // Cleanup objects definition
+        //
+        $export = preg_replace('/=>\s*/m', ' => ', $export); // No new line between array/object keys and properties
+        $export = preg_replace('/\[([\w": ]+)\]/', '$1 ', $export); // remove square brackets in array/object keys
+        // $export = preg_replace('/\[([\w": ]+)\]/', ', $1 ', $export); // remove square brackets in array/object keys
+        // $export = preg_replace('/([{(]\s+), /', '$1  ', $export); // remove first coma in array/object properties listing
+        $export = preg_replace('/\{\s+\}/m', '{}', $export);
+        $export = preg_replace('/\s+$/m', '', $export); // Trim end spaces/new line
+
+        $export = preg_replace('/(array\(\d+\) ){([^}]+)}/m', '$1[$2]', $export); // Cleanup objects definition
+        $export = preg_replace('/(.+=>.+)/m', '$1,', $export); // Cleanup objects definition
+
+        return $export;
+    }
+
+    /**
+     * Formats a debug data to HTML output.
+     *
+     * @param array $debug
+     *
+     * @return string
+     */
+    protected function formatHtml(array $debug): string
+    {
+        return '<div class="springy-debug-info">'
+            .'<div class="springy-debug-time"><strong>Time:</strong> '
+            .sprintf('%.6f', $debug[1]).' s | <strong>Memory:</strong> '
+            .$this->getMemoryString($debug[0]).
+            ' <a href="javascript:;" class="springy-debug-remove" title="Delete"></a></div>'
+            .'<div class="springy-debug-value">'.$this->highligh($debug[2]).'</div>'
+            .($debug[4] > 0
+                ? '<a class="spring-debug-backtrace-btn">Backtrace ('
+                    .($debug[4] > 0 ? 'last '.$debug[4] : 'all')
+                    .') <i class="springy-arrow down"></i></a>'
+                    .'<div class="spring-debug-backtrace-data">'
+                    .$this->backtrace($debug[3]).'</div>'
+                : ''
+            )
+            .'</div>';
+    }
+
+    /**
+     * Formats a debug data to JSON output.
+     *
+     * @param array $debug
+     *
+     * @return string
+     */
+    protected function formatJson(array $debug): string
+    {
+        $result = [
+            'Time'   => sprintf('%.6f s', $debug[1]),
+            'Memory' => $this->getMemoryString($debug[0]),
+            'Debug'  => $this->dumpData($debug[2]),
+        ];
+
+        if ($debug[4] > 0) {
+            $result['Backtrace'] = [
+                'Quantity' => $debug[4] > 0 ? 'last '.$debug[4] : 'all',
+                'Backtrace' => $this->translateBacktrace($debug[3], true),
+            ];
+        }
+
+        return json_encode($result);
+    }
+
+    /**
+     * Formats a debug data to text plain output.
+     *
+     * @param array $debug
+     *
+     * @return string
+     */
+    protected function formatPlain(array $debug): string
+    {
+        return '> Time: '.sprintf('%.6f s', $debug[1])
+            .' Memory: '.$this->getMemoryString($debug[0]).LF
+            .'> '.$this->highligh($debug[2]).LF
+            .($debug[4] > 0
+                ? '> Backtrace ('.$debug[4] > 0 ? 'last '.$debug[4] : 'all'.'):'.LF
+                    .$this->backtrace($debug[3]).LF.LF
+                : ''
+            );
+    }
+
+    /**
+     * Gets a string of memory usage representation.
+     *
+     * @param int $memory
+     *
+     * @return string
+     */
+    protected function getMemoryString(int $memory): string
+    {
+        $unit = [
+            'B',
+            'KiB',
+            'MiB',
+            'GiB',
+            'TiB',
+            'PiB',
+        ];
+
+        return round($memory / pow(1024, ($idx = floor(log($memory, 1024)))), 2).' '.$unit[$idx];
+    }
+
+    /**
+     * Translates the backtrace array to internal backtrace array.
+     *
+     * @param array $backtrace
+     * @param bool  $clean
+     *
+     * @return array
+     */
+    protected function translateBacktrace(array $backtrace, bool $clean = false): array
+    {
+        $translated = [];
+
+        foreach ($backtrace as &$value) {
+            $file = $value['file'] ?? null;
+            $line = $value['line'] ?? 1;
+
+            $lines = $file
+                ? (
+                    $clean
+                    ? file($file)
+                    : explode(
+                        '<br />',
+                        str_replace(
+                            '<br /></span>',
+                            '</span><br />',
+                            highlight_file($file, true)
+                        )
+                    )
+                ) : ['unknown file'];
+
+            $translated[] = [
+                'file'    => $file,
+                'line'    => $line,
+                'args'    => $value['args'] ?? [],
+                'content' => trim(preg_replace('/^(&nbsp;)+/', '', $lines[$line - 1])),
+            ];
+
+            // Releasing memory
+            $lines = null;
+            $value = null;
+        }
+
+        return $translated;
     }
 
     /**
@@ -84,35 +255,6 @@ class Debug
     }
 
     /**
-     * Gets the string model for each debug information.
-     *
-     * @param int $backtrace
-     *
-     * @return string
-     */
-    protected function outputFormat(int $backtrace = 0): string
-    {
-        if (self::$cliOutput) {
-            return '> Time: %.6d  Memory: %s'.LF
-                .'> %s'.LF
-                .($backtrace
-                    ? '> Backtrace (%s):'.LF.'%s'.LF.LF
-                    : ''
-                );
-        }
-
-        return '<div class="springy-debug-info"><div class="springy-debug-time"><strong>Time:</strong>'
-            .' %.6f s | <strong>Memory:</strong> %s <a href="javascript:;" class="springy-debug-remove" title="Delete"></a></div>'
-            .'<div class="springy-debug-value">%s</div>'
-            .($backtrace > 0
-                ? '<a class="spring-debug-backtrace-btn">Backtrace (%s) <i class="springy-arrow down"></i></a>'
-                    .'<div class="spring-debug-backtrace-data">%s</div>'
-                : ''
-            )
-            .'</div>';
-    }
-
-    /**
      * Parses the backtrace to HTML string.
      *
      * @param array $debug
@@ -126,33 +268,7 @@ class Debug
         }
 
         $result = '<ul>';
-        $translated = [];
-
-        // Translates the backtrace array to internal backtrace array
-        foreach ($backtrace as &$value) {
-            $file = $value['file'] ?? null;
-            $line = $value['line'] ?? 1;
-
-            $lines = $file ? explode(
-                '<br />',
-                str_replace(
-                    '<br /></span>',
-                    '</span><br />',
-                    highlight_file($file, true)
-                )
-            ) : ['unknown file'];
-
-            $translated[] = [
-                'file'    => $file,
-                'line'    => $line,
-                'args'    => $value['args'] ?? [],
-                'content' => trim(preg_replace('/^(&nbsp;)+/', '', $lines[$line - 1])),
-            ];
-
-            // Releasing memory
-            $lines = null;
-            $value = null;
-        }
+        $translated = $this->translateBacktrace($backtrace);
 
         // Build the backtrace HTML
         foreach ($translated as $trace) {
@@ -187,22 +303,16 @@ class Debug
      *
      * @return string
      */
-    public function get(): string
+    public function get(string $format = 'html'): string
     {
+        $format = 'format'.ucfirst($format);
+        if (!method_exists($this, $format)) {
+            return '';
+        }
+
         $return = [];
-
         foreach (self::$debug as $debug) {
-            $unit = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
-            $memory = round($debug[0] / pow(1024, ($idx = floor(log($debug[0], 1024)))), 2).' '.$unit[$idx];
-
-            $return[] = sprintf(
-                $this->outputFormat($debug[4]),
-                $debug[1],
-                $memory,
-                $this->highligh($debug[2]),
-                $debug[4] > 0 ? 'last '.$debug[4] : 'all',
-                $this->backtrace($debug[3])
-            );
+            $return[] = $this->$format($debug);
         }
 
         return implode(self::$cliOutput ? LF : '', $return);
@@ -217,26 +327,7 @@ class Debug
      */
     public function highligh($data): string
     {
-        ob_start();
-        var_dump($data);
-        $xpto = ob_get_clean();
-        $export = $xpto;
-        $export = preg_replace('/\s*\bNULL\b/m', 'null', $export); // Cleanup NULL
-        $export = preg_replace('/\s*\bbool\((true|false)\)/m', '$1', $export); // Cleanup booleans
-        $export = preg_replace('/\s*\bint\((\d+)\)/m', '$1', $export); // Cleanup integers
-        $export = preg_replace('/\s*\bfloat\(([\d.e-]+)\)/mi', '$1', $export); // Cleanup floats
-        $export = preg_replace('/\s*\bstring\(\d+\) /m', '', $export); // Cleanup strings
-        $export = preg_replace('/object\((\w+)\)(#\d+) (\(\d+\))/m', '$1', $export); // Cleanup objects definition
-        // //@todo array cleaning
-        $export = preg_replace('/=>\s*/m', ' => ', $export); // No new line between array/object keys and properties
-        $export = preg_replace('/\[([\w": ]+)\]/', '$1 ', $export); // remove square brackets in array/object keys
-        // $export = preg_replace('/\[([\w": ]+)\]/', ', $1 ', $export); // remove square brackets in array/object keys
-        // $export = preg_replace('/([{(]\s+), /', '$1  ', $export); // remove first coma in array/object properties listing
-        $export = preg_replace('/\{\s+\}/m', '{}', $export);
-        $export = preg_replace('/\s+$/m', '', $export); // Trim end spaces/new line
-
-        $export = preg_replace('/(array\(\d+\) ){([^}]+)}/m', '$1[$2]', $export); // Cleanup objects definition
-        $export = preg_replace('/(.+=>.+)/m', '$1,', $export); // Cleanup objects definition
+        $export = $this->dumpData($data);
 
         if (self::$cliOutput) {
             return $export;
@@ -266,18 +357,26 @@ class Debug
             return $content;
         }
 
-        $size = memory_get_peak_usage(true);
-        $unit = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
-        $memory = round($size / pow(1024, ($idx = floor(log($size, 1024)))), 2).' '.$unit[$idx];
-        unset($unit, $size);
-
         $this->add('Execution time: '.
             sprintf('%.8f', Kernel::getInstance()->runTime()).
-            ' seconds'.LF.'Maximum memory used: '.$memory,
+            ' seconds '.LF.'Maximum memory used: '.$this->getMemoryString(memory_get_peak_usage(true)),
             true, false
         );
-        unset($memory);
 
+        // Gets the Content-Type header
+        $cType = Response::getInstance()->header()->getContentType();
+
+        // Injects into a JSON
+        if ($cType == 'application/json') {
+            $json = json_decode($content);
+            if ($json === false || strlen($content) < 2 || substr($content, -1, 1) !== '}') {
+                return $content;
+            }
+
+            return substr_replace($content, ',"springy_debug":'.$this->get('json'), -1, 0);
+        }
+
+        // Injects into a HTML
         $htmlDebug = '';
         $debugTemplate = __DIR__.DS.'assets'.DS.'debug.html';
         if (file_exists($debugTemplate) && $htmlDebug = file_get_contents($debugTemplate)) {

@@ -97,6 +97,24 @@ class Header
         $this->header('Expires', $value, true);
     }
 
+    public function getContentType()
+    {
+        $header = $this->getHeader('Content-Type');
+
+        if (count($header)) {
+            $cType = explode('; ', $header[0])[0];
+
+            return $cType;
+        }
+
+        return '';
+    }
+
+    public function getHeader(string $header): array
+    {
+        return $this->headers[$header] ?? [];
+    }
+
     public function headers(): array
     {
         $headers = [];
