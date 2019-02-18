@@ -15,6 +15,7 @@ namespace Springy\HTTP;
 
 use Springy\Core\ControllerInterface;
 use Springy\Exceptions\Http403Error;
+use Springy\Exceptions\Http404Error;
 use Springy\Exceptions\SpringyException;
 use Springy\Security\AclManager;
 
@@ -103,7 +104,7 @@ class WebController implements ControllerInterface
     /**
      * Throws a HTTP "403 - Forbidden" error or redirects the user to another page.
      *
-     * @throws Exception
+     * @throws Http403Error
      *
      * @return void
      */
@@ -120,5 +121,17 @@ class WebController implements ControllerInterface
     public function _hasPermission(): bool
     {
         return $this->hasPermission;
+    }
+
+    /**
+     * Throws a HTTP "404 - Page not found" error.
+     *
+     * @throws Http404Error
+     *
+     * @return void
+     */
+    public function _pageNotFound()
+    {
+        throw new Http404Error();
     }
 }

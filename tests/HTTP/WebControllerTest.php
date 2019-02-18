@@ -13,6 +13,7 @@ use Springy\Core\Kernel;
 use Springy\HTTP\Session;
 use Springy\HTTP\WebController;
 use Springy\Security\Authentication;
+use Springy\Exceptions\Http404Error;
 
 require_once __DIR__.'/../mocks/mockUser.php';
 
@@ -57,6 +58,12 @@ class WebControllerTest extends TestCase
     public function testHasPermission()
     {
         $this->assertTrue($this->controller->_hasPermission());
+    }
+
+    public function testPageNotFound()
+    {
+        $this->expectException(Http404Error::class);
+        $this->controller->_pageNotFound();
     }
 }
 

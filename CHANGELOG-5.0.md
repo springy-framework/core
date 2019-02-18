@@ -67,13 +67,24 @@
 -   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `hasPermissionFor`
 
 ### Removed
+-   Removed `$action` property from `Springy\Security\AclManager`
+-   Removed `$controller` property from `Springy\Security\AclManager`
+-   Removed `$defaultModule` property from `Springy\Security\AclManager`
+-   Removed `$modulePrefix` property from `Springy\Security\AclManager`
 -   Removed `Springy\Controller` class
 -   Removed `contents` method from `Springy\HTTP\Cookie`
 -   Removed `del` method from `Springy\HTTP\Cookie`
 -   Removed `generateHash` method from `Springy\Security\BasicHasher`
 -   Removed `getAll` method from `Springy\HTTP\Session`
+-   Removed `getCurrentAction` method from `Springy\Security\AclManager`
+-   Removed `getCurrentController` method from `Springy\Security\AclManager`
+-   Removed `getCurrentModule` method from `Springy\Security\AclManager`
+-   Removed `getDefaultModule` method from `Springy\Security\AclManager`
+-   Removed `getModulePrefix` method from `Springy\Security\AclManager`
 -   Removed `getParams` method from `Springy\HTTP\URI` now you must uses `Springy\HTTP\Input` class to get query string values
 -   Removed `parseURI` method from `Springy\HTTP\URI`
+-   Removed `setDefaultModule` method from `Springy\Security\AclManager`
+-   Removed `setModulePrefix` method from `Springy\Security\AclManager`
 -   Removed `setupCurrentAclObject` method from `Springy\Security\AclManager`
 -   Removed `validateURI` method from `Springy\HTTP\URI`
 -   Removed support to configuration `'uri.redirect_last_slash'`

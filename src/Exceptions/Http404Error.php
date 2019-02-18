@@ -22,7 +22,7 @@ class Http404Error extends HttpError
      * @param int       $code     the code will be replaced by 403 HTTP forbidden error.
      * @param Throwable $previous
      */
-    public function __construct(string $message = '', int $code = 0, Throwable $previous = NULL)
+    public function __construct(string $message = '', int $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, 404, $previous);
     }
