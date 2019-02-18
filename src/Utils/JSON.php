@@ -113,19 +113,19 @@ class JSON
      */
     public function send()
     {
-        $resṕonse = Response::getInstance();
+        $response = Response::getInstance();
 
         // Set the header
-        $resṕonse->header()->httpResponseCode($this->statusCode);
-        $resṕonse->header()->clear();
-        $resṕonse->header()->contentType('application/json', Kernel::getInstance()->getCharset(), true);
-        $resṕonse->header()->expires('0');
-        $resṕonse->header()->lastModified(gmdate(DATE_RFC822));
-        $resṕonse->header()->cacheControl('no-store, no-cache, must-revalidate');
-        $resṕonse->header()->cacheControl('post-check=0, pre-check=0', false);
-        $resṕonse->header()->pragma('no-cache');
+        $response->header()->httpResponseCode($this->statusCode);
+        $response->header()->clear();
+        $response->header()->contentType('application/json', Kernel::getInstance()->getCharset(), true);
+        $response->header()->expires('0');
+        $response->header()->lastModified(gmdate(DATE_RFC822));
+        $response->header()->cacheControl('no-store, no-cache, must-revalidate');
+        $response->header()->cacheControl('post-check=0, pre-check=0', false);
+        $response->header()->pragma('no-cache');
 
-        $resṕonse->body($this->fetch());
+        $response->body($this->fetch());
     }
 
     /**
