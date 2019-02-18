@@ -14,6 +14,9 @@ use Springy\Utils\ArrayUtils;
 
 class ArrayUtilsTest extends TestCase
 {
+    public $arrayUtils;
+    public $data;
+
     public function setUp()
     {
         $this->arrayUtils = new ArrayUtils();

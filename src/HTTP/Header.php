@@ -92,9 +92,9 @@ class Header
      *
      * @return void
      */
-    public function expires(string $value, bool $replace = true)
+    public function expires(string $value)
     {
-        $this->header('Expires', $value, $replace);
+        $this->header('Expires', $value, true);
     }
 
     public function headers(): array
@@ -127,6 +127,19 @@ class Header
     public function isEmpty(): bool
     {
         return empty($this->headers);
+    }
+
+    /**
+     * Sends Last-Modified HTTP header.
+     *
+     * @param string $value
+     * @param bool   $replace
+     *
+     * @return void
+     */
+    public function lastModified(string $value)
+    {
+        $this->header('Last-Modified', $value, true);
     }
 
     /**

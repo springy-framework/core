@@ -51,6 +51,11 @@ class HeaderTest extends TestCase
         $this->assertTrue($this->header->isEmpty());
     }
 
+    public function testLastModified()
+    {
+        $this->assertNull($this->header->lastModified(gmdate(DATE_RFC822)));
+    }
+
     public function testNotFound()
     {
         $this->header->notFound();

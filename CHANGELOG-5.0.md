@@ -27,6 +27,8 @@
 -   Added `Springy\HTTP\Session->configure` method
 -   Added `Springy\HTTP\WebController` class
 -   Added `Springy\HTTP\URI::getInstance` method
+-   Added `Springy\Utils\JSON->merge` method
+-   Added `Springy\Utils\JSON->setData` method
 -   Added constants `Springy\Core\Kernel::ENV_TYPE_CLI` and `Springy\Core\Kernel::ENV_TYPE_WEB`
 
 ### Changed
@@ -65,6 +67,7 @@
 -   Method `Springy\HTTP\URI::getAllSegments` is no more static and was renamed to `getSegments`
 -   Method `Springy\Security\AclManager->isPermitted` renamed to `hasPermission`
 -   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `hasPermissionFor`
+-   Method `Springy\Utils\JSON->add` now accept an array to merge or two mixed data with `key` and `value` to be added to json data
 
 ### Removed
 -   Removed `$action` property from `Springy\Security\AclManager`
@@ -72,6 +75,7 @@
 -   Removed `$defaultModule` property from `Springy\Security\AclManager`
 -   Removed `$modulePrefix` property from `Springy\Security\AclManager`
 -   Removed `Springy\Controller` class
+-   Removed `Springy\Utils\JSON_Static` class
 -   Removed `contents` method from `Springy\HTTP\Cookie`
 -   Removed `del` method from `Springy\HTTP\Cookie`
 -   Removed `generateHash` method from `Springy\Security\BasicHasher`
@@ -79,10 +83,12 @@
 -   Removed `getCurrentAction` method from `Springy\Security\AclManager`
 -   Removed `getCurrentController` method from `Springy\Security\AclManager`
 -   Removed `getCurrentModule` method from `Springy\Security\AclManager`
+-   Removed `getDados` method from `Springy\Utils\JSON`
 -   Removed `getDefaultModule` method from `Springy\Security\AclManager`
 -   Removed `getModulePrefix` method from `Springy\Security\AclManager`
 -   Removed `getParams` method from `Springy\HTTP\URI` now you must uses `Springy\HTTP\Input` class to get query string values
 -   Removed `parseURI` method from `Springy\HTTP\URI`
+-   Removed `printJ` method from `Springy\Utils\JSON`
 -   Removed `setDefaultModule` method from `Springy\Security\AclManager`
 -   Removed `setModulePrefix` method from `Springy\Security\AclManager`
 -   Removed `setupCurrentAclObject` method from `Springy\Security\AclManager`

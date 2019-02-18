@@ -16,9 +16,6 @@
 
 namespace Springy\Utils;
 
-/**
- * Universally Unique Identifiers (UUID) RFC 4211 compatible generator.
- */
 class UUID
 {
     /**
