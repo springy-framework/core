@@ -10,10 +10,10 @@
  */
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Kernel;
+use Springy\Exceptions\Http404Error;
 use Springy\HTTP\Session;
 use Springy\HTTP\WebController;
 use Springy\Security\Authentication;
-use Springy\Exceptions\Http404Error;
 
 require_once __DIR__.'/../mocks/mockUser.php';
 

@@ -12,8 +12,8 @@
 
 namespace Springy\Utils;
 
-use Springy\HTTP\Response;
 use Springy\Core\Kernel;
+use Springy\HTTP\Response;
 
 
 class JSON

@@ -29,6 +29,7 @@
 -   Added `Springy\HTTP\URI::getInstance` method
 -   Added `Springy\Utils\JSON->merge` method
 -   Added `Springy\Utils\JSON->setData` method
+-   Added `Springy\Utils\StringUtils` trait
 -   Added constants `Springy\Core\Kernel::ENV_TYPE_CLI` and `Springy\Core\Kernel::ENV_TYPE_WEB`
 
 ### Changed
@@ -66,6 +67,7 @@
 -   Method `Springy\HTTP\Session::unregister` is no more static and was renamed to `forget`
 -   Method `Springy\HTTP\URI::getAllSegments` is no more static and was renamed to `getSegments`
 -   Method `Springy\Security\AclManager->isPermitted` renamed to `hasPermission`
+-   Method `Springy\Security\Strings::validateEmailAddress` moved and renamed to `Springy\Utils\StringUtils->isValidEmailAddress`
 -   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `hasPermissionFor`
 -   Method `Springy\Utils\JSON->add` now accept an array to merge or two mixed data with `key` and `value` to be added to json data
 
@@ -75,7 +77,10 @@
 -   Removed `$defaultModule` property from `Springy\Security\AclManager`
 -   Removed `$modulePrefix` property from `Springy\Security\AclManager`
 -   Removed `Springy\Controller` class
+-   Removed `Springy\Utils\Excel` class
 -   Removed `Springy\Utils\JSON_Static` class
+-   Removed `Springy\Utils\Strings` class. See new trait `Springy\Utils\StringUtils` for substitute methods.
+-   Removed `Springy\Utils\ZipFile` class
 -   Removed `contents` method from `Springy\HTTP\Cookie`
 -   Removed `del` method from `Springy\HTTP\Cookie`
 -   Removed `generateHash` method from `Springy\Security\BasicHasher`
