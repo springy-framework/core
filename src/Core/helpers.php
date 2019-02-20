@@ -91,7 +91,7 @@ function dd($var, $die = true)
  * Gets an environment variable.
  *
  * @param string $key
- * @param mixed $default
+ * @param mixed  $default
  *
  * @return mixed
  */

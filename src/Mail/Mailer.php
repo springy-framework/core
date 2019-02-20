@@ -22,7 +22,7 @@ class Mailer
     const MAIL_ENGINE_SWIFTMAILER = 'swiftmailer';
 
     protected $fakeTo;
-    /** @var Object the mailer driver object */
+    /** @var object the mailer driver object */
     protected $mailObj;
 
     /**
@@ -262,11 +262,11 @@ class Mailer
      *
      * @param string $from
      * @param string $name
-     * @param string $mailto - endereço de email do destinatário da mensagem
-     * @param string $to_name - nome do destinatário da mensagem
-     * @param string $subject - assunto da mensagem
-     * @param string $htmlmessage - mensagem em formato HTML
-     * @param string $textmessage - mensagem em formato texto puro
+     * @param string $mailto
+     * @param string $to_name
+     * @param string $subject
+     * @param string $htmlmessage
+     * @param string $textmessage
      *
      * @return bool
      */

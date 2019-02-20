@@ -29,12 +29,12 @@
 
 namespace Springy\Mail\Drivers;
 
+use Springy\Exceptions\SpringyException;
 use Swift_Mailer;
 use Swift_MailTransport;
 use Swift_Message;
 use Swift_SendmailTransport;
 use Swift_SmtpTransport;
-use Springy\Exceptions\SpringyException;
 
 class SwiftMailer implements MailDriverInterface
 {
@@ -42,7 +42,7 @@ class SwiftMailer implements MailDriverInterface
     protected $lastError;
     /** @var Swift_Message the Swift Mailer object */
     protected $mailObj;
-    /** @var Object the Swift Mailer protocol transport object */
+    /** @var object the Swift Mailer protocol transport object */
     protected $transport;
 
     /**
