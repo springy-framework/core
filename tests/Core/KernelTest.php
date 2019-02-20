@@ -18,7 +18,7 @@ class KernelTest extends TestCase
 
     public function setUp()
     {
-        $this->conf = require __DIR__.'/../config.php';
+        $this->conf = require __DIR__.'/../conf/main.php';
         $this->kernel = Kernel::getInstance();
     }
 
@@ -37,7 +37,7 @@ class KernelTest extends TestCase
 
     public function testGetEnvironment()
     {
-        $this->assertEquals($this->conf['ENVIRONMENT'], $this->kernel->getEnvironment());
+        $this->assertEquals($this->conf['environment'], $this->kernel->getEnvironment());
     }
 
     public function testGetEnvironmentType()
@@ -45,25 +45,16 @@ class KernelTest extends TestCase
         $this->assertEquals(Kernel::ENV_TYPE_CLI, $this->kernel->getEnvironmentType());
     }
 
-    public function testGetProjectCodeName()
+    public function testApplicationDetails()
     {
-        $this->assertEquals(
-            $this->conf['PROJECT_CODE_NAME'],
-            $this->kernel->getProjectCodeName()
-        );
-    }
+        $this->assertEquals($this->conf['app']['name'], $this->kernel->getApplicationName());
 
-    public function testGetSystemName()
-    {
-        $this->assertEquals($this->conf['SYSTEM_NAME'], $this->kernel->getSystemName());
-    }
-
-    public function testGetSystemVersion()
-    {
         $this->assertEquals(
-            implode('.', $this->conf['SYSTEM_VERSION']),
-            $this->kernel->GetSystemVersion()
+            implode('.', $this->conf['app']['version']),
+            $this->kernel->getApplicationVersion()
         );
+
+        $this->assertEquals($this->conf['app']['code_name'], $this->kernel->getAppCodeName());
     }
 
     public function testHttpRequest()
@@ -77,9 +68,9 @@ class KernelTest extends TestCase
         $this->assertEquals('testcase', $this->kernel->getEnvironment());
 
         // Test environment configuration by env_var
-        putenv('ENVIRONMENT=test');
+        putenv('ENVIRONMENT=unittest');
         $this->kernel->setEnvironment('', [], 'ENVIRONMENT');
-        $this->assertEquals('test', $this->kernel->getEnvironment());
+        $this->assertEquals('unittest', $this->kernel->getEnvironment());
 
         // Test environment configuration by host or cli alias
         $this->kernel->setEnvironment('', [
@@ -90,33 +81,5 @@ class KernelTest extends TestCase
         // Test environment configuration by setting empty
         $this->kernel->setEnvironment('', [], '');
         $this->assertEquals('cli', $this->kernel->getEnvironment());
-    }
-
-    public function testSetProjectCodeName()
-    {
-        $this->kernel->setProjectCodeName('Beta');
-        $this->assertEquals('Beta', $this->kernel->getProjectCodeName());
-    }
-
-    public function testSetSystemName()
-    {
-        $this->kernel->setSystemName('Springy Test');
-        $this->assertEquals('Springy Test', $this->kernel->getSystemName());
-    }
-
-    public function testSetSystemVersion()
-    {
-        $this->kernel->setSystemVersion(1, 0, 1);
-        $this->assertEquals('1.0.1', $this->kernel->getSystemVersion());
-
-        $this->kernel->setSystemVersion([1, 0, 2]);
-        $this->assertEquals('1.0.2', $this->kernel->getSystemVersion());
-    }
-
-    public function testSetUp()
-    {
-        $this->assertTrue($this->kernel->setUp(__DIR__.'/../config.php'));
-        $this->assertEquals('Foo', $this->kernel->getSystemName());
-        $this->assertTrue($this->kernel->setUp($this->conf));
     }
 }

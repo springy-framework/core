@@ -48,15 +48,6 @@ class Kernel
     /** @var self Kernel globally instance */
     protected static $instance;
 
-    /** @var string the application name */
-    protected static $name;
-    /** @var array the application version */
-    protected static $version;
-    /** @var string the project code name */
-    protected static $projName;
-    /** @var string default charset of the application */
-    protected static $charset;
-
     /** @var float application started time */
     protected static $startime;
     /** @var string the execution environment type */
@@ -82,10 +73,6 @@ class Kernel
             return;
         }
 
-        self::$name = '';
-        self::$version = [0, 0, 0];
-        self::$projName = '';
-        self::$charset = 'UTF-8';
         self::$envType = (php_sapi_name() === 'cli') ? self::ENV_TYPE_CLI : self::ENV_TYPE_WEB;
         self::$configuration = new Configuration();
         self::$errorHandler = new Handler();
@@ -408,6 +395,42 @@ class Kernel
     }
 
     /**
+     * The project code name.
+     *
+     * @return string A string containing the project code name.
+     *
+     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
+     */
+    public function getAppCodeName(): string
+    {
+        return config_get('main.app.code_name');
+    }
+
+    /**
+     * The application name.
+     *
+     * @return string
+     */
+    public function getApplicationName(): string
+    {
+        return config_get('main.app.name', '');
+    }
+
+    /**
+     * The application version.
+     *
+     * @return string
+     */
+    public function getApplicationVersion(): string
+    {
+        $appVersion = config_get('main.app.version', [1, 0, 0]);
+
+        return is_array($appVersion)
+            ? implode('.', $appVersion)
+            : $appVersion;
+    }
+
+    /**
      * The system environment.
      *
      * @return string
@@ -425,40 +448,6 @@ class Kernel
     public function getEnvironmentType(): string
     {
         return self::$envType;
-    }
-
-    /**
-     * The project code name.
-     *
-     * @return string A string containing the project code name.
-     *
-     * @see https://en.wikipedia.org/wiki/Code_name#Project_code_name
-     */
-    public function getProjectCodeName(): string
-    {
-        return self::$projName;
-    }
-
-    /**
-     * The system name.
-     *
-     * @return string
-     */
-    public function getSystemName(): string
-    {
-        return self::$name;
-    }
-
-    /**
-     * The system version.
-     *
-     * @return string
-     */
-    public function getSystemVersion(): string
-    {
-        return is_array(self::$version)
-            ? implode('.', self::$version)
-            : self::$version;
     }
 
     /**
@@ -582,61 +571,6 @@ class Kernel
     }
 
     /**
-     * Sets the project code name.
-     *
-     * @param string $name - if defined, set the project code name.
-     *
-     * @return void
-     */
-    public function setProjectCodeName(string $name = null)
-    {
-        self::$projName = $name;
-    }
-
-    /**
-     * Sets the system name.
-     *
-     * @param string $name
-     *
-     * @return void
-     */
-    public function setSystemName(string $name)
-    {
-        self::$name = $name;
-    }
-
-    /**
-     * Sets the system version.
-     *
-     * @param mixed $major if defined, set the major part of the system version.
-     *                     Can be an array with all three parts.
-     * @param mixed $minor if defined, set the minor part of the system version.
-     * @param mixed $build if defined, set the build part of the system version.
-     *
-     * @return void
-     */
-    public function setSystemVersion($major, $minor = null, $build = null)
-    {
-        if (is_array($major) && is_null($minor) && is_null($build)) {
-            return self::getInstance()->setSystemVersion(
-                $major[0] ?? 1,
-                $major[1] ?? 0,
-                $major[2] ?? 0
-            );
-        }
-
-        if (is_null($major) || is_null($minor) || is_null($build)) {
-            throw new SpringyException('Incorrect number of arguments.');
-        }
-
-        self::$version = [
-            $major ?? 1,
-            $minor ?? 0,
-            $build ?? 0,
-        ];
-    }
-
-    /**
      * Configures the application.
      *
      * @param array|string $conf the array of configuration or
@@ -653,20 +587,18 @@ class Kernel
         }
 
         // Check basic configuration path
-        if (!isset($conf['CONFIG_PATH'])) {
+        if (!isset($conf['config_path'])) {
             throw new SpringyException('Configuration files path not found.');
         }
 
-        self::$configuration->configPath($conf['CONFIG_PATH']);
+        self::$configuration->configPath($conf['config_path']);
+        self::$configuration->load('main');
 
-        ini_set('date.timezone', $conf['TIMEZONE'] ?? 'UTC');
+        ini_set('date.timezone', $conf['timezone'] ?? 'UTC');
 
         $this->setCharset($conf['charset'] ?? 'UTF-8');
-        $this->setSystemName($conf['SYSTEM_NAME'] ?? '');
-        $this->setSystemVersion($conf['SYSTEM_VERSION'] ?? [1, 0, 0]);
-        $this->setProjectCodeName($conf['PROJECT_CODE_NAME'] ?? '');
         $this->setEnvironment(
-            $conf['ENVIRONMENT'] ?? '',
+            $conf['environment'] ?? '',
             $conf['ENVIRONMENT_ALIAS'] ?? [],
             $conf['ENVIRONMENT_VARIABLE'] ?? 'ENVIRONMENT'
         );

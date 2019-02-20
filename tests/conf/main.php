@@ -10,11 +10,13 @@
  */
 
 return [
-    'SYSTEM_NAME'       => 'Foo',
-    'SYSTEM_VERSION'    => [1, 0, 0],
-    'PROJECT_CODE_NAME' => 'Alpha',
-    'charset'           => 'UTF-8',
-    'TIMEZONE'          => 'UTC',
-    'ENVIRONMENT'       => 'test',
-    'CONFIG_PATH'       => __DIR__.'/conf',
+    'app' => [
+        'name'      => 'Foo',
+        'version'   => [1, 0, 0],
+        'code_name' => 'Alpha',
+    ],
+    'charset'     => 'UTF-8',
+    'timezone'    => 'UTC',
+    'environment' => 'test',
+    'config_path' => __DIR__,
 ];

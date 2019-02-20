@@ -63,9 +63,9 @@
 -   Method `Springy\Kernel::delIgnoredError()` moved to `Springy\Exceptions\Handler->delIgnoredError()`
 -   Method `Springy\Kernel::environment()` was separated in `Springy\Core\Kernel->getEnvironment()` and `Springy\Core\Kernel->setEnvironment()`
 -   Method `Springy\Kernel::getIgnoredError()` moved to `Springy\Exceptions\Handler->getIgnoredError()`
--   Method `Springy\Kernel::projectCodeName()` was separated in `Springy\Core\Kernel->getProjectCodeName()` and `Springy\Core\Kernel->setProjectCodeName()`
--   Method `Springy\Kernel::systemName()` was separated in `Springy\Core\Kernel->getSystemName()` and `Springy\Core\Kernel->setSystemName()`
--   Method `Springy\Kernel::systemVersion()` was separated in `Springy\Core\Kernel->getSystemVersion()` and `Springy\Core\Kernel->setSystemVersion()`
+-   Method `Springy\Kernel::projectCodeName()` was changed to read only and renamed to `Springy\Core\Kernel->getAppCodeName()`
+-   Method `Springy\Kernel::systemName()` was changed to read only and renamed to `Springy\Core\Kernel->getApplicationName()`
+-   Method `Springy\Kernel::systemVersion()` was changed to read only and renamed to `Springy\Core\Kernel->getApplicationVersion()`
 -   Method `Springy\Mail->bcc()` renamed to `Springy\Mail\Mailer->addBcc()`
 -   Method `Springy\Mail->cc()` renamed to `Springy\Mail\Mailer->addCc()`
 -   Method `Springy\Mail->from()` renamed to `Springy\Mail\Mailer->setFrom()`
@@ -79,6 +79,12 @@
 -   Method `Springy\Session::unregister()` is no more static and was renamed to `Springy\HTTP\Session->forget()`
 -   Method `Springy\URI::getAllSegments()` is no more static and was renamed to `Springy\HTTP\URI->getSegments()`
 -   Method `Springy\Utils\JSON->add()` now accept an array to merge or two mixed data with `key` and `value` to be added to json data
+-   Main configuration file `sysconf.php` moved from the web server root directory to the configuration directory and renamed to `main.php`
+-   Main system configuration `SYSTEM_NAME` renamed to `main.app.name`
+-   Main system configuration `SYSTEM_VERSION` renamed to `main.app.version`
+-   Main system configuration `PROJECT_CODE_NAME` renamed to `main.app.code_name`
+-   Main system configuration `CHARSET` renamed to `main.charset`
+-   Main system configuration `ENVIRONMENT` renamed to `main.environment`
 -   Configuration `mail.default_driver` renamed to `mail.driver`
 -   Configuration `mail.errors_go_to` moved to `system.errors_go_to`
 -   Configuration `mail.mails_go_to` renamed to `mail.fake_to`
@@ -89,7 +95,16 @@
 -   Removed `$defaultModule` property from `Springy\Security\AclManager`
 -   Removed `$modulePrefix` property from `Springy\Security\AclManager`
 -   Removed `Springy\Controller` class
+-   Removed `Springy\CreditCardValidation` class
+-   Removed `Springy\DBDelete` class
+-   Removed `Springy\DBExpression` class
+-   Removed `Springy\DBFiltro` class
+-   Removed `Springy\DBInsert` class
+-   Removed `Springy\DBSelect` class
+-   Removed `Springy\DBUpdate` class
+-   Removed `Springy\DBWhere` class
 -   Removed `Springy\DeepDir` class
+-   Removed `Springy\Log` class
 -   Removed `Springy\Pagination` class
 -   Removed `Springy\Utils\Excel` class
 -   Removed `Springy\Utils\JSON_Static` class
@@ -118,7 +133,3 @@
 -   Removed support to configuration `'uri.redirect_last_slash'`
 -   Removed support to configuration `'uri.force_slash_on_index'`
 -   Removed support to Manuel Lemos' MIME Mail Message classes. Thanks a lot!
-
-### Main configuration file
-
-The main configuration file was renamed from syscont.php to config.php and moved from web root directory to /conf folder.
