@@ -35,11 +35,6 @@ class KernelTest extends TestCase
         $this->assertInstanceOf(Springy\Exceptions\Handler::class, $this->kernel->errorHandler());
     }
 
-    public function testGetCharset()
-    {
-        $this->assertEquals($this->conf['CHARSET'], $this->kernel->getCharset());
-    }
-
     public function testGetEnvironment()
     {
         $this->assertEquals($this->conf['ENVIRONMENT'], $this->kernel->getEnvironment());
@@ -74,12 +69,6 @@ class KernelTest extends TestCase
     public function testHttpRequest()
     {
         $this->assertInstanceOf(Springy\HTTP\Request::class, $this->kernel->httpRequest());
-    }
-
-    public function testSetCharset()
-    {
-        $this->kernel->setCharset('ISO-8859-1');
-        $this->assertEquals('ISO-8859-1', $this->kernel->getCharset());
     }
 
     public function testSetEnvironment()

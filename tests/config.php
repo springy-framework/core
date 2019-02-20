@@ -13,7 +13,7 @@ return [
     'SYSTEM_NAME'       => 'Foo',
     'SYSTEM_VERSION'    => [1, 0, 0],
     'PROJECT_CODE_NAME' => 'Alpha',
-    'CHARSET'           => 'UTF-8',
+    'charset'           => 'UTF-8',
     'TIMEZONE'          => 'UTC',
     'ENVIRONMENT'       => 'test',
     'CONFIG_PATH'       => __DIR__.'/conf',

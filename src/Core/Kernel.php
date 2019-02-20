@@ -408,16 +408,6 @@ class Kernel
     }
 
     /**
-     * Gets the system charset.
-     *
-     * @return string A string containing the system charset.
-     */
-    public function getCharset(): string
-    {
-        return self::$charset;
-    }
-
-    /**
      * The system environment.
      *
      * @return string
@@ -544,13 +534,13 @@ class Kernel
     /**
      * Sets the system charset.
      *
-     * @param string $charset if defined, set the system charset.
+     * @param string $charset
      *
      * @return void
      */
     public function setCharset(string $charset)
     {
-        self::$charset = $charset;
+        config_set('main.charset', $charset);
         ini_set('default_charset', $charset);
     }
 
@@ -662,9 +652,16 @@ class Kernel
             $conf = require $conf;
         }
 
+        // Check basic configuration path
+        if (!isset($conf['CONFIG_PATH'])) {
+            throw new SpringyException('Configuration files path not found.');
+        }
+
+        self::$configuration->configPath($conf['CONFIG_PATH']);
+
         ini_set('date.timezone', $conf['TIMEZONE'] ?? 'UTC');
 
-        $this->setCharset($conf['CHARSET'] ?? 'UTF-8');
+        $this->setCharset($conf['charset'] ?? 'UTF-8');
         $this->setSystemName($conf['SYSTEM_NAME'] ?? '');
         $this->setSystemVersion($conf['SYSTEM_VERSION'] ?? [1, 0, 0]);
         $this->setProjectCodeName($conf['PROJECT_CODE_NAME'] ?? '');
@@ -673,13 +670,6 @@ class Kernel
             $conf['ENVIRONMENT_ALIAS'] ?? [],
             $conf['ENVIRONMENT_VARIABLE'] ?? 'ENVIRONMENT'
         );
-
-        // Check basic configuration path
-        if (!isset($conf['CONFIG_PATH'])) {
-            throw new SpringyException('Configuration files path not found.');
-        }
-
-        self::$configuration->configPath($conf['CONFIG_PATH']);
 
         // Define the application paths
         // $this->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);

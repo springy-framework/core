@@ -14,6 +14,7 @@
 -   Added `Springy\Core\Kernel->errorHandler` method
 -   Added `Springy\Core\Kernel->httpRequest` method
 -   Added `Springy\Core\Kernel->httpResponse` method
+-   Added `Springy\Core\Kernel->setCharset` method
 -   Added `Springy\Core\Kernel->setUp` method
 -   Added `Springy\Exceptions\Handler` class
 -   Added `Springy\Exceptions\Http403Error` class
@@ -27,6 +28,8 @@
 -   Added `Springy\HTTP\Session->configure` method
 -   Added `Springy\HTTP\WebController` class
 -   Added `Springy\HTTP\URI::getInstance` method
+-   Added `Springy\Mail\Mailer->setAlternativeBody()` method
+-   Added `Springy\Mail\Mailer->setBody()` method
 -   Added `Springy\Utils\JSON->merge` method
 -   Added `Springy\Utils\JSON->setData` method
 -   Added `Springy\Utils\StringUtils` trait
@@ -45,6 +48,7 @@
 -   The `Springy\Core\Kernel` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\Files\File` class was moved to `Springy\Utils` namespace
 -   The `Springy\Files\UploadedFile` class was moved to `Springy\HTTP` namespace
+-   The `Springy\Mail` class was moved and renamed to `Springy\Mail\Mailer`
 -   The `Springy\HTTP\Cookie` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\HTTP\Session` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\HTTP\URI` class is no more static and has a `getInstance` static method to get its instance object
@@ -52,24 +56,32 @@
 -   The `Springy\Kernel` class was moved to `Springy\Core` namespace
 -   The `Springy\Session` class was moved to `Springy\HTTP` namespace
 -   The `Springy\URI` class was moved to `Springy\HTTP` namespace
--   Method `addIgnoredError` moved from `Springy\Core\Kernel` to `Springy\Exceptions\Handler`
--   Method `delIgnoredError` moved from `Springy\Core\Kernel` to `Springy\Exceptions\Handler`
--   Method `getIgnoredError` moved from `Springy\Core\Kernel` to `Springy\Exceptions\Handler`
--   Method `Springy\Core\Copyright->printCopyright` renamed to `content`
--   Method `Springy\Core\Debug::print_rc` is no more static and was renamed to `highligh`
--   Method `Springy\Core\Debug::printOut` is no more static and was renamed to `inject`
--   Method `Springy\Core\Kernel::charset` was separated in `getCharset` and `setCharset`
--   Method `Springy\Core\Kernel::environment` was separated in `getEnvironment` and `setEnvironment`
--   Method `Springy\Core\Kernel::projectCodeName` was separated in `getProjectCodeName` and `setProjectCodeName`
--   Method `Springy\Core\Kernel::systemName` was separated in `getSystemName` and `setSystemName`
--   Method `Springy\Core\Kernel::systemVersion` was separated in `getSystemVersion` and `setSystemVersion`
--   Method `Springy\HTTP\Session::setSessionId` is no more static and was renamed to `setId`
--   Method `Springy\HTTP\Session::unregister` is no more static and was renamed to `forget`
--   Method `Springy\HTTP\URI::getAllSegments` is no more static and was renamed to `getSegments`
--   Method `Springy\Security\AclManager->isPermitted` renamed to `hasPermission`
--   Method `Springy\Security\Strings::validateEmailAddress` moved and renamed to `Springy\Utils\StringUtils->isValidEmailAddress`
--   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `hasPermissionFor`
--   Method `Springy\Utils\JSON->add` now accept an array to merge or two mixed data with `key` and `value` to be added to json data
+-   Method `Springy\Core\Copyright->printCopyright()` renamed to `Springy\Core\Copyright->content()`
+-   Method `Springy\Core\Debug::print_rc()` is no more static and was renamed to `Springy\Core\Copyright->highligh()`
+-   Method `Springy\Core\Debug::printOut()` is no more static and was renamed to `Springy\Core\Copyright->inject()`
+-   Method `Springy\Kernel::addIgnoredError()` moved to `Springy\Exceptions\Handler->addIgnoredError()`
+-   Method `Springy\Kernel::delIgnoredError()` moved to `Springy\Exceptions\Handler->delIgnoredError()`
+-   Method `Springy\Kernel::environment()` was separated in `Springy\Core\Kernel->getEnvironment()` and `Springy\Core\Kernel->setEnvironment()`
+-   Method `Springy\Kernel::getIgnoredError()` moved to `Springy\Exceptions\Handler->getIgnoredError()`
+-   Method `Springy\Kernel::projectCodeName()` was separated in `Springy\Core\Kernel->getProjectCodeName()` and `Springy\Core\Kernel->setProjectCodeName()`
+-   Method `Springy\Kernel::systemName()` was separated in `Springy\Core\Kernel->getSystemName()` and `Springy\Core\Kernel->setSystemName()`
+-   Method `Springy\Kernel::systemVersion()` was separated in `Springy\Core\Kernel->getSystemVersion()` and `Springy\Core\Kernel->setSystemVersion()`
+-   Method `Springy\Mail->bcc()` renamed to `Springy\Mail\Mailer->addBcc()`
+-   Method `Springy\Mail->cc()` renamed to `Springy\Mail\Mailer->addCc()`
+-   Method `Springy\Mail->from()` renamed to `Springy\Mail\Mailer->setFrom()`
+-   Method `Springy\Mail->setTemplate()` renamed to `Springy\Mail\Mailer->setTemplateId()`
+-   Method `Springy\Mail->subject()` renamed to `Springy\Mail\Mailer->setSubject()`
+-   Method `Springy\Mail->to()` renamed to `Springy\Mail\Mailer->addTo()`
+-   Method `Springy\Security\AclManager->isPermitted` renamed to `Springy\Security\AclManager->hasPermission()`
+-   Method `Springy\Security\Strings::validateEmailAddress` moved and renamed to `Springy\Utils\StringUtils->isValidEmailAddress()`
+-   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `Springy\Security\AclUserInterface->hasPermissionFor()`
+-   Method `Springy\Session::setSessionId()` is no more static and was renamed to `Springy\HTTP\Session->setId()`
+-   Method `Springy\Session::unregister()` is no more static and was renamed to `Springy\HTTP\Session->forget()`
+-   Method `Springy\URI::getAllSegments()` is no more static and was renamed to `Springy\HTTP\URI->getSegments()`
+-   Method `Springy\Utils\JSON->add()` now accept an array to merge or two mixed data with `key` and `value` to be added to json data
+-   Configuration `mail.default_driver` renamed to `mail.driver`
+-   Configuration `mail.errors_go_to` moved to `system.errors_go_to`
+-   Configuration `mail.mails_go_to` renamed to `mail.fake_to`
 
 ### Removed
 -   Removed `$action` property from `Springy\Security\AclManager`
@@ -77,29 +89,35 @@
 -   Removed `$defaultModule` property from `Springy\Security\AclManager`
 -   Removed `$modulePrefix` property from `Springy\Security\AclManager`
 -   Removed `Springy\Controller` class
+-   Removed `Springy\DeepDir` class
+-   Removed `Springy\Pagination` class
 -   Removed `Springy\Utils\Excel` class
 -   Removed `Springy\Utils\JSON_Static` class
 -   Removed `Springy\Utils\Strings` class. See new trait `Springy\Utils\StringUtils` for substitute methods.
 -   Removed `Springy\Utils\ZipFile` class
--   Removed `contents` method from `Springy\HTTP\Cookie`
--   Removed `del` method from `Springy\HTTP\Cookie`
--   Removed `generateHash` method from `Springy\Security\BasicHasher`
--   Removed `getAll` method from `Springy\HTTP\Session`
--   Removed `getCurrentAction` method from `Springy\Security\AclManager`
--   Removed `getCurrentController` method from `Springy\Security\AclManager`
--   Removed `getCurrentModule` method from `Springy\Security\AclManager`
--   Removed `getDados` method from `Springy\Utils\JSON`
--   Removed `getDefaultModule` method from `Springy\Security\AclManager`
--   Removed `getModulePrefix` method from `Springy\Security\AclManager`
--   Removed `getParams` method from `Springy\HTTP\URI` now you must uses `Springy\HTTP\Input` class to get query string values
--   Removed `parseURI` method from `Springy\HTTP\URI`
--   Removed `printJ` method from `Springy\Utils\JSON`
--   Removed `setDefaultModule` method from `Springy\Security\AclManager`
--   Removed `setModulePrefix` method from `Springy\Security\AclManager`
--   Removed `setupCurrentAclObject` method from `Springy\Security\AclManager`
--   Removed `validateURI` method from `Springy\HTTP\URI`
+-   Removed `Springy\Kernel::charset()` method
+-   Removed `Springy\Cookie::contents()` method
+-   Removed `Springy\Cookie::del()` method
+-   Removed `Springy\Mail->body()` method. See new methods `Springy\Mail\Mailer->setBody()` and `Springy\Mail\Mailer->setAlternativeBody()`
+-   Removed `Springy\Mail->setHeader()` method
+-   Removed `Springy\Session::getAll()` method
+-   Removed `Springy\Security\AclManager->getCurrentAction()` method
+-   Removed `Springy\Security\AclManager->getCurrentController()` method
+-   Removed `Springy\Security\AclManager->getCurrentModule()` method
+-   Removed `Springy\Security\AclManager->getDefaultModule()` method
+-   Removed `Springy\Security\AclManager->getModulePrefix()` method
+-   Removed `Springy\Security\AclManager->setModulePrefix()` method
+-   Removed `Springy\Security\AclManager->setDefaultModule()` method
+-   Removed `Springy\Security\AclManager->setupCurrentAclObject()` method
+-   Removed `Springy\Security\BasicHasher->generateHash()` method
+-   Removed `Springy\URI::getParams()` method now you must uses `Springy\HTTP\Input` class to get query string values
+-   Removed `Springy\URI::parseURI()` method
+-   Removed `Springy\URI::validateURI()` method
+-   Removed `Springy\Utils\JSON->getDados()` method
+-   Removed `Springy\Utils\JSON->printJ()` method
 -   Removed support to configuration `'uri.redirect_last_slash'`
 -   Removed support to configuration `'uri.force_slash_on_index'`
+-   Removed support to Manuel Lemos' MIME Mail Message classes. Thanks a lot!
 
 ### Main configuration file
 

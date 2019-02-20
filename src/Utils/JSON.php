@@ -118,7 +118,7 @@ class JSON
         // Set the header
         $response->header()->httpResponseCode($this->statusCode);
         $response->header()->clear();
-        $response->header()->contentType('application/json', Kernel::getInstance()->getCharset(), true);
+        $response->header()->contentType('application/json', config_get('main.charset', 'UTF-8'), true);
         $response->header()->expires('0');
         $response->header()->lastModified(gmdate(DATE_RFC822));
         $response->header()->cacheControl('no-store, no-cache, must-revalidate');

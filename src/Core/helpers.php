@@ -43,12 +43,13 @@ function app($service = null)
  * Gets an application configuration var.
  *
  * @param string $key
+ * @param mixed  $default
  *
  * @return mixed
  */
-function config_get(string $key)
+function config_get(string $key, $default = null)
 {
-    return Springy\Core\Kernel::getInstance()->configuration()->get($key);
+    return Springy\Core\Kernel::getInstance()->configuration()->get($key, $default);
 }
 
 /**
@@ -84,6 +85,29 @@ function dd($var, $die = true)
     if ($die) {
         die;
     }
+}
+
+/**
+ * Gets an environment variable.
+ *
+ * @param string $key
+ * @param mixed $default
+ *
+ * @return mixed
+ */
+function env(string $key, $default = null)
+{
+    $value = getenv($key);
+
+    if ($value === false) {
+        return $default;
+    }
+
+    if (($vLength = strlen($value)) > 1 && $value[0] === '"' && $value[$vLength - 1] === '"') {
+        return substr($value, 1, -1);
+    }
+
+    return $value;
 }
 
 /**
