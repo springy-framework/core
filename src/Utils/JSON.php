@@ -95,7 +95,7 @@ class JSON
     }
 
     /**
-     * Merges the given array into json data
+     * Merges the given array into json data.
      *
      * @param array $data
      *
