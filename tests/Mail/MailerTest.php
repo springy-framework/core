@@ -1,6 +1,6 @@
 <?php
 /**
- * Test case for Springy\Utils\ArrayUtils class.
+ * Test case for Springy\Mail\Mailer class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>

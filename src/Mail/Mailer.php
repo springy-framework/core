@@ -30,7 +30,7 @@ class Mailer
      */
     public function __construct()
     {
-        $this->getDriver();
+        $this->startDriver();
 
         if (($errorsTo = config_get('system.errors_go_to', '')) !== '') {
             $this->addHeader('Errors-To', $errorsTo);
@@ -59,15 +59,18 @@ class Mailer
      *
      * @return void
      */
-    protected function getDriver()
+    protected function startDriver()
     {
+        $driver = config_get('mail.driver');
+        if ($driver === null) {
+            throw new SpringyException('Mail driver undefined');
+        }
+
         $drivers = [
             self::MAIL_ENGINE_PHPMAILER   => 'Springy\Mail\Drivers\PhpMailer',
             self::MAIL_ENGINE_SENDGRID    => 'Springy\Mail\Drivers\SendGrid',
             self::MAIL_ENGINE_SWIFTMAILER => 'Springy\Mail\Drivers\SwiftMailer',
         ];
-
-        $driver = $this->getDriverName();
 
         if (!isset($drivers[$driver])) {
             throw new SpringyException('Mail driver unknown or not supported');
@@ -79,23 +82,6 @@ class Mailer
         }
 
         $this->mailObj = new $drivers[$driver]($config);
-    }
-
-    /**
-     * Get driver name from the configuration.
-     *
-     * @throws SpringyException
-     *
-     * @return string
-     */
-    protected function getDriverName(): string
-    {
-        $driver = config_get('mail.driver');
-        if ($driver === null) {
-            throw new SpringyException('Mail driver not defined');
-        }
-
-        return $driver;
     }
 
     /**

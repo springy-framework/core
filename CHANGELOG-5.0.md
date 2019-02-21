@@ -30,10 +30,18 @@
 -   Added `Springy\HTTP\URI::getInstance` method
 -   Added `Springy\Mail\Mailer->setAlternativeBody()` method
 -   Added `Springy\Mail\Mailer->setBody()` method
+-   Added `Springy\Template\Template->setAutoEscape()` method
+-   Added `Springy\Template\Template->setDebug()` method
+-   Added `Springy\Template\Template->setEscapeHtml()` method
+-   Added `Springy\Template\Template->setOptimizations()` method
+-   Added `Springy\Template\Template->setStrict()` method
+-   Added `Springy\Template\Template->setUseSubDirs()` method
 -   Added `Springy\Utils\JSON->merge` method
 -   Added `Springy\Utils\JSON->setData` method
 -   Added `Springy\Utils\StringUtils` trait
 -   Added constants `Springy\Core\Kernel::ENV_TYPE_CLI` and `Springy\Core\Kernel::ENV_TYPE_WEB`
+-   Added configuration entry `template.auto_escape`
+-   Added configuration entry `template.file_sufix`
 
 ### Changed
 -   Added parameters type declaration and return type declaration for several methods
@@ -55,6 +63,7 @@
 -   The `Springy\HTTP\URI` class is no longer responsible for determining the controller. This becomes the responsibility of the `Kernel` class.
 -   The `Springy\Kernel` class was moved to `Springy\Core` namespace
 -   The `Springy\Session` class was moved to `Springy\HTTP` namespace
+-   The `Springy\Template` class was moved to `Springy\Template` namespace
 -   The `Springy\URI` class was moved to `Springy\HTTP` namespace
 -   Method `Springy\Core\Copyright->printCopyright()` renamed to `Springy\Core\Copyright->content()`
 -   Method `Springy\Core\Debug::print_rc()` is no more static and was renamed to `Springy\Core\Copyright->highligh()`
@@ -79,6 +88,8 @@
 -   Method `Springy\Session::unregister()` is no more static and was renamed to `Springy\HTTP\Session->forget()`
 -   Method `Springy\URI::getAllSegments()` is no more static and was renamed to `Springy\HTTP\URI->getSegments()`
 -   Method `Springy\Utils\JSON->add()` now accept an array to merge or two mixed data with `key` and `value` to be added to json data
+-   Constant `Springy\Template::TPL_ENGINE_SMARTY` renamed to `Springy\Exceptions\SpringyException::DRV_SMARTY`
+-   Constant `Springy\Template::TPL_ENGINE_TWIG` renamed to `Springy\Exceptions\SpringyException::DRV_TWIG`
 -   Main configuration file `sysconf.php` moved from the web server root directory to the configuration directory and renamed to `main.php`
 -   Main system configuration `SYSTEM_NAME` renamed to `main.app.name`
 -   Main system configuration `SYSTEM_VERSION` renamed to `main.app.version`
@@ -88,6 +99,9 @@
 -   Configuration `mail.default_driver` renamed to `mail.driver`
 -   Configuration `mail.errors_go_to` moved to `system.errors_go_to`
 -   Configuration `mail.mails_go_to` renamed to `mail.fake_to`
+-   Configuration `template.auto_reload` renamed to `template.force_compile`
+-   Configuration `template.template_engine` renamed to `template.driver`
+-   Configuration `template.template_path` renamed to `template.paths.templates`
 
 ### Removed
 -   Removed `$action` property from `Springy\Security\AclManager`
@@ -132,4 +146,6 @@
 -   Removed `Springy\Utils\JSON->printJ()` method
 -   Removed support to configuration `'uri.redirect_last_slash'`
 -   Removed support to configuration `'uri.force_slash_on_index'`
+-   Removed support to configuration `'template.debugging_ctrl'`
+-   Removed support to configuration `'template.escape_html'` see `'template.auto_escape'`
 -   Removed support to Manuel Lemos' MIME Mail Message classes. Thanks a lot!

@@ -30,8 +30,8 @@
         "phpunit/phpunit": "~6.0",
         "phpmd/phpmd": "@stable",
 
-        "smarty/smarty": "3.1.*",
-        "twig/twig": "<2.5",
+        "smarty/smarty": "~3.1",
+        "twig/twig": "~2.6",
 
         "phpmailer/phpmailer": "~6.0"
     },
