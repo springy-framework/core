@@ -12,27 +12,32 @@ use PHPUnit\Framework\TestCase;
 use Springy\Core\Kernel;
 use Springy\Template\Template;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class TemplateTest extends TestCase
 {
     public function testSmartyTemplateDriver()
     {
-        Kernel::getInstance()->setEnvironment('template/smarty');
+        Kernel::getInstance()->setEnvironment('tpl-smarty');
 
-        $template = new Template();
+        $template = new Template('test');
+        $template->assign('test', 'Foo');
+        $dir = config_get('template.paths.compiled');
 
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-          );
+        $this->assertEquals('Foo', $template->fetch());
+
+        $template->clearCompileDir();
     }
 
     public function testTwigTemplateDriver()
     {
-        Kernel::getInstance()->setEnvironment('template/twig');
+        Kernel::getInstance()->setEnvironment('tpl-twig');
 
-        $template = new Template();
+        $template = new Template('test');
+        $template->assign('test', 'Bar');
+        $template->setCaching(false);
 
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-          );
+        $this->assertEquals('Test Bar', $template->fetch());
     }
 }

@@ -100,6 +100,7 @@
 -   Configuration `mail.errors_go_to` moved to `system.errors_go_to`
 -   Configuration `mail.mails_go_to` renamed to `mail.fake_to`
 -   Configuration `template.auto_reload` renamed to `template.force_compile`
+-   Configuration `template.compiled_template_path` renamed to `template.paths.compiled`
 -   Configuration `template.template_engine` renamed to `template.driver`
 -   Configuration `template.template_path` renamed to `template.paths.templates`
 

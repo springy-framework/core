@@ -9,8 +9,7 @@
  * @version   1.0.0
  */
 use PHPUnit\Framework\TestCase;
-use Springy\Core\Configuration;
-use Springy\HTTP\Session;
+use Springy\Core\Kernel;
 use Springy\Utils\FlashMessagesManager;
 use Springy\Utils\MessageContainer;
 
@@ -23,10 +22,7 @@ class FlashMessageManagerTest extends TestCase
 
     public function setUp()
     {
-        $config = new Configuration(__DIR__.'/../conf', 'test');
-        $session = Session::getInstance();
-        $session->configure($config);
-
+        Kernel::getInstance()->setEnvironment('test');
         $this->flash = new FlashMessagesManager();
     }
 

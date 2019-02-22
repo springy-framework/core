@@ -49,13 +49,7 @@ class Handler
      */
     public function __destruct()
     {
-        if ($this->prevErrorHandler) {
-            restore_error_handler();
-        }
-
-        if ($this->prevExceptionHandler) {
-            restore_exception_handler();
-        }
+        $this->restoreHandlers();
     }
 
     /**
@@ -75,7 +69,7 @@ class Handler
         $response->header()->cacheControl('private', false);
 
         $config = Kernel::getInstance()->configuration();
-        $path = $config->get('view.path.errors').DS.'http'.$response->header()->httpResponseCode().'error.html';
+        $path = $config->get('template.paths.errors').DS.'http'.$response->header()->httpResponseCode().'error.html';
 
         $body = $this->getErrorName($this->exception->getCode())
             .' - '.$this->exception->getMessage()
@@ -100,6 +94,24 @@ class Handler
         Response::getInstance()->header()->httpResponseCode($this->exception->getCode());
 
         $this->displayError();
+    }
+
+    /**
+     * Restores to previous error and exception handlers.
+     *
+     * @return void
+     */
+    protected function restoreHandlers()
+    {
+        if ($this->prevErrorHandler) {
+            restore_error_handler();
+            $this->prevErrorHandler = null;
+        }
+
+        if ($this->prevExceptionHandler) {
+            restore_exception_handler();
+            $this->prevExceptionHandler = null;
+        }
     }
 
     /**
@@ -258,6 +270,8 @@ class Handler
         if (in_array($errCode, [E_DEPRECATED, E_USER_DEPRECATED])) {
             return;
         }
+
+        $this->restoreHandlers();
 
         if ($this->exception instanceof HttpError) {
             $this->httpError();

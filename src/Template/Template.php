@@ -20,22 +20,23 @@ class Template
     const DRV_SMARTY = 'smarty';
     const DRV_TWIG = 'twig';
 
+    /** @var string sufix for template files */
+    protected $fileSufix;
     /** @var object the template driver */
     protected $tplObj;
-
-    /** @var array otpions for the template engine */
-    protected $tplOptions;
 
     /**
      * Constructor method.
      *
-     * @param array|string|null $tpl the template name or path
+     * @param array|string|null $template the template file name
      */
-    public function __construct($tpl = null)
+    public function __construct($template = null)
     {
         $this->startDriver();
 
         $config = Kernel::getInstance()->configuration();
+
+        $this->fileSufix = $config->get('template.file_sufix', '.html');
 
         $this->tplObj->setAutoEscape($config->get('template.auto_escape', ''));
         $this->tplObj->setDebug($config->get('template.debug', false));
@@ -44,7 +45,13 @@ class Template
         $this->tplObj->setStrict($config->get('template.strict', false));
         $this->tplObj->setUseSubDirs($config->get('template.use_sub_dirs', false));
 
+        $this->tplObj->setCacheDir($config->get('template.paths.cache'));
+        $this->tplObj->setCompileDir($config->get('template.paths.compiled'));
         $this->tplObj->setTemplateDir($config->get('template.paths.templates'));
+
+        if ($template !== null) {
+            $this->setTemplate($template);
+        }
     }
 
     /**
@@ -70,8 +77,53 @@ class Template
             throw new SpringyException('Template driver unknown or not supported');
         }
 
-        $this->tplOptions = [];
         $this->tplObj = new $drivers[$driver]();
+    }
+
+    /**
+     * Assigns a variable to the template.
+     *
+     * @param string $var     the name of the variable.
+     * @param mixed  $value   the value of the variable.
+     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
+     *
+     * @return void
+     */
+    public function assign(string $var, $value = null, $nocache = false)
+    {
+        return $this->tplObj->assign($var, $value, $nocache);
+    }
+
+    /**
+     * Clears the compiled version of the template.
+     *
+     * @param int $expTime only compiled templates older than $expTime seconds are cleared.
+     *
+     * @return void
+     */
+    public function clearCompiled(int $expTime)
+    {
+        return $this->tplObj->clearCompiled($expTime);
+    }
+
+    /**
+     * Clears the compiled templates folder.
+     *
+     * @return void
+     */
+    public function clearCompileDir()
+    {
+        return $this->tplObj->clearCompileDir();
+    }
+
+    /**
+     * Gets the template compiled.
+     *
+     * @return string
+     */
+    public function fetch(): string
+    {
+        return $this->tplObj->fetch();
     }
 
     /**
@@ -86,6 +138,30 @@ class Template
     public function setAutoEscape(string $autoEscape)
     {
         $this->tplObj->setAutoEscape($autoEscape);
+    }
+
+    /**
+     * Defines template caching strategy.
+     *
+     * @param string|bool $cache
+     *
+     * @return void
+     */
+    public function setCaching($cache = false)
+    {
+        return $this->tplObj->setCaching($cache);
+    }
+
+    /**
+     * Sets the template cache folder.
+     *
+     * @param string $path
+     *
+     * @return void
+     */
+    public function setCacheDir(string $path)
+    {
+        return $this->tplObj->setCacheDir($path);
     }
 
     /**
@@ -134,6 +210,30 @@ class Template
     public function setStrict(bool $strict)
     {
         $this->tplObj->setStrict($strict);
+    }
+
+    /**
+     * Defines the compiled template folder.
+     *
+     * @param string
+     *
+     * @return void
+     */
+    public function setCompileDir(string $path)
+    {
+        $this->tplObj->setCompileDir($path);
+    }
+
+    /**
+     * Sets the template file.
+     *
+     * @param string $template
+     *
+     * @return void
+     */
+    public function setTemplate(string $template)
+    {
+        $this->tplObj->setTemplate($template.$this->fileSufix);
     }
 
     /**

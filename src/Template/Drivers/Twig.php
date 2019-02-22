@@ -15,16 +15,23 @@
 
 namespace Springy\Template\Drivers;
 
+use Twig\Environment as TwigEnvironment;
+use Twig\Loader\FilesystemLoader;
+
 class Twig implements TemplateDriverInterface
 {
-    /** @var array the list of template directories */
-    protected $templateDir;
-    /** @var array otpions for the template engine */
-    protected $tplOptions;
+    /** @var array the environment options */
+    protected $envOptions;
+    /** @var array the list of template home directories */
+    protected $templateDirs;
+    /** @var string the template file name */
+    protected $templateFile;
+    /** @var array the template variables */
+    protected $templateVars;
 
     public function __construct()
     {
-        $this->tplOptions= [
+        $this->envOptions= [
             'debug'            => false,
             'cache'            => false,
             'auto_reload'      => false,
@@ -33,7 +40,106 @@ class Twig implements TemplateDriverInterface
             'optimizations'    => -1,
         ];
 
-        $this->templateDir = [];
+        $this->templateDirs = [];
+        $this->templateVars = [];
+    }
+
+    /**
+     * Assigns a variable to the template.
+     *
+     * @param string $var     the name of the variable.
+     * @param mixed  $value   the value of the variable.
+     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
+     *
+     * @return void
+     */
+    public function assign(string $var, $value = null, $nocache = false)
+    {
+        $this->templateVars[$var] = [
+            'value'   => $value,
+            'nocache' => $nocache,
+        ];
+    }
+
+    /**
+     * Clears the compiled version of the template.
+     *
+     * This method do nothing. Exists only by an interface requisition.
+     *
+     * @param int $expTime only compiled templates older than $expTime seconds are cleared.
+     *
+     * @return void
+     */
+    public function clearCompiled(int $expTime)
+    {
+        $expTime = 0;
+    }
+
+    /**
+     * Clears all compiled templates.
+     *
+     * This method do nothing. Exists only by an interface requisition.
+     *
+     * @return void
+     */
+    public function clearCompileDir()
+    {
+        // Do nothing
+    }
+
+    /**
+     * Returns the template output.
+     *
+     * @return string
+     */
+    public function fetch()
+    {
+        if ($this->templateFile === null) {
+            throw new SpringyException('Template file undefined');
+        }
+
+        // if (!$this->templateExists($this->templateFile)) {
+        //     new Errors(404, $this->templateFile.self::TPL_NAME_SUFIX);
+        // }
+
+        // Alimenta as variáveis CONSTANTES
+        $vars = [];
+        // $vars = [
+        //     'HOST'               => URI::buildURL(),
+        //     'CURRENT_PAGE_URI'   => URI::currentPageURI(),
+        //     'SYSTEM_NAME'        => Kernel::systemName(),
+        //     'SYSTEM_VERSION'     => Kernel::systemVersion(),
+        //     'PROJECT_CODE_NAME'  => Kernel::projectCodeName(),
+        //     'ACTIVE_ENVIRONMENT' => Kernel::environment(),
+        // ];
+
+        // Alimenta as variáveis padrão da aplicação
+        // foreach (Kernel::getTemplateVar() as $name => $data) {
+        //     $vars[$name] = $data;
+        // }
+
+        // Alimenta as variáveis do template
+        foreach ($this->templateVars as $name => $data) {
+            $vars[$name] = $data['value'];
+        }
+
+        // Inicializa a função padrão assetFile
+        // $this->tplObj->addFunction(new \Twig_SimpleFunction('assetFile', [$this, 'assetFile']));
+
+        // Inicializa as funções personalizadas padrão
+        // foreach (Kernel::getTemplateFunctions() as $func) {
+        //     $this->tplObj->addFunction(new \Twig_SimpleFunction($func[1], $func[2]));
+        // }
+
+        // Inicializa as funções personalizadas do template
+        // foreach ($this->templateFuncs as $func) {
+        //     $this->tplObj->addFunction(new \Twig_SimpleFunction($func[1], $func[2]));
+        // }
+
+        $loader = new FilesystemLoader($this->templateDirs);
+        $tplObj = new TwigEnvironment($loader, $this->envOptions);
+
+        return $tplObj->render($this->templateFile, $vars);
     }
 
     /**
@@ -47,7 +153,7 @@ class Twig implements TemplateDriverInterface
      */
     public function setAutoEscape($autoEscape)
     {
-        $this->tplOptions['autoescape'] = $autoEscape;
+        $this->envOptions['autoescape'] = $autoEscape;
     }
 
     /**
@@ -61,7 +167,7 @@ class Twig implements TemplateDriverInterface
      */
     public function setDebug(bool $debug)
     {
-        $this->tplOptions['debug'] = $debug;
+        $this->envOptions['debug'] = $debug;
     }
 
     /**
@@ -75,7 +181,7 @@ class Twig implements TemplateDriverInterface
      */
     public function setForceCompile(bool $forceCompile = null)
     {
-        $this->tplOptions['auto_reload'] = $forceCompile ?? $this->tplOptions['debug'];
+        $this->envOptions['auto_reload'] = $forceCompile ?? $this->envOptions['debug'];
     }
 
     /**
@@ -89,7 +195,7 @@ class Twig implements TemplateDriverInterface
      */
     public function setOptimizations(int $optimizations)
     {
-        $this->tplOptions['optimizations'] = $optimizations;
+        $this->envOptions['optimizations'] = $optimizations;
     }
 
     /**
@@ -103,7 +209,64 @@ class Twig implements TemplateDriverInterface
      */
     public function setStrict(bool $strict)
     {
-        $this->tplOptions['strict_variables'] = $strict;
+        $this->envOptions['strict_variables'] = $strict;
+    }
+
+    /**
+     * Sets the template cache folder.
+     *
+     * @param string $path path in the file system.
+     *
+     * @return void
+     */
+    public function setCacheDir(string $path)
+    {
+        $this->envOptions['cache'] = $path;
+    }
+
+    /**
+     * Defines template caching strategy.
+     *
+     * This method works only to turns cache off.
+     *
+     * @param bool $cache
+     *
+     * @return void
+     */
+    public function setCaching($cache = false)
+    {
+        if ($cache !== false) {
+            return;
+        }
+
+        $this->envOptions['cache'] = false;
+    }
+
+    /**
+     * Defines the compiled template folder.
+     *
+     * This method do nothing. Twig has not compiled directory.
+     * Exists only by an interface requisition.
+     *
+     * @param string $path
+     *
+     * @return void
+     */
+    public function setCompileDir(string $path)
+    {
+        $path = '';
+    }
+
+    /**
+     * Sets the template file.
+     *
+     * @param string $template
+     *
+     * @return void
+     */
+    public function setTemplate(string $template)
+    {
+        $this->templateFile = $template;
     }
 
     /**
@@ -115,7 +278,11 @@ class Twig implements TemplateDriverInterface
      */
     public function setTemplateDir($path)
     {
-        $this->templateDir = $path;
+        if (!is_array($path)) {
+            $path = [$path];
+        }
+
+        $this->templateDirs = $path;
     }
 
     /**
@@ -130,8 +297,8 @@ class Twig implements TemplateDriverInterface
      */
     public function setUseSubDirs(bool $useSubDirs)
     {
-        $this->tplOptions['use_sub_dirs'] = $useSubDirs;
-        unset($this->tplOptions['use_sub_dirs']);
+        $this->envOptions['use_sub_dirs'] = $useSubDirs;
+        unset($this->envOptions['use_sub_dirs']);
     }
 }
 
