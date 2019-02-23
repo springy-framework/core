@@ -10,6 +10,9 @@
  */
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Kernel;
+use Springy\Template\Drivers\Mustache;
+use Springy\Template\Drivers\Smarty;
+use Springy\Template\Drivers\Twig;
 use Springy\Template\Template;
 
 /**
@@ -25,6 +28,9 @@ class TemplateTest extends TestCase
         $template->assign('test', 'Foo');
         $dir = config_get('template.paths.compiled');
 
+        $this->assertInstanceOf(Smarty::class, $template->getTemplateDriver());
+        $this->assertTrue($template->templateExists());
+        $this->assertFalse($template->isCached());
         $this->assertEquals('Foo', $template->fetch());
 
         $template->clearCompileDir();
@@ -36,8 +42,31 @@ class TemplateTest extends TestCase
 
         $template = new Template('test');
         $template->assign('test', 'Bar');
-        $template->setCaching(false);
 
+        $this->assertInstanceOf(Twig::class, $template->getTemplateDriver());
+        $this->assertTrue($template->templateExists());
         $this->assertEquals('Test Bar', $template->fetch());
+
+        $template->clearCache();
+
+        $dir = scandir(config_get('template.paths.cache'));
+        $this->assertEquals(['.', '..'], $dir);
+    }
+
+    public function testMustacheTemplateDriver()
+    {
+        Kernel::getInstance()->setEnvironment('tpl-mustache');
+
+        $template = new Template('test');
+        $template->assign('test', 'bar');
+
+        $this->assertInstanceOf(Mustache::class, $template->getTemplateDriver());
+        $this->assertTrue($template->templateExists());
+        $this->assertEquals('Foo bar', $template->fetch());
+
+        // $template->clearCache();
+
+        $dir = scandir(config_get('template.paths.cache'));
+        $this->assertEquals(['.', '..'], $dir);
     }
 }

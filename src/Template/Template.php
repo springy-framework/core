@@ -17,6 +17,7 @@ use Springy\Exceptions\SpringyException;
 
 class Template
 {
+    const DRV_MUSTACHE = 'mustache';
     const DRV_SMARTY = 'smarty';
     const DRV_TWIG = 'twig';
 
@@ -69,8 +70,9 @@ class Template
         }
 
         $drivers = [
-            self::DRV_SMARTY => 'Springy\Template\Drivers\Smarty',
-            self::DRV_TWIG   => 'Springy\Template\Drivers\Twig',
+            self::DRV_MUSTACHE => 'Springy\Template\Drivers\Mustache',
+            self::DRV_SMARTY   => 'Springy\Template\Drivers\Smarty',
+            self::DRV_TWIG     => 'Springy\Template\Drivers\Twig',
         ];
 
         if (!isset($drivers[$driver])) {
@@ -78,6 +80,18 @@ class Template
         }
 
         $this->tplObj = new $drivers[$driver]();
+    }
+
+    /**
+     * Adds alternates template home directories.
+     *
+     * @param array|string $dir
+     *
+     * @return void
+     */
+    public function addTemplateDir($dir)
+    {
+        return $this->tplObj->addTemplateDir($dir);
     }
 
     /**
@@ -92,6 +106,21 @@ class Template
     public function assign(string $var, $value = null, $nocache = false)
     {
         return $this->tplObj->assign($var, $value, $nocache);
+    }
+
+    /**
+     * Clears the entire template cache.
+     *
+     * As an optional parameter, you can supply a minimum age in seconds
+     * the cache files must have to get deleted.
+     *
+     * @param int $expTime
+     *
+     * @return void
+     */
+    public function clearCache(int $expTime = 0)
+    {
+        return $this->tplObj->clearCache($expTime);
     }
 
     /**
@@ -117,13 +146,53 @@ class Template
     }
 
     /**
+     * Invalidates the cache for current template.
+     *
+     * @param int $expireTime if defined only template cache older than expireTime seconds are deleted.
+     *
+     * @return void
+     */
+    public function clearTemplateCache(int $expireTime = null)
+    {
+        return $this->tplObj->clearTemplateCache($expireTime);
+    }
+
+    /**
      * Gets the template compiled.
      *
      * @return string
      */
     public function fetch(): string
     {
+        $template = $this->tplObj->getTemplateName();
+
+        if ($template === '') {
+            throw new SpringyException('Template file undefined');
+        } elseif (!$this->tplObj->templateExists($template)) {
+            throw new SpringyException('Template file "'.$template.'" does not exists');
+        }
+
         return $this->tplObj->fetch();
+    }
+
+    /**
+     * Returns the internal template driver object.
+     *
+     * @return object
+     */
+    public function getTemplateDriver()
+    {
+        return $this->tplObj;
+    }
+
+    /**
+     * Checks if the template is cached.
+     *
+     * @return bool
+     */
+    public function isCached(): bool
+    {
+        return $this->tplObj->isCached();
     }
 
     /**
@@ -141,6 +210,42 @@ class Template
     }
 
     /**
+     * Sets the template cache folder.
+     *
+     * @param string $path
+     *
+     * @return void
+     */
+    public function setCacheDir(string $path)
+    {
+        return $this->tplObj->setCacheDir($path);
+    }
+
+    /**
+     * Sets the cache id.
+     *
+     * @param string $cid
+     *
+     * @return void
+     */
+    public function setCacheId(string $cid)
+    {
+        return $this->tplObj->setCacheId($cid);
+    }
+
+    /**
+     * Sets the template cache lifetime.
+     *
+     * @param int $seconds
+     *
+     * @return void
+     */
+    public function setCacheLifetime(int $seconds)
+    {
+        $this->tplObj->setCacheLifetime($seconds);
+    }
+
+    /**
      * Defines template caching strategy.
      *
      * @param string|bool $cache
@@ -153,15 +258,27 @@ class Template
     }
 
     /**
-     * Sets the template cache folder.
+     * Defines the compiled template folder.
      *
-     * @param string $path
+     * @param string
      *
      * @return void
      */
-    public function setCacheDir(string $path)
+    public function setCompileDir(string $path)
     {
-        return $this->tplObj->setCacheDir($path);
+        $this->tplObj->setCompileDir($path);
+    }
+
+    /**
+     * Sets the compile identifier.
+     *
+     * @param string $cid
+     *
+     * @return void
+     */
+    public function setCompileId(string $cid)
+    {
+        return $this->tplObj->setCompileId($cid);
     }
 
     /**
@@ -213,18 +330,6 @@ class Template
     }
 
     /**
-     * Defines the compiled template folder.
-     *
-     * @param string
-     *
-     * @return void
-     */
-    public function setCompileDir(string $path)
-    {
-        $this->tplObj->setCompileDir($path);
-    }
-
-    /**
      * Sets the template file.
      *
      * @param string $template
@@ -259,5 +364,33 @@ class Template
     public function setUseSubDirs(bool $useSubDirs)
     {
         $this->tplObj->setUseSubDirs($useSubDirs);
+    }
+
+    /**
+     * Checks whether the specified template exists.
+     *
+     * @param string $templateName
+     *
+     * @return bool
+     */
+    public function templateExists(string $templateName = null): bool
+    {
+        return $this->tplObj->templateExists(
+            $templateName === null
+            ? $this->tplObj->getTemplateName()
+            : $templateName.$this->fileSufix
+        );
+    }
+
+    /**
+     * Unissigns an assigned variable.
+     *
+     * @param string $var
+     *
+     * @return void
+     */
+    public function unassign(string $var)
+    {
+        return $this->tplObj->unassign($var);
     }
 }

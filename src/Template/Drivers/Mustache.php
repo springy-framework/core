@@ -8,63 +8,77 @@
  *
  * @version   1.8.0
  *
- * This class implements support for Twig template engine.
+ * This class implements support for Smarty template engine.
  *
- * @see       https://twig.symfony.com/
+ * @see       http://www.smarty.net/
  */
 
 namespace Springy\Template\Drivers;
 
+use Mustache_Engine as MustacheEngine;
+use Mustache_Loader_FilesystemLoader as FilesystemLoader;
+use Mustache_Logger_StreamLogger as StreamLogger;
 use Springy\Utils\FileSystemUtils;
-use Twig\Environment as TwigEnvironment;
-use Twig\Loader\FilesystemLoader;
 
-class Twig implements TemplateDriverInterface
+class Mustache implements TemplateDriverInterface
 {
     use FileSystemUtils;
 
-    /** @var int the cache life time in seconds */
-    protected $cacheTime;
-    /** @var array the environment options */
-    protected $envOptions;
     /** @var array the list of template home directories */
     protected $templateDirs;
     /** @var string the template file name */
     protected $templateFile;
     /** @var array the template variables */
     protected $templateVars;
+    /** @var MustacheEngine the Mustache object */
+    protected $tplObj;
+    /** @var array the template options */
+    protected $tplOptions;
 
     /**
      * Constructor.
      */
     public function __construct()
     {
-        $this->envOptions= [
-            'debug'            => false,
-            'cache'            => false,
-            'auto_reload'      => false,
-            'strict_variables' => true,
-            'autoescape'       => false,
-            'optimizations'    => -1,
-        ];
-
-        $this->cacheTime = 3600;
         $this->templateDirs = [];
         $this->templateFile = '';
         $this->templateVars = [];
+        $this->tplOptions = [
+            'cache'                  => null,
+            'cache_file_mode'        => 0666,
+            'cache_lambda_templates' => false,
+            // 'helpers' => [
+            //     'i18n' => function ($text) {
+            //         // do something translatey here...
+            //     }
+            // ],
+            'escape' => function ($value) {
+                return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+            },
+            'charset' => 'UTF-8',
+            'logger' => new StreamLogger('php://stderr'),
+            'strict_callables' => true,
+            'pragmas' => [MustacheEngine::PRAGMA_FILTERS],
+        ];
     }
 
     /**
-     * Creates the Twig object.
+     * Creates the Mustache object.
      *
-     * @return TwigEnvironment
+     * @return MustacheEngine
      */
-    protected function createTplObj(): TwigEnvironment
+    protected function createTplObj(): MustacheEngine
     {
-        return new TwigEnvironment(
-            new FilesystemLoader($this->templateDirs),
-            $this->envOptions
+        $options = $this->tplOptions;
+        $options['loader'] = new FilesystemLoader(
+            $this->templateDirs[0],
+            [
+                'extension' => '',
+            ]
         );
+        // $options['partials_loader'] = new FilesystemLoader($this->templateDirs[0]);
+
+        return new MustacheEngine($options);
     }
 
     /**
@@ -77,12 +91,16 @@ class Twig implements TemplateDriverInterface
     public function addTemplateDir($dir)
     {
         if (is_array($dir)) {
-            $this->templateDirs = array_merge($this->templateDirs, $dir);
+            foreach ($dir as $path) {
+                $this->addTemplateDir($dir);
+            }
 
             return;
         }
 
-        $this->templateDirs[] = $dir;
+        // Mustache template engine does not accept multiple template directories
+        // then always overwrites the 0 index.
+        $this->templateDirs[0] = $dir;
     }
 
     /**
@@ -111,11 +129,11 @@ class Twig implements TemplateDriverInterface
      */
     public function clearCache(int $expTime = 0)
     {
-        if (!$this->envOptions['cache']) {
+        if (!$this->tplOptions['cache']) {
             return;
         }
 
-        $dir = $this->envOptions['cache'].DS;
+        $dir = $this->tplOptions['cache'].DS;
         $objects = scandir($dir);
         if (!$objects) {
             return;
@@ -164,9 +182,9 @@ class Twig implements TemplateDriverInterface
     }
 
     /**
-     * Turns on the auto_reload option.
+     * Turns off the cache_lambda_templates option.
      *
-     * In Twig template has no method to deletes a single
+     * In Mustache template has no method to deletes a single
      * template cache.
      *
      * @param int $expireTime not used.
@@ -177,7 +195,7 @@ class Twig implements TemplateDriverInterface
     {
         $expireTime = 0;
 
-        $this->envOptions['auto_reload'] = true;
+        $this->envOptions['cache_lambda_templates'] = false;
     }
 
     /**
@@ -209,19 +227,21 @@ class Twig implements TemplateDriverInterface
         }
 
         // Inicializa a função padrão assetFile
-        // $this->tplObj->addFunction(new \Twig_SimpleFunction('assetFile', [$this, 'assetFile']));
+        // $this->tplObj->addFunction(new \Mustache_SimpleFunction('assetFile', [$this, 'assetFile']));
 
         // Inicializa as funções personalizadas padrão
         // foreach (Kernel::getTemplateFunctions() as $func) {
-        //     $this->tplObj->addFunction(new \Twig_SimpleFunction($func[1], $func[2]));
+        //     $this->tplObj->addFunction(new \Mustache_SimpleFunction($func[1], $func[2]));
         // }
 
         // Inicializa as funções personalizadas do template
         // foreach ($this->templateFuncs as $func) {
-        //     $this->tplObj->addFunction(new \Twig_SimpleFunction($func[1], $func[2]));
+        //     $this->tplObj->addFunction(new \Mustache_SimpleFunction($func[1], $func[2]));
         // }
 
-        return $this->createTplObj()->render($this->templateFile, $vars);
+        $template = $this->createTplObj()->loadTemplate($this->templateFile);
+
+        return $template->render($vars);
     }
 
     /**
@@ -241,12 +261,6 @@ class Twig implements TemplateDriverInterface
      */
     public function isCached(): bool
     {
-        // $this->createTplObj()->getLoader()->isFresh($this->templateFile, time() - $this->cacheTime);
-        // $this->createTplObj()->isTemplateFresh($this->templateFile, time() - $this->cacheTime);
-        // Above methods returns true if template file is older than time() - $this->cacheTime
-        // Inverted logic?
-        // There is no method to check is cache file exists or get your name
-
         return false;
     }
 
@@ -257,25 +271,31 @@ class Twig implements TemplateDriverInterface
      *
      * @return void
      *
-     * @see https://twig.symfony.com/doc/2.x/api.html#environment-options
+     * @see https://github.com/bobthecow/mustache.php/wiki
      */
     public function setAutoEscape($autoEscape)
     {
-        $this->envOptions['autoescape'] = $autoEscape;
+        if (is_object($autoEscape) && ($autoEscape instanceof Closure)) {
+            $this->envOptions['escape'] = $autoEscape;
+
+            return;
+        }
+
+        $this->envOptions['escape'] = null;
     }
 
     /**
      * Turns the debug on or off.
      *
+     * This method do nothing. Exists only by an interface requisition.
+     *
      * @param bool $debug
      *
      * @return void
-     *
-     * @see https://twig.symfony.com/doc/2.x/api.html#environment-options
      */
     public function setDebug(bool $debug)
     {
-        $this->envOptions['debug'] = $debug;
+        $debug = false;
     }
 
     /**
@@ -285,39 +305,41 @@ class Twig implements TemplateDriverInterface
      *
      * @return void
      *
-     * @see https://twig.symfony.com/doc/2.x/api.html#environment-options
+     * @see https://github.com/bobthecow/mustache.php/wiki
      */
     public function setForceCompile(bool $forceCompile = null)
     {
-        $this->envOptions['auto_reload'] = $forceCompile ?? $this->envOptions['debug'];
+        $this->envOptions['cache_lambda_templates'] = !$forceCompile;
     }
 
     /**
      * Turns on or off the optimizations.
      *
+     * This method do nothing. Exists only by an interface requisition.
+     *
      * @param int $optimizations
      *
      * @return void
      *
-     * @see https://twig.symfony.com/doc/2.x/api.html#environment-options
+     * @see https://github.com/bobthecow/mustache.php/wiki
      */
     public function setOptimizations(int $optimizations)
     {
-        $this->envOptions['optimizations'] = $optimizations;
+        $optimizations = 0;
     }
 
     /**
      * Turns on or off the strict mode.
      *
+     * This method do nothing. Exists only by an interface requisition.
+     *
      * @param bool $strict
      *
      * @return void
-     *
-     * @see https://twig.symfony.com/doc/2.x/api.html#environment-options
      */
     public function setStrict(bool $strict)
     {
-        $this->envOptions['strict_variables'] = $strict;
+        $strict = false;
     }
 
     /**
@@ -337,8 +359,6 @@ class Twig implements TemplateDriverInterface
      *
      * This method do nothing. Exists only by an interface requisition.
      *
-     * Twig does not support identification for cached templates.
-     *
      * @param string $cid
      *
      * @return void
@@ -353,15 +373,13 @@ class Twig implements TemplateDriverInterface
      *
      * This method do nothing. Exists only by an interface requisition.
      *
-     * Twig does not support life time for cached templates.
-     *
      * @param int $seconds
      *
      * @return void
      */
     public function setCacheLifetime(int $seconds)
     {
-        $this->cacheTime = $seconds;
+        $seconds = 0;
     }
 
     /**
@@ -379,13 +397,13 @@ class Twig implements TemplateDriverInterface
             return;
         }
 
-        $this->envOptions['cache'] = false;
+        unset($this->envOptions['cache']);
     }
 
     /**
      * Defines the compiled template folder.
      *
-     * This method do nothing. Twig has not compiled directory.
+     * This method do nothing. Mustache has not compiled directory.
      * Exists only by an interface requisition.
      *
      * @param string $path
@@ -400,7 +418,7 @@ class Twig implements TemplateDriverInterface
     /**
      * Sets the compile identifier.
      *
-     * This method do nothing. Twig has not compile process.
+     * This method do nothing. Mustache has not compile process.
      *
      * @param string $cid
      *
@@ -432,18 +450,18 @@ class Twig implements TemplateDriverInterface
      */
     public function setTemplateDir($path)
     {
-        if (!is_array($path)) {
-            $path = [$path];
+        if (is_array($path)) {
+            $path = $path[0];
         }
 
-        $this->templateDirs = $path;
+        $this->templateDirs[0] = $path;
     }
 
     /**
      * Turns on or off the use of subdirectories to save compiled
      * and cached templates.
      *
-     * This has no effect on Twig template.
+     * This has no effect on Mustache template.
      *
      * @param bool $useSubDirs
      *
@@ -451,8 +469,7 @@ class Twig implements TemplateDriverInterface
      */
     public function setUseSubDirs(bool $useSubDirs)
     {
-        $this->envOptions['use_sub_dirs'] = $useSubDirs;
-        unset($this->envOptions['use_sub_dirs']);
+        $useSubDirs = false;
     }
 
     /**
@@ -470,7 +487,7 @@ class Twig implements TemplateDriverInterface
             $templateFile = $this->templateFile;
         }
 
-        return $this->createTplObj()->getLoader()->exists($templateFile);
+        return true;
     }
 
     /**
@@ -485,4 +502,3 @@ class Twig implements TemplateDriverInterface
         unset($this->templateVars[$var]);
     }
 }
-

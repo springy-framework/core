@@ -4,8 +4,8 @@ return [
     'driver' => 'smarty',
     'file_sufix' => '.tpl',
     'auto_escape' => true,
-    'debug' => true,
-    'force_compile' => true,
+    'debug' => false,
+    'force_compile' => false,
     'strict' => false,
     'use_sub_dirs' => false,
 

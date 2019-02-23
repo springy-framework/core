@@ -30,6 +30,7 @@
 -   Added `Springy\HTTP\URI::getInstance` method
 -   Added `Springy\Mail\Mailer->setAlternativeBody()` method
 -   Added `Springy\Mail\Mailer->setBody()` method
+-   Added `Springy\Template\Drivers\Mustache` class
 -   Added `Springy\Template\Template->setAutoEscape()` method
 -   Added `Springy\Template\Template->setDebug()` method
 -   Added `Springy\Template\Template->setEscapeHtml()` method
@@ -86,6 +87,10 @@
 -   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `Springy\Security\AclUserInterface->hasPermissionFor()`
 -   Method `Springy\Session::setSessionId()` is no more static and was renamed to `Springy\HTTP\Session->setId()`
 -   Method `Springy\Session::unregister()` is no more static and was renamed to `Springy\HTTP\Session->forget()`
+-   Method `Springy\Template->clearCache()` was renamed to `Springy\Template\Template->clearTemplateCache()`
+-   Method `Springy\Template->clearAllCache()` was renamed to `Springy\Template\Template->clearCache()`
+-   Method `Springy\Template->clearAssign()` was renamed to `Springy\Template\Template->unassign()`
+-   Method `Springy\Template->templateObject()` was renamed to `Springy\Template\Template->getTemplateDriver()`
 -   Method `Springy\URI::getAllSegments()` is no more static and was renamed to `Springy\HTTP\URI->getSegments()`
 -   Method `Springy\Utils\JSON->add()` now accept an array to merge or two mixed data with `key` and `value` to be added to json data
 -   Constant `Springy\Template::TPL_ENGINE_SMARTY` renamed to `Springy\Exceptions\SpringyException::DRV_SMARTY`
@@ -140,6 +145,7 @@
 -   Removed `Springy\Security\AclManager->setDefaultModule()` method
 -   Removed `Springy\Security\AclManager->setupCurrentAclObject()` method
 -   Removed `Springy\Security\BasicHasher->generateHash()` method
+-   Removed `Springy\Template::display()` method
 -   Removed `Springy\URI::getParams()` method now you must uses `Springy\HTTP\Input` class to get query string values
 -   Removed `Springy\URI::parseURI()` method
 -   Removed `Springy\URI::validateURI()` method

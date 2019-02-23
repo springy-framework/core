@@ -16,10 +16,11 @@
 namespace Springy\Template\Drivers;
 
 use Smarty as SmartyTemplate;
-use Springy\Exceptions\SpringyException;
 
 class Smarty implements TemplateDriverInterface
 {
+    /** @var string cache id for the template */
+    private $cacheId;
     /** @var string compile id for the template */
     private $compileId;
     /** @var bool strict mode */
@@ -31,10 +32,26 @@ class Smarty implements TemplateDriverInterface
     /** @var SmartyTemplate the Smarty object */
     protected $tplObj;
 
+    /**
+     * Constructor.
+     */
     public function __construct()
     {
         $this->tplObj = new SmartyTemplate();
         $this->templateVars = [];
+        $this->templateFile = '';
+    }
+
+    /**
+     * Adds alternate path to the template folders.
+     *
+     * @param array|string $dir
+     *
+     * @return void
+     */
+    public function addTemplateDir($dir)
+    {
+        $this->tplObj->addTemplateDir($dir);
     }
 
     /**
@@ -45,6 +62,8 @@ class Smarty implements TemplateDriverInterface
      * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
      *
      * @return void
+     *
+     * @see https://www.smarty.net/docs/en/api.assign.tpl
      */
     public function assign(string $var, $value = null, $nocache = false)
     {
@@ -55,11 +74,27 @@ class Smarty implements TemplateDriverInterface
     }
 
     /**
+     * Clears the template cache folder.
+     *
+     * @param int $expireTime
+     *
+     * @return void
+     *
+     * @see https://www.smarty.net/docs/en/api.clear.all.cache.tpl
+     */
+    public function clearCache(int $expTime = 0)
+    {
+        $this->tplObj->clearAllCache($expTime);
+    }
+
+    /**
      * Clears the compiled version of the template.
      *
      * @param int $expTime only compiled templates older than $expTime seconds are cleared.
      *
      * @return void
+     *
+     * @see https://www.smarty.net/docs/en/api.clear.compiled.tpl.tpl
      */
     public function clearCompiled(int $expTime)
     {
@@ -70,10 +105,26 @@ class Smarty implements TemplateDriverInterface
      * Clears all compiled templates.
      *
      * @return void
+     *
+     * @see https://www.smarty.net/docs/en/api.clear.compiled.tpl.tpl
      */
     public function clearCompileDir()
     {
         $this->tplObj->clearCompiledTemplate();
+    }
+
+    /**
+     * Invalidates the cache for current template.
+     *
+     * @param int $expireTime if defined only template cache older than expireTime seconds are deleted.
+     *
+     * @return void
+     *
+     * @see https://www.smarty.net/docs/en/api.clear.cache.tpl
+     */
+    public function clearTemplateCache(int $expireTime = null)
+    {
+        $this->tplObj->clearCache($this->templateFile, $this->cacheId, $this->compileId, $expireTime);
     }
 
     /**
@@ -83,14 +134,6 @@ class Smarty implements TemplateDriverInterface
      */
     public function fetch()
     {
-        if ($this->templateFile === null) {
-            throw new SpringyException('Template file undefined');
-        }
-
-        // if (!$this->templateExists($this->templateFile)) {
-        //     throw new SpringyException('Template file not found');
-        // }
-
         // Alimenta as variáveis CONSTANTES
         // $this->tplObj->assign('HOST', URI::buildURL());
         // $this->tplObj->assign('CURRENT_PAGE_URI', URI::currentPageURI());
@@ -128,8 +171,29 @@ class Smarty implements TemplateDriverInterface
 
         SmartyTemplate::muteExpectedErrors();
 
-        // return $this->tplObj->fetch($this->templateFile, $this->templateCacheId, $this->compileId);
-        return $this->tplObj->fetch($this->templateFile, null, $this->compileId);
+        return $this->tplObj->fetch($this->templateFile, $this->cacheId, $this->compileId);
+    }
+
+    /**
+     * Returns the template file name.
+     *
+     * @return string
+     */
+    public function getTemplateName(): string
+    {
+        return $this->templateFile;
+    }
+
+    /**
+     * Checks if the template is cached.
+     *
+     * @return bool
+     *
+     * @see https://www.smarty.net/docs/en/api.is.cached.tpl
+     */
+    public function isCached(): bool
+    {
+        return $this->tplObj->isCached($this->templateFile, $this->cacheId, $this->compileId);
     }
 
     /**
@@ -152,10 +216,40 @@ class Smarty implements TemplateDriverInterface
      * @param string $path
      *
      * @return void
+     *
+     * @see https://www.smarty.net/docs/en/api.set.cache.dir.tpl
      */
     public function setCacheDir(string $path)
     {
         $this->tplObj->setCacheDir($path);
+    }
+
+    /**
+     * Sets the cache id.
+     *
+     * @param string $cid
+     *
+     * @return void
+     *
+     * @see https://www.smarty.net/docs/en/variable.cache.id.tpl
+     */
+    public function setCacheId(string $cid)
+    {
+        $this->cacheId = $cid;
+    }
+
+    /**
+     * Sets the template cache lifetime.
+     *
+     * @param int $seconds
+     *
+     * @return void
+     *
+     * @see https://www.smarty.net/docs/en/variable.cache.lifetime.tpl
+     */
+    public function setCacheLifetime(int $seconds)
+    {
+        $this->tplObj->setCacheLifetime($seconds);
     }
 
     /**
@@ -164,6 +258,8 @@ class Smarty implements TemplateDriverInterface
      * @param mixed $cache
      *
      * @return void
+     *
+     * @see https://www.smarty.net/docs/en/variable.caching.tpl
      */
     public function setCaching($cache = 'current')
     {
@@ -176,6 +272,34 @@ class Smarty implements TemplateDriverInterface
             ? SmartyTemplate::CACHING_LIFETIME_CURRENT
             : SmartyTemplate::CACHING_LIFETIME_SAVED
         );
+    }
+
+    /**
+     * Defines the compiled template folder.
+     *
+     * @param string
+     *
+     * @return void
+     *
+     * @see https://www.smarty.net/docs/en/api.set.compile.dir.tpl
+     */
+    public function setCompileDir(string $path)
+    {
+        $this->tplObj->setCompileDir($path);
+    }
+
+    /**
+     * Sets the compile identifier.
+     *
+     * @param string $cid
+     *
+     * @return void
+     *
+     * @see https://www.smarty.net/docs/en/variable.compile.id.tpl
+     */
+    public function setCompileId(string $cid)
+    {
+        $this->compileId = $cid;
     }
 
     /**
@@ -233,31 +357,7 @@ class Smarty implements TemplateDriverInterface
      */
     public function setStrict(bool $strict)
     {
-        // if ($this->strict) {
-        //     $this->tplObj->error_reporting = E_ALL & ~E_NOTICE;
-        //     \SmartyTemplate::muteExpectedErrors();
-
-        //     return;
-        // } elseif ($this->tplObj->error_reporting !== null) {
-        //     $this->tplObj->error_reporting = null;
-        //     \SmartyTemplate::unMuteExpectedErrors();
-
-        //     return;
-        // }
-
         $this->strict = $strict;
-    }
-
-    /**
-     * Defines the compiled template folder.
-     *
-     * @param string
-     *
-     * @return void
-     */
-    public function setCompileDir(string $path)
-    {
-        $this->tplObj->setCompileDir($path);
     }
 
     /**
@@ -278,6 +378,8 @@ class Smarty implements TemplateDriverInterface
      * @param array|string $path
      *
      * @return void
+     *
+     * @see https://www.smarty.net/docs/en/api.set.template.dir.tpl
      */
     public function setTemplateDir($path)
     {
@@ -297,5 +399,35 @@ class Smarty implements TemplateDriverInterface
     public function setUseSubDirs(bool $useSubDirs)
     {
         $this->tplObj->use_sub_dirs = $useSubDirs;
+    }
+
+    /**
+     * Checks whether the specified template exists.
+     *
+     * @param string $templateFile
+     *
+     * @return bool
+     *
+     * @see https://www.smarty.net/docs/en/api.template.exists.tpl
+     */
+    public function templateExists(string $templateFile = null): bool
+    {
+        if ($templateFile === null) {
+            $templateFile = $this->templateFile;
+        }
+
+        return $this->tplObj->templateExists($templateFile);
+    }
+
+    /**
+     * Unassigns an assigned variable.
+     *
+     * @param string $var
+     *
+     * @return void
+     */
+    public function unassign(string $var)
+    {
+        unset($this->templateVars[$var]);
     }
 }
