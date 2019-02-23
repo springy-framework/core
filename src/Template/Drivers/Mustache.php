@@ -146,8 +146,7 @@ class Mustache implements TemplateDriverInterface
 
             $this->unlinkExtended(
                 $dir.$object,
-                function ($file) use ($expTime)
-                {
+                function ($file) use ($expTime) {
                     return filemtime($file) <= (time() - $expTime);
                 },
                 true
