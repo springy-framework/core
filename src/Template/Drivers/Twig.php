@@ -484,4 +484,3 @@ class Twig implements TemplateDriverInterface
         unset($this->templateVars[$var]);
     }
 }
-
