@@ -39,7 +39,7 @@ class Twig implements TemplateDriverInterface
      */
     public function __construct()
     {
-        $this->envOptions= [
+        $this->envOptions = [
             'debug'            => false,
             'cache'            => false,
             'auto_reload'      => false,
