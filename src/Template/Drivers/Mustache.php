@@ -92,7 +92,7 @@ class Mustache implements TemplateDriverInterface
     {
         if (is_array($dir)) {
             foreach ($dir as $path) {
-                $this->addTemplateDir($dir);
+                $this->addTemplateDir($path);
             }
 
             return;
