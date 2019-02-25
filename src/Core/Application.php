@@ -71,9 +71,9 @@ class Application extends DIContainer
      * @param string $event
      * @param array  $data
      *
-     * @return array
+     * @return mixed
      */
-    public function fire(string $event, array $data = []): array
+    public function fire(string $event, array $data = [])
     {
         return $this->resolve('events')->fire($event, $data);
     }

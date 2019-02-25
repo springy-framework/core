@@ -11,7 +11,9 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Kernel;
 use Springy\HTTP\Session;
+use Springy\Security\AuthDriver;
 use Springy\Security\Authentication;
+use Springy\Security\BasicHasher;
 
 require_once __DIR__.'/../mocks/mockUser.php';
 
@@ -30,15 +32,16 @@ class AuthenticationTest extends TestCase
             Kernel::getInstance()->configuration()
         );
 
+        $hasher = new BasicHasher();
         $this->user = new User();
-        $this->authDriver = new AuthDriver($this->user);
+        $this->authDriver = new AuthDriver($hasher, $this->user);
         $this->authentication = new Authentication($this->authDriver);
     }
 
     public function testAttempt()
     {
-        $this->assertFalse($this->authentication->attempt('Foo', 'Bar'));
-        $this->assertTrue($this->authentication->attempt('Homer', 'Duh!', false, false));
+        $this->assertFalse($this->authentication->attempt('homer@springfield.local', 'Ha ha!'));
+        $this->assertTrue($this->authentication->attempt('homer@springfield.local', 'Duh!', false, false));
     }
 
     public function testCheck()
@@ -78,7 +81,7 @@ class AuthenticationTest extends TestCase
 
     public function testValidete()
     {
-        $this->assertFalse($this->authentication->validate('Foo', 'Bar'));
-        $this->assertTrue($this->authentication->validate('Homer', 'Duh!'));
+        $this->assertFalse($this->authentication->validate('homer@springfield.local', 'Ha ha!'));
+        $this->assertTrue($this->authentication->validate('homer@springfield.local', 'Duh!'));
     }
 }

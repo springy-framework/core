@@ -64,6 +64,7 @@
 -   The `Springy\HTTP\URI` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\HTTP\URI` class is no longer responsible for determining the controller. This becomes the responsibility of the `Kernel` class.
 -   The `Springy\Kernel` class was moved to `Springy\Core` namespace
+-   The `Springy\Security\DBAuthDriver` class was renamed to `Springy\Security\AuthDrive`
 -   The `Springy\Session` class was moved to `Springy\HTTP` namespace
 -   The `Springy\Template` class was moved to `Springy\Template` namespace
 -   The `Springy\URI` class was moved to `Springy\HTTP` namespace
@@ -171,6 +172,7 @@
 -   Removed support to configuration `'uri.redirect_last_slash'`
 -   Removed support to configuration `'uri.force_slash_on_index'`
 -   Removed support to configuration `'template.debugging_ctrl'`
+-   Removed support to configuration `'template.errors'`
 -   Removed support to configuration `'template.escape_html'` see `'template.auto_escape'`
 -   Removed support to Manuel Lemos' MIME Mail Message classes. Thanks a lot!
 -   Removed template variable `HOST`

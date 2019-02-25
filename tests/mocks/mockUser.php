@@ -10,21 +10,34 @@
  */
 use Springy\Security\AclUserInterface;
 use Springy\Security\AuthDriverInterface;
+use Springy\Security\BasicHasher;
 use Springy\Security\IdentityInterface;
 
 class User implements IdentityInterface, AclUserInterface
 {
-    public $uid;
-    public $name;
+    public $uuid;
+    public $email;
+    public $password;
+
+    protected function validPass()
+    {
+        return (new BasicHasher())->make('Duh!', 0);
+    }
 
     public function loadByCredentials(array $data)
     {
-        $uid = $data[$this->getIdField()] ?? null;
 
-        if ($uid == 'test') {
-            $this->uid = $uid;
-            $this->name = 'Homer';
+        if ($data['uuid'] == '0001' || $data['email'] == 'homer@springfield.local') {
+            $this->uuid = '0001';
+            $this->email = $uid;
+            $this->password = $this->validPass();
+
+            return;
         }
+
+        $this->uid = '';
+        $this->name = '';
+        $this->password = '';
     }
 
     public function fillFromSession(array $data)
@@ -33,7 +46,7 @@ class User implements IdentityInterface, AclUserInterface
 
     public function getId()
     {
-        return $this->uid;
+        return $this->uuid;
     }
 
     public function getIdField(): string
@@ -49,61 +62,22 @@ class User implements IdentityInterface, AclUserInterface
     public function getSessionData(): array
     {
         return [
-            'uuid' => $this->uid,
-            'name' => $this->name,
+            'uuid'     => $this->uuid,
+            'email'    => $this->email,
+            'password' => $this->password,
         ];
     }
 
     public function getCredentials(): array
     {
-        return [];
+        return [
+            'login'    => 'email',
+            'password' => 'password',
+        ];
     }
 
     public function hasPermissionFor(string $aclObjectName): bool
     {
         return $aclObjectName === '';
-    }
-}
-
-class AuthDriver implements AuthDriverInterface
-{
-    protected $identity;
-
-    public function __construct(IdentityInterface $identity = null)
-    {
-        $this->setDefaultIdentity($identity);
-    }
-
-    public function getIdentitySessionKey(): string
-    {
-        return $this->identity->getSessionKey();
-    }
-
-    public function isValid(string $login, string $password): bool
-    {
-        return $login === 'Homer' && $password === 'Duh!';
-    }
-
-    public function setDefaultIdentity(IdentityInterface $identity)
-    {
-        $this->identity = $identity;
-    }
-
-    public function getDefaultIdentity(): IdentityInterface
-    {
-    }
-
-    public function getLastValidIdentity(): IdentityInterface
-    {
-        return $this->identity;
-    }
-
-    public function getIdentityById($iid): IdentityInterface
-    {
-        $this->identity->loadByCredentials([
-            $this->identity->getIdField() => $iid,
-        ]);
-
-        return $this->identity;
     }
 }

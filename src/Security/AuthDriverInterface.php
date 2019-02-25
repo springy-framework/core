@@ -15,11 +15,34 @@ namespace Springy\Security;
 interface AuthDriverInterface
 {
     /**
+     * Returns the session identity used to perform the authentication.
+     *
+     * @return IdentityInterface
+     */
+    public function getDefaultIdentity(): IdentityInterface;
+
+    /**
+     * Returns the identity by the ID that identifies it.
+     *
+     * @param string|int $iid
+     *
+     * @return IdentityInterface
+     */
+    public function getIdentityById($iid): IdentityInterface;
+
+    /**
      * Returns the identity identifier of the identity session.
      *
      * @return string
      */
     public function getIdentitySessionKey(): string;
+
+    /**
+     * Returns the last session identity to pass successfully through authentication.
+     *
+     * @return IdentityInterface
+     */
+    public function getLastValidIdentity(): IdentityInterface;
 
     /**
      * Checks whether the current identity login and password are valid.
@@ -39,27 +62,4 @@ interface AuthDriverInterface
      * @return void
      */
     public function setDefaultIdentity(IdentityInterface $identity);
-
-    /**
-     * Returns the session identity used to perform the authentication.
-     *
-     * @return IdentityInterface
-     */
-    public function getDefaultIdentity(): IdentityInterface;
-
-    /**
-     * Returns the last session identity to pass successfully through authentication.
-     *
-     * @return IdentityInterface
-     */
-    public function getLastValidIdentity(): IdentityInterface;
-
-    /**
-     * Returns the identity by the ID that identifies it.
-     *
-     * @param string|int $iid
-     *
-     * @return IdentityInterface
-     */
-    public function getIdentityById($iid): IdentityInterface;
 }

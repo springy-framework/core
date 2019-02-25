@@ -13,7 +13,9 @@ use Springy\Core\Kernel;
 use Springy\Exceptions\Http404Error;
 use Springy\HTTP\Session;
 use Springy\HTTP\WebController;
+use Springy\Security\AuthDriver;
 use Springy\Security\Authentication;
+use Springy\Security\BasicHasher;
 
 require_once __DIR__.'/../mocks/mockUser.php';
 
@@ -32,13 +34,17 @@ class WebControllerTest extends TestCase
 
         // Starts authentication driver
         $app = app();
+        $app->bind('security.hasher', function () {
+            return $hasher = new BasicHasher();
+        });
         $app->bind('user.auth.identity', function () {
             return new TstUser();
         });
         $app->bind('user.auth.driver', function ($c) {
+            $hasher = $c['security.hasher'];
             $user = $c['user.auth.identity'];
 
-            return new AuthDriver($user);
+            return new AuthDriver($hasher, $user);
         });
         $app->instance('user.auth.manager', function ($c) {
             return new Authentication($c['user.auth.driver']);
@@ -46,7 +52,7 @@ class WebControllerTest extends TestCase
 
         // Login the user
         $driver = app('user.auth.driver');
-        $user = $driver->getIdentityById('test');
+        $user = $driver->getIdentityById('0001');
         app('user.auth.manager')->login($user, false);
 
         $this->controller = new TstController([
