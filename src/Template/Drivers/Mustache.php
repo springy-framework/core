@@ -28,8 +28,6 @@ class Mustache implements TemplateDriverInterface
     protected $templateDirs;
     /** @var string the template file name */
     protected $templateFile;
-    /** @var array the template variables */
-    protected $templateVars;
     /** @var MustacheEngine the Mustache object */
     protected $tplObj;
     /** @var array the template options */
@@ -42,16 +40,10 @@ class Mustache implements TemplateDriverInterface
     {
         $this->templateDirs = [];
         $this->templateFile = '';
-        $this->templateVars = [];
         $this->tplOptions = [
             'cache'                  => null,
             'cache_file_mode'        => 0666,
             'cache_lambda_templates' => false,
-            // 'helpers' => [
-            //     'i18n' => function ($text) {
-            //         // do something translatey here...
-            //     }
-            // ],
             'escape' => function ($value) {
                 return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
             },
@@ -65,9 +57,11 @@ class Mustache implements TemplateDriverInterface
     /**
      * Creates the Mustache object.
      *
+     * @param array $functions
+     *
      * @return MustacheEngine
      */
-    protected function createTplObj(): MustacheEngine
+    protected function createTplObj(array $functions = []): MustacheEngine
     {
         $options = $this->tplOptions;
         $options['loader'] = new FilesystemLoader(
@@ -77,6 +71,10 @@ class Mustache implements TemplateDriverInterface
             ]
         );
         // $options['partials_loader'] = new FilesystemLoader($this->templateDirs[0]);
+        $options['helpers'] = [];
+        foreach ($functions as $name => $callback) {
+            $options['helpers'][$name] = $callback;
+        }
 
         return new MustacheEngine($options);
     }
@@ -101,23 +99,6 @@ class Mustache implements TemplateDriverInterface
         // Mustache template engine does not accept multiple template directories
         // then always overwrites the 0 index.
         $this->templateDirs[0] = $dir;
-    }
-
-    /**
-     * Assigns a variable to the template.
-     *
-     * @param string $var     the name of the variable.
-     * @param mixed  $value   the value of the variable.
-     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
-     *
-     * @return void
-     */
-    public function assign(string $var, $value = null, $nocache = false)
-    {
-        $this->templateVars[$var] = [
-            'value'   => $value,
-            'nocache' => $nocache,
-        ];
     }
 
     /**
@@ -200,45 +181,14 @@ class Mustache implements TemplateDriverInterface
     /**
      * Returns the template output.
      *
+     * @param array $vars
+     * @param array $functions
+     *
      * @return string
      */
-    public function fetch()
+    public function fetch(array $vars, array $functions = []): string
     {
-        // Alimenta as variáveis CONSTANTES
-        $vars = [];
-        // $vars = [
-        //     'HOST'               => URI::buildURL(),
-        //     'CURRENT_PAGE_URI'   => URI::currentPageURI(),
-        //     'SYSTEM_NAME'        => Kernel::systemName(),
-        //     'SYSTEM_VERSION'     => Kernel::systemVersion(),
-        //     'PROJECT_CODE_NAME'  => Kernel::projectCodeName(),
-        //     'ACTIVE_ENVIRONMENT' => Kernel::environment(),
-        // ];
-
-        // Alimenta as variáveis padrão da aplicação
-        // foreach (Kernel::getTemplateVar() as $name => $data) {
-        //     $vars[$name] = $data;
-        // }
-
-        // Alimenta as variáveis do template
-        foreach ($this->templateVars as $name => $data) {
-            $vars[$name] = $data['value'];
-        }
-
-        // Inicializa a função padrão assetFile
-        // $this->tplObj->addFunction(new \Mustache_SimpleFunction('assetFile', [$this, 'assetFile']));
-
-        // Inicializa as funções personalizadas padrão
-        // foreach (Kernel::getTemplateFunctions() as $func) {
-        //     $this->tplObj->addFunction(new \Mustache_SimpleFunction($func[1], $func[2]));
-        // }
-
-        // Inicializa as funções personalizadas do template
-        // foreach ($this->templateFuncs as $func) {
-        //     $this->tplObj->addFunction(new \Mustache_SimpleFunction($func[1], $func[2]));
-        // }
-
-        $template = $this->createTplObj()->loadTemplate($this->templateFile);
+        $template = $this->createTplObj($functions)->loadTemplate($this->templateFile);
 
         return $template->render($vars);
     }
@@ -487,17 +437,5 @@ class Mustache implements TemplateDriverInterface
         }
 
         return true;
-    }
-
-    /**
-     * Unassigns an assigned variable.
-     *
-     * @param string $var
-     *
-     * @return void
-     */
-    public function unassign(string $var)
-    {
-        unset($this->templateVars[$var]);
     }
 }

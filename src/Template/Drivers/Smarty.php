@@ -27,8 +27,6 @@ class Smarty implements TemplateDriverInterface
     protected $strict;
     /** @var string the template file name */
     protected $templateFile;
-    /** @var array the template variables */
-    protected $templateVars;
     /** @var SmartyTemplate the Smarty object */
     protected $tplObj;
 
@@ -38,7 +36,6 @@ class Smarty implements TemplateDriverInterface
     public function __construct()
     {
         $this->tplObj = new SmartyTemplate();
-        $this->templateVars = [];
         $this->templateFile = '';
     }
 
@@ -52,25 +49,6 @@ class Smarty implements TemplateDriverInterface
     public function addTemplateDir($dir)
     {
         $this->tplObj->addTemplateDir($dir);
-    }
-
-    /**
-     * Assigns a variable to the template.
-     *
-     * @param string $var     the name of the variable.
-     * @param mixed  $value   the value of the variable.
-     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
-     *
-     * @return void
-     *
-     * @see https://www.smarty.net/docs/en/api.assign.tpl
-     */
-    public function assign(string $var, $value = null, $nocache = false)
-    {
-        $this->templateVars[$var] = [
-            'value'   => $value,
-            'nocache' => $nocache,
-        ];
     }
 
     /**
@@ -130,40 +108,25 @@ class Smarty implements TemplateDriverInterface
     /**
      * Returns the template output.
      *
+     * @param array $vars
+     * @param array $functions
+     *
      * @return string
      */
-    public function fetch()
+    public function fetch(array $vars, array $functions = []): string
     {
-        // Alimenta as variáveis CONSTANTES
-        // $this->tplObj->assign('HOST', URI::buildURL());
-        // $this->tplObj->assign('CURRENT_PAGE_URI', URI::currentPageURI());
-        // $this->tplObj->assign('SYSTEM_NAME', Kernel::systemName());
-        // $this->tplObj->assign('SYSTEM_VERSION', Kernel::systemVersion());
-        // $this->tplObj->assign('PROJECT_CODE_NAME', Kernel::projectCodeName());
-        // $this->tplObj->assign('ACTIVE_ENVIRONMENT', Kernel::environment());
-
-        // Alimenta as variáveis padrão da aplicação
-        // foreach (Kernel::getTemplateVar() as $name => $value) {
-        //     $this->tplObj->assign($name, $value);
-        // }
-
-        // Alimenta as variáveis do template
-        foreach ($this->templateVars as $name => $data) {
-            $this->tplObj->assign($name, $data['value'], $data['nocache']);
+        foreach ($vars as $name => $data) {
+            $this->tplObj->assign($name, $data);
         }
 
-        // Inicializa a função padrão assetFile
-        // $this->tplObj->registerPlugin('function', 'assetFile', [$this, 'assetFile']);
-
-        // Inicializa as funções personalizadas padrão
-        // foreach (Kernel::getTemplateFunctions() as $func) {
-        //     $this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
-        // }
-
-        // Inicializa as funções personalizadas do template
-        // foreach ($this->templateFuncs as $func) {
-        //     $this->tplObj->registerPlugin($func[0], $func[1], $func[2], $func[3], $func[4]);
-        // }
+        // Registers personal functions
+        foreach ($functions as $name => $callback) {
+            $this->tplObj->registerPlugin(
+                'function',
+                $name,
+                $callback
+            );
+        }
 
         if ($this->strict) {
             $this->tplObj->error_reporting = E_ALL & ~E_NOTICE;
@@ -417,17 +380,5 @@ class Smarty implements TemplateDriverInterface
         }
 
         return $this->tplObj->templateExists($templateFile);
-    }
-
-    /**
-     * Unassigns an assigned variable.
-     *
-     * @param string $var
-     *
-     * @return void
-     */
-    public function unassign(string $var)
-    {
-        unset($this->templateVars[$var]);
     }
 }

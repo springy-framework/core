@@ -1,1 +1,1 @@
-{$test}
+Smarty {$test} {personal name="Bar"}

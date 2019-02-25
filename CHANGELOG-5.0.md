@@ -31,6 +31,7 @@
 -   Added `Springy\Mail\Mailer->setAlternativeBody()` method
 -   Added `Springy\Mail\Mailer->setBody()` method
 -   Added `Springy\Template\Drivers\Mustache` class
+-   Added `Springy\Template\Template->addFunction()` method
 -   Added `Springy\Template\Template->setAutoEscape()` method
 -   Added `Springy\Template\Template->setDebug()` method
 -   Added `Springy\Template\Template->setEscapeHtml()` method
@@ -106,8 +107,13 @@
 -   Configuration `mail.mails_go_to` renamed to `mail.fake_to`
 -   Configuration `template.auto_reload` renamed to `template.force_compile`
 -   Configuration `template.compiled_template_path` renamed to `template.paths.compiled`
+-   Configuration `template.default_template_path` renamed to `template.paths.alternative`
 -   Configuration `template.template_engine` renamed to `template.driver`
 -   Configuration `template.template_path` renamed to `template.paths.templates`
+-   Template variable `ACTIVE_ENVIRONMENT` renamed to `ENVIRONMENT`
+-   Template variable `PROJECT_CODE_NAME` renamed to `APP_CODE_NAME`
+-   Template variable `SYSTEM_NAME` renamed to `APP_NAME`
+-   Template variable `SYSTEM_VERSION` renamed to `APP_VERSION`
 
 ### Removed
 -   Removed `$action` property from `Springy\Security\AclManager`
@@ -115,6 +121,8 @@
 -   Removed `$defaultModule` property from `Springy\Security\AclManager`
 -   Removed `$modulePrefix` property from `Springy\Security\AclManager`
 -   Removed `Springy\Controller` class
+-   Removed `Springy\Cookie::contents()` method
+-   Removed `Springy\Cookie::del()` method
 -   Removed `Springy\CreditCardValidation` class
 -   Removed `Springy\DBDelete` class
 -   Removed `Springy\DBExpression` class
@@ -130,9 +138,13 @@
 -   Removed `Springy\Utils\JSON_Static` class
 -   Removed `Springy\Utils\Strings` class. See new trait `Springy\Utils\StringUtils` for substitute methods.
 -   Removed `Springy\Utils\ZipFile` class
+-   Removed `Springy\Kernel::objectToArray()` method
+-   Removed `Springy\Kernel::arrayToObject()` method
+-   Removed `Springy\Kernel::assignTemplateVar()` method
 -   Removed `Springy\Kernel::charset()` method
--   Removed `Springy\Cookie::contents()` method
--   Removed `Springy\Cookie::del()` method
+-   Removed `Springy\Kernel::getTemplateFunctions()` method
+-   Removed `Springy\Kernel::getTemplateVar()` method
+-   Removed `Springy\Kernel::registerTemplateFunction()` method
 -   Removed `Springy\Mail->body()` method. See new methods `Springy\Mail\Mailer->setBody()` and `Springy\Mail\Mailer->setAlternativeBody()`
 -   Removed `Springy\Mail->setHeader()` method
 -   Removed `Springy\Session::getAll()` method
@@ -145,14 +157,22 @@
 -   Removed `Springy\Security\AclManager->setDefaultModule()` method
 -   Removed `Springy\Security\AclManager->setupCurrentAclObject()` method
 -   Removed `Springy\Security\BasicHasher->generateHash()` method
--   Removed `Springy\Template::display()` method
+-   Removed `Springy\Template->clearConfig()` method
+-   Removed `Springy\Template->display()` method
+-   Removed `Springy\Template->registerPlugin()` method see new method `Springy\Template\Template->addFunction()`
+-   Removed `Springy\Template->setAutoTemplatePaths()` method
+-   Removed `Springy\Template->setConfigDir()` method
 -   Removed `Springy\URI::getParams()` method now you must uses `Springy\HTTP\Input` class to get query string values
 -   Removed `Springy\URI::parseURI()` method
 -   Removed `Springy\URI::validateURI()` method
 -   Removed `Springy\Utils\JSON->getDados()` method
 -   Removed `Springy\Utils\JSON->printJ()` method
+-   Removed support to configuration `'uri.common_urls'`
 -   Removed support to configuration `'uri.redirect_last_slash'`
 -   Removed support to configuration `'uri.force_slash_on_index'`
 -   Removed support to configuration `'template.debugging_ctrl'`
 -   Removed support to configuration `'template.escape_html'` see `'template.auto_escape'`
 -   Removed support to Manuel Lemos' MIME Mail Message classes. Thanks a lot!
+-   Removed template variable `HOST`
+-   Removed template variable `CURRENT_PAGE_URI`
+-   Removed `assetFile` pre-defined template function. The application must implements by it self using `Springy\Template\Template->addFunction()` method.

@@ -26,12 +26,15 @@ class TemplateTest extends TestCase
 
         $template = new Template('test');
         $template->assign('test', 'Foo');
+        $template->addFunction('personal', function ($options) {
+            return $options['name'] ?? 'no name';
+        });
         $dir = config_get('template.paths.compiled');
 
         $this->assertInstanceOf(Smarty::class, $template->getTemplateDriver());
         $this->assertTrue($template->templateExists());
         $this->assertFalse($template->isCached());
-        $this->assertEquals('Foo', $template->fetch());
+        $this->assertEquals('Smarty Foo Bar', $template->fetch());
 
         $template->clearCompileDir();
     }
@@ -41,11 +44,14 @@ class TemplateTest extends TestCase
         Kernel::getInstance()->setEnvironment('tpl-twig');
 
         $template = new Template('test');
-        $template->assign('test', 'Bar');
+        $template->assign('test', 'Foo');
+        $template->addFunction('personal', function ($text) {
+            return $text ?? 'no name';
+        });
 
         $this->assertInstanceOf(Twig::class, $template->getTemplateDriver());
         $this->assertTrue($template->templateExists());
-        $this->assertEquals('Test Bar', $template->fetch());
+        $this->assertEquals('Twig Foo Bar', $template->fetch());
 
         $template->clearCache();
 
@@ -58,11 +64,14 @@ class TemplateTest extends TestCase
         Kernel::getInstance()->setEnvironment('tpl-mustache');
 
         $template = new Template('test');
-        $template->assign('test', 'bar');
+        $template->assign('test', 'Foo');
+        $template->addFunction('personal', function ($text) {
+            return $text ?? 'no name';
+        });
 
         $this->assertInstanceOf(Mustache::class, $template->getTemplateDriver());
         $this->assertTrue($template->templateExists());
-        $this->assertEquals('Foo bar', $template->fetch());
+        $this->assertEquals('Mustache Foo Bar', $template->fetch());
 
         // $template->clearCache();
 

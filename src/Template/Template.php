@@ -23,6 +23,10 @@ class Template
 
     /** @var string sufix for template files */
     protected $fileSufix;
+    /** @var array template personal functions */
+    private $templateFuncs;
+    /** @var array the template variables */
+    protected $templateVars;
     /** @var object the template driver */
     protected $tplObj;
 
@@ -35,7 +39,8 @@ class Template
     {
         $this->startDriver();
 
-        $config = Kernel::getInstance()->configuration();
+        $kernel = Kernel::getInstance();
+        $config = $kernel->configuration();
 
         $this->fileSufix = $config->get('template.file_sufix', '.html');
 
@@ -49,6 +54,21 @@ class Template
         $this->tplObj->setCacheDir($config->get('template.paths.cache'));
         $this->tplObj->setCompileDir($config->get('template.paths.compiled'));
         $this->tplObj->setTemplateDir($config->get('template.paths.templates'));
+
+        $altPath = $config->get('template.paths.alternative');
+        if ($altPath) {
+            $this->tplObj->addTemplateDir($altPath);
+        }
+
+        $this->templateFuncs = [];
+
+        // Initiates template vars with global vars
+        $this->templateVars = [
+            'APP_NAME'      => $kernel->getApplicationName(),
+            'APP_VERSION'   => $kernel->getApplicationVersion(),
+            'APP_CODE_NAME' => $kernel->getAppCodeName(),
+            'ENVIRONMENT'   => $kernel->getEnvironment(),
+        ];
 
         if ($template !== null) {
             $this->setTemplate($template);
@@ -83,6 +103,19 @@ class Template
     }
 
     /**
+     * Registers custom functions or methods as template plugins.
+     *
+     * @param string $name     defines the name of the plugin.
+     * @param mixed  $callback defines the callback.
+     *
+     * @return void
+     */
+    public function addFunction(string $name, $callback)
+    {
+        $this->templateFuncs[$name] = $callback;
+    }
+
+    /**
      * Adds alternates template home directories.
      *
      * @param array|string $dir
@@ -97,15 +130,14 @@ class Template
     /**
      * Assigns a variable to the template.
      *
-     * @param string $var     the name of the variable.
-     * @param mixed  $value   the value of the variable.
-     * @param bool   $nocache (optional) if true, the variable is assigned as nocache variable.
+     * @param string $var   the name of the variable.
+     * @param mixed  $value the value of the variable.
      *
      * @return void
      */
-    public function assign(string $var, $value = null, $nocache = false)
+    public function assign(string $var, $value = null)
     {
-        return $this->tplObj->assign($var, $value, $nocache);
+        $this->templateVars[$var] = $value;
     }
 
     /**
@@ -172,7 +204,7 @@ class Template
             throw new SpringyException('Template file "'.$template.'" does not exists');
         }
 
-        return $this->tplObj->fetch();
+        return $this->tplObj->fetch($this->templateVars, $this->templateFuncs);
     }
 
     /**
@@ -391,6 +423,6 @@ class Template
      */
     public function unassign(string $var)
     {
-        return $this->tplObj->unassign($var);
+        unset($this->templateVars[$var]);
     }
 }
