@@ -17,8 +17,8 @@ namespace Springy\Template\Drivers;
 
 use Springy\Utils\FileSystemUtils;
 use Twig\Environment as TwigEnvironment;
-use Twig\TwigFunction;
 use Twig\Loader\FilesystemLoader;
+use Twig\TwigFunction;
 
 class Twig implements TemplateDriverInterface
 {
