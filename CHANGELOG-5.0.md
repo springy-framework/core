@@ -43,9 +43,9 @@
 -   Added `Springy\Utils\StringUtils` trait
 -   Added constants `Springy\Core\Kernel::ENV_TYPE_CLI` and `Springy\Core\Kernel::ENV_TYPE_WEB`
 -   Added configuration entry `application.authentication` with following entries:
-    *   `driver` the authentication driver closure
-    *   `hasher` the authentication hasher class name or closure
-    *   `identity` the authentication identity class name or closure
+    -   `driver` the authentication driver closure
+    -   `hasher` the authentication hasher class name or closure
+    -   `identity` the authentication identity class name or closure
 -   Added configuration entry `template.auto_escape`
 -   Added configuration entry `template.file_sufix`
 
