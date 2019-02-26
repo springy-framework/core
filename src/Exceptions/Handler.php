@@ -81,7 +81,7 @@ class Handler
         }
 
         $response->body($body);
-        $response->send($config->get('system.debug'));
+        $response->send($config->get('application.debug'));
     }
 
     /**

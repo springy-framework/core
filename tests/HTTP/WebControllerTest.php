@@ -28,27 +28,36 @@ class WebControllerTest extends TestCase
 
     public function setUp()
     {
-        Session::getInstance()->configure(
-            Kernel::getInstance()->configuration()
-        );
+        $kernel = Kernel::getInstance();
+        $config = $kernel->configuration();
 
-        // Starts authentication driver
-        $app = app();
-        $app->bind('security.hasher', function () {
-            return $hasher = new BasicHasher();
-        });
-        $app->bind('user.auth.identity', function () {
-            return new TstUser();
-        });
-        $app->bind('user.auth.driver', function ($c) {
-            $hasher = $c['security.hasher'];
+        $config->set('application.authentication.hasher', 'Springy\Security\BasicHasher');
+        $config->set('application.authentication.identity', 'TstUser');
+        $config->set('application.authentication.driver', function ($c) {
+            $hasher = $c['user.auth.hasher'];
             $user = $c['user.auth.identity'];
 
             return new AuthDriver($hasher, $user);
         });
-        $app->instance('user.auth.manager', function ($c) {
-            return new Authentication($c['user.auth.driver']);
-        });
+
+        $kernel->setUp(__DIR__.'/../conf/main.php');
+
+        Session::getInstance()->configure($kernel->configuration());
+
+        // // Starts authentication driver
+        // $app = app();
+        // $app->bind('user.auth.identity', function () {
+        //     return new TstUser();
+        // });
+        // $app->bind('user.auth.driver', function ($c) {
+        //     $hasher = new BasicHasher();
+        //     $user = $c['user.auth.identity'];
+
+        //     return new AuthDriver($hasher, $user);
+        // });
+        // $app->instance('user.auth.manager', function ($c) {
+        //     return new Authentication($c['user.auth.driver']);
+        // });
 
         // Login the user
         $driver = app('user.auth.driver');

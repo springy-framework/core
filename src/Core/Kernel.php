@@ -18,6 +18,8 @@ use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Request;
 use Springy\HTTP\Response;
 use Springy\HTTP\URI;
+use Springy\Security\AuthDriver;
+use Springy\Security\Authentication;
 
 class Kernel
 {
@@ -370,6 +372,53 @@ class Kernel
     }
 
     /**
+     * Sets up authentication driver event handler.
+     *
+     * @return void
+     */
+    protected function setupAuthDriver()
+    {
+        $driver = self::$configuration->get('application.authentication.driver');
+
+        if ($driver === null) {
+            return;
+        } elseif ($identity instanceof Closure || is_object($driver)) {
+            app()->bind('user.auth.driver', $driver);
+
+            return;
+        }
+
+        app()->bind('user.auth.driver', function ($data) {
+            $hasher = $data['user.auth.hasher'];
+            $identity = $data['user.auth.identity'];
+
+            return new AuthDriver($hasher, $identity);
+        });
+    }
+
+    /**
+     * Instantiates authentication object event handler.
+     *
+     * @param string $element
+     *
+     * @return void
+     */
+    protected function setupAuthEvt(string $element)
+    {
+        $option = self::$configuration->get('application.authentication.'.$element);
+
+        if ($option === null) {
+            return;
+        } elseif ($option instanceof Closure || is_object($option)) {
+            app()->bind('user.auth.'.$element, $option);
+        } elseif (is_string($option)) {
+            app()->bind('user.auth.'.$element, function () use ($option) {
+                return new $option();
+            });
+        }
+    }
+
+    /**
      * Returns the configuration handler.
      *
      * @return Configuration
@@ -477,11 +526,11 @@ class Kernel
         return self::$paths[$component] ?? '';
     }
 
-    public function run(float $startime = null)
+    public function run(float $startime = null): self
     {
         // Can be executed once
         if (self::$startime !== null) {
-            return;
+            return self::$instance;
         }
 
         // Overwrites the application started time if defined
@@ -513,7 +562,7 @@ class Kernel
     {
         if (self::$envType === self::ENV_TYPE_WEB) {
             Response::getInstance()->send(
-                self::$configuration->get('system.debug')
+                self::$configuration->get('application.debug')
             );
 
             return;
@@ -576,9 +625,9 @@ class Kernel
      * @param array|string $conf the array of configuration or
      *                           the full path name of the configuration file.
      *
-     * @return bool
+     * @return self
      */
-    public function setUp($conf): bool
+    public function setUp($conf): self
     {
         if (!is_array($conf) && !is_string($conf)) {
             throw new SpringyException('Invalid application configuration set.');
@@ -603,11 +652,20 @@ class Kernel
             $conf['ENVIRONMENT_VARIABLE'] ?? 'ENVIRONMENT'
         );
 
+        if (is_array(self::$configuration->get('application.authentication'))) {
+            $this->setupAuthEvt('hasher');
+            $this->setupAuthEvt('identity');
+            $this->setupAuthDriver();
+            app()->instance('user.auth.manager', function ($data) {
+                return new Authentication($data['user.auth.driver']);
+            });
+        }
+
         // Define the application paths
         // $this->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);
         // self::path(self::PATH_APPLICATION, $conf['APP_PATH'] ?? realpath($conf['ROOT_PATH'].'/../app'));
 
-        return true;
+        return self::$instance;
     }
 
     /**

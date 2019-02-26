@@ -1,6 +1,6 @@
 <?php
 /**
- * Driver for standard session store system.
+ * Driver for standard session store handler.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>

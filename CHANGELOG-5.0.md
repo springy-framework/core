@@ -42,6 +42,10 @@
 -   Added `Springy\Utils\JSON->setData` method
 -   Added `Springy\Utils\StringUtils` trait
 -   Added constants `Springy\Core\Kernel::ENV_TYPE_CLI` and `Springy\Core\Kernel::ENV_TYPE_WEB`
+-   Added configuration entry `application.authentication` with following entries:
+    *   `driver` the authentication driver closure
+    *   `hasher` the authentication hasher class name or closure
+    *   `identity` the authentication identity class name or closure
 -   Added configuration entry `template.auto_escape`
 -   Added configuration entry `template.file_sufix`
 
@@ -104,8 +108,9 @@
 -   Main system configuration `CHARSET` renamed to `main.charset`
 -   Main system configuration `ENVIRONMENT` renamed to `main.environment`
 -   Configuration `mail.default_driver` renamed to `mail.driver`
--   Configuration `mail.errors_go_to` moved to `system.errors_go_to`
+-   Configuration `mail.errors_go_to` moved to `application.errors_go_to`
 -   Configuration `mail.mails_go_to` renamed to `mail.fake_to`
+-   Configuration `system` renamed to `application`
 -   Configuration `template.auto_reload` renamed to `template.force_compile`
 -   Configuration `template.compiled_template_path` renamed to `template.paths.compiled`
 -   Configuration `template.default_template_path` renamed to `template.paths.alternative`

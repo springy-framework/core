@@ -294,7 +294,7 @@ class Mustache implements TemplateDriverInterface
     /**
      * Sets the template cache folder.
      *
-     * @param string $path path in the file system.
+     * @param string $path
      *
      * @return void
      */
