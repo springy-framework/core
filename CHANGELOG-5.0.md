@@ -41,6 +41,7 @@
 -   Added `Springy\Utils\JSON->merge` method
 -   Added `Springy\Utils\JSON->setData` method
 -   Added `Springy\Utils\StringUtils` trait
+-   Added `Springy\Validation\Rule` class
 -   Added constants `Springy\Core\Kernel::ENV_TYPE_CLI` and `Springy\Core\Kernel::ENV_TYPE_WEB`
 -   Added configuration entry `application.authentication` with following entries:
     -   `driver` the authentication driver closure
@@ -99,6 +100,8 @@
 -   Method `Springy\Template->templateObject()` was renamed to `Springy\Template\Template->getTemplateDriver()`
 -   Method `Springy\URI::getAllSegments()` is no more static and was renamed to `Springy\HTTP\URI->getSegments()`
 -   Method `Springy\Utils\JSON->add()` now accept an array to merge or two mixed data with `key` and `value` to be added to json data
+-   Method `Springy\Validation\Validator::__constructor()` does not receives an array of messages anymore
+-   Method `Springy\Validation\Validator->messages()` was renamed to `Springy\Validation\Validator->getErrors()`
 -   Constant `Springy\Template::TPL_ENGINE_SMARTY` renamed to `Springy\Exceptions\SpringyException::DRV_SMARTY`
 -   Constant `Springy\Template::TPL_ENGINE_TWIG` renamed to `Springy\Exceptions\SpringyException::DRV_TWIG`
 -   Main configuration file `sysconf.php` moved from the web server root directory to the configuration directory and renamed to `main.php`
@@ -120,6 +123,7 @@
 -   Template variable `PROJECT_CODE_NAME` renamed to `APP_CODE_NAME`
 -   Template variable `SYSTEM_NAME` renamed to `APP_NAME`
 -   Template variable `SYSTEM_VERSION` renamed to `APP_VERSION`
+-   The structure of array os rules for `Springy\Validation\Validator` class was changed to receive the custom error messages
 
 ### Removed
 -   Removed `$action` property from `Springy\Security\AclManager`
@@ -173,6 +177,10 @@
 -   Removed `Springy\URI::validateURI()` method
 -   Removed `Springy\Utils\JSON->getDados()` method
 -   Removed `Springy\Utils\JSON->printJ()` method
+-   Removed `Springy\Validation\Validator->getDefaultErrorMessage()` method
+-   Removed `Springy\Validation\Validator->getMessages()` method
+-   Removed `Springy\Validation\Validator->setDefaultErrorMessage()` method
+-   Removed `Springy\Validation\Validator->setMessages()` method
 -   Removed support to configuration `'uri.common_urls'`
 -   Removed support to configuration `'uri.redirect_last_slash'`
 -   Removed support to configuration `'uri.force_slash_on_index'`
@@ -183,3 +191,15 @@
 -   Removed template variable `HOST`
 -   Removed template variable `CURRENT_PAGE_URI`
 -   Removed `assetFile` pre-defined template function. The application must implements by it self using `Springy\Template\Template->addFunction()` method.
+
+### Validation rules array
+The array of validation rules used by the class `Springy\Validation\Validator` must be in a structure where the name of the fields stays in each index of the array and the rule set in its value.
+
+Each rule set can be a string of rules concatenated by pipe "|" or an array of validation rules.
+
+Each validation rule can be a string in the format "rule_name:param1,param2[,paramN]:custom error message" or an array with the following indexes:
+-   'params' => an array of parameters or a string with parameters separated by comma ","
+-   'message' => the string for the custom message. The following tags are accepted:
+    -    '@field' : the name of the field
+    -    '@rule' : the name of the rule
+    -    '@value' : the value of the field

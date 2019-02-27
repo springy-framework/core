@@ -376,36 +376,33 @@ class Kernel
      *
      * @return void
      */
-    protected function setupAuthDriver()
+    protected function setupAuthDrv()
     {
         $driver = self::$configuration->get('application.authentication.driver');
 
         if ($driver === null) {
-            return;
-        } elseif ($identity instanceof Closure || is_object($driver)) {
+            app()->bind('user.auth.driver', function ($data) {
+                $hasher = $data['user.auth.hasher'];
+                $identity = $data['user.auth.identity'];
+
+                return new AuthDriver($hasher, $identity);
+            });
+        } elseif ($driver instanceof Closure || is_object($driver)) {
             app()->bind('user.auth.driver', $driver);
-
-            return;
         }
-
-        app()->bind('user.auth.driver', function ($data) {
-            $hasher = $data['user.auth.hasher'];
-            $identity = $data['user.auth.identity'];
-
-            return new AuthDriver($hasher, $identity);
-        });
     }
 
     /**
      * Instantiates authentication object event handler.
      *
      * @param string $element
+     * @param mixed  $default
      *
      * @return void
      */
-    protected function setupAuthEvt(string $element)
+    protected function setupAuthEvt(string $element, $default = null)
     {
-        $option = self::$configuration->get('application.authentication.'.$element);
+        $option = self::$configuration->get('application.authentication.'.$element, $default);
 
         if ($option === null) {
             return;
@@ -653,9 +650,9 @@ class Kernel
         );
 
         if (is_array(self::$configuration->get('application.authentication'))) {
-            $this->setupAuthEvt('hasher');
+            $this->setupAuthEvt('hasher', 'Springy\Security\BCryptHasher');
             $this->setupAuthEvt('identity');
-            $this->setupAuthDriver();
+            $this->setupAuthDrv();
             app()->instance('user.auth.manager', function ($data) {
                 return new Authentication($data['user.auth.driver']);
             });
