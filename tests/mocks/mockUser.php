@@ -9,7 +9,6 @@
  * @version   1.0.0
  */
 use Springy\Security\AclUserInterface;
-use Springy\Security\AuthDriverInterface;
 use Springy\Security\BasicHasher;
 use Springy\Security\IdentityInterface;
 
@@ -26,7 +25,6 @@ class User implements IdentityInterface, AclUserInterface
 
     public function loadByCredentials(array $data)
     {
-
         if ($data['uuid'] == '0001' || $data['email'] == 'homer@springfield.local') {
             $this->uuid = '0001';
             $this->email = $uid;
