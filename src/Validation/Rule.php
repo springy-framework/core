@@ -311,6 +311,18 @@ class Rule
     }
 
     /**
+     * Validates if the value is not null.
+     *
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    protected function validateNotNull($value): bool
+    {
+        return $value !== null;
+    }
+
+    /**
      * Validate value using regular expression.
      *
      * @param mixed $value
@@ -398,7 +410,7 @@ class Rule
             $this->parseMethod();
         }
 
-        if (!isset($fields[$this->field]) && $this->method != 'validateRequired') {
+        if (!isset($fields[$this->field]) && $this->method != 'validateNotNull' && $this->method != 'validateRequired') {
             return true;
         }
 

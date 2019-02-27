@@ -50,6 +50,7 @@ class ValidatorTest extends TestCase
             'min_length'           => 'min_length:10',
             'max_length'           => 'max_length:10',
             'length_between'       => 'length_between:5,10',
+            'not_null'             => 'not_null',
         ];
     }
 
@@ -78,6 +79,7 @@ class ValidatorTest extends TestCase
             'min_length'           => '12345678901',
             'max_length'           => '12345',
             'length_between'       => '1234567',
+            'not_null'             => '',
         ];
 
         $validation = new Validator($input, $this->rules());
