@@ -1,6 +1,9 @@
+# Springy Framework Change Log
+
 ## v5.0.0
 
 ### Added
+
 -   Added `Springy\Core\Configuration->configHost` method
 -   Added `Springy\Core\Configuration->configPath` method
 -   Added `Springy\Core\Configuration->getEnvironment` method
@@ -40,17 +43,16 @@
 -   Added `Springy\Template\Template->setUseSubDirs()` method
 -   Added `Springy\Utils\JSON->merge` method
 -   Added `Springy\Utils\JSON->setData` method
+-   Added `Springy\Utils\FileSystemUtils` trait
 -   Added `Springy\Utils\StringUtils` trait
 -   Added `Springy\Validation\Rule` class
 -   Added constants `Springy\Core\Kernel::ENV_TYPE_CLI` and `Springy\Core\Kernel::ENV_TYPE_WEB`
--   Added configuration entry `application.authentication` with following entries:
-    -   `driver` the authentication driver closure
-    -   `hasher` the authentication hasher class name or closure
-    -   `identity` the authentication identity class name or closure
+-   Added configuration entry `application.authentication` (see bellow)
 -   Added configuration entry `template.auto_escape`
 -   Added configuration entry `template.file_sufix`
 
 ### Changed
+
 -   Added parameters type declaration and return type declaration for several methods
 -   Due to deprecation of `Springy\Controller` class the web controllers must extends new class `Springy\Core\WebController`
 -   Environment alias configuration `'cmd.shell'` renamed to `'cli'`
@@ -126,11 +128,12 @@
 -   The structure of array os rules for `Springy\Validation\Validator` class was changed to receive the custom error messages
 
 ### Removed
+
 -   Removed `$action` property from `Springy\Security\AclManager`
 -   Removed `$controller` property from `Springy\Security\AclManager`
 -   Removed `$defaultModule` property from `Springy\Security\AclManager`
 -   Removed `$modulePrefix` property from `Springy\Security\AclManager`
--   Removed `Springy\Controller` class
+-   Removed `Springy\Controller->_pageNotFound()` method. Throws a `Springy\Exceptions\Http404Error` exception to returns a '404-page not found' HTTP error.
 -   Removed `Springy\Cookie::contents()` method
 -   Removed `Springy\Cookie::del()` method
 -   Removed `Springy\CreditCardValidation` class
@@ -192,14 +195,32 @@
 -   Removed template variable `CURRENT_PAGE_URI`
 -   Removed `assetFile` pre-defined template function. The application must implements by it self using `Springy\Template\Template->addFunction()` method.
 
+### Configuration files
+
+#### The Application file application.php
+
+##### Entry application.authentication
+
+-   `driver` the authentication driver closure
+-   `hasher` the authentication hasher class name or closure
+-   `identity` the authentication identity class name or closure
+
+#### The database connection configuration database.php
+
+The database.php file in configuration dirs
+
 ### Validation rules array
+
 The array of validation rules used by the class `Springy\Validation\Validator` must be in a structure where the name of the fields stays in each index of the array and the rule set in its value.
 
 Each rule set can be a string of rules concatenated by pipe "|" or an array of validation rules.
 
-Each validation rule can be a string in the format "rule_name:param1,param2[,paramN]:custom error message" or an array with the following indexes:
+Each validation rule can be a string in the format "rule_name:param1,param2,paramN:custom error message" or an array with the following indexes:
 -   'params' => an array of parameters or a string with parameters separated by comma ","
--   'message' => the string for the custom message. The following tags are accepted:
-    -    '@field' : the name of the field
-    -    '@rule' : the name of the rule
-    -    '@value' : the value of the field
+-   'message' => the string for the custom message. See messages tag section.
+
+#### Messages tag
+
+-   '@field' : the name of the field
+-   '@rule' : the name of the rule
+-   '@value' : the value of the field

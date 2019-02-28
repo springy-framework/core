@@ -122,16 +122,4 @@ class WebController implements ControllerInterface
     {
         return $this->hasPermission;
     }
-
-    /**
-     * Throws a HTTP "404 - Page not found" error.
-     *
-     * @throws Http404Error
-     *
-     * @return void
-     */
-    public function _pageNotFound()
-    {
-        throw new Http404Error();
-    }
 }

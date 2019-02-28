@@ -10,7 +10,7 @@
  */
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Kernel;
-use Springy\Exceptions\Http404Error;
+use Springy\Exceptions\Http403Error;
 use Springy\HTTP\Session;
 use Springy\HTTP\WebController;
 use Springy\Security\AuthDriver;
@@ -77,8 +77,8 @@ class WebControllerTest extends TestCase
 
     public function testPageNotFound()
     {
-        $this->expectException(Http404Error::class);
-        $this->controller->_pageNotFound();
+        $this->expectException(Http403Error::class);
+        $this->controller->_forbidden();
     }
 }
 
