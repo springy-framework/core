@@ -40,8 +40,8 @@ class Validator
     /**
      * Applies all rules for given field.
      *
-     * @param string        $field name of the field.
-     * @param array|string  $rules an array or a string with the rules delimited by pipe char '|'.
+     * @param string       $field name of the field.
+     * @param array|string $rules an array or a string with the rules delimited by pipe char '|'.
      *
      * @return void
      */
@@ -84,9 +84,9 @@ class Validator
      * @param mixed        $name
      * @param array|string $rule
      *
-     * @return array
-     *
      * @throws BadMethodCallException
+     *
+     * @return array
      */
     protected function parseRule($name, $rule): array
     {
