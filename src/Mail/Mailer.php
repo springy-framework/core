@@ -67,9 +67,9 @@ class Mailer
         }
 
         $drivers = [
-            self::MAIL_ENGINE_PHPMAILER   => 'Springy\Mail\Drivers\PhpMailer',
-            self::MAIL_ENGINE_SENDGRID    => 'Springy\Mail\Drivers\SendGrid',
-            self::MAIL_ENGINE_SWIFTMAILER => 'Springy\Mail\Drivers\SwiftMailer',
+            self::MAIL_ENGINE_PHPMAILER   => 'PhpMailer',
+            self::MAIL_ENGINE_SENDGRID    => 'SendGrid',
+            self::MAIL_ENGINE_SWIFTMAILER => 'SwiftMailer',
         ];
 
         if (!isset($drivers[$driver])) {
@@ -81,7 +81,9 @@ class Mailer
             throw new SpringyException('Mail driver configuration settings not defined');
         }
 
-        $this->mailObj = new $drivers[$driver]($config);
+        $driver = __NAMESPACE__.'\\Drivers\\'.$drivers[$driver];
+
+        $this->mailObj = new $driver($config);
     }
 
     /**

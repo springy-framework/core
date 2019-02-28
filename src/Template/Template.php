@@ -90,16 +90,18 @@ class Template
         }
 
         $drivers = [
-            self::DRV_MUSTACHE => 'Springy\Template\Drivers\Mustache',
-            self::DRV_SMARTY   => 'Springy\Template\Drivers\Smarty',
-            self::DRV_TWIG     => 'Springy\Template\Drivers\Twig',
+            self::DRV_MUSTACHE => 'Mustache',
+            self::DRV_SMARTY   => 'Smarty',
+            self::DRV_TWIG     => 'Twig',
         ];
 
         if (!isset($drivers[$driver])) {
             throw new SpringyException('Template driver unknown or not supported');
         }
 
-        $this->tplObj = new $drivers[$driver]();
+        $driver = __NAMESPACE__.'\\Drivers\\'.$drivers[$driver];
+
+        $this->tplObj = new $driver();
     }
 
     /**

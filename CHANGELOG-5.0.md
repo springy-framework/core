@@ -47,9 +47,10 @@
 -   Added `Springy\Utils\StringUtils` trait
 -   Added `Springy\Validation\Rule` class
 -   Added constants `Springy\Core\Kernel::ENV_TYPE_CLI` and `Springy\Core\Kernel::ENV_TYPE_WEB`
--   Added configuration entry `application.authentication` (see bellow)
--   Added configuration entry `template.auto_escape`
--   Added configuration entry `template.file_sufix`
+-   Added configuration file `dbms.php` (see bellow)
+-   Added configuration entry `'application.authentication'` (see bellow)
+-   Added configuration entry `'template.auto_escape'`
+-   Added configuration entry `'template.file_sufix'`
 
 ### Changed
 
@@ -63,6 +64,7 @@
 -   The `Springy\Core\Configuration` class is no more static
 -   The `Springy\Core\Debug` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\Core\Kernel` class is no more static and has a `getInstance` static method to get its instance object
+-   The `Springy\DB` class was moved and renamed to `Springy\Database\Connection`
 -   The `Springy\Files\File` class was moved to `Springy\Utils` namespace
 -   The `Springy\Files\UploadedFile` class was moved to `Springy\HTTP` namespace
 -   The `Springy\Mail` class was moved and renamed to `Springy\Mail\Mailer`
@@ -112,15 +114,15 @@
 -   Main system configuration `PROJECT_CODE_NAME` renamed to `main.app.code_name`
 -   Main system configuration `CHARSET` renamed to `main.charset`
 -   Main system configuration `ENVIRONMENT` renamed to `main.environment`
--   Configuration `mail.default_driver` renamed to `mail.driver`
--   Configuration `mail.errors_go_to` moved to `application.errors_go_to`
--   Configuration `mail.mails_go_to` renamed to `mail.fake_to`
--   Configuration `system` renamed to `application`
--   Configuration `template.auto_reload` renamed to `template.force_compile`
--   Configuration `template.compiled_template_path` renamed to `template.paths.compiled`
--   Configuration `template.default_template_path` renamed to `template.paths.alternative`
--   Configuration `template.template_engine` renamed to `template.driver`
--   Configuration `template.template_path` renamed to `template.paths.templates`
+-   Configuration `'mail.default_driver'` renamed to `'mail.driver'`
+-   Configuration `'mail.errors_go_to'` moved to `'application.errors_go_to'`
+-   Configuration `'mail.mails_go_to'` renamed to `'mail.fake_to'`
+-   Configuration `'system'` renamed to `'application'`
+-   Configuration `'template.auto_reload'` renamed to `'template.force_compile'`
+-   Configuration `'template.compiled_template_path'` renamed to `'template.paths.compiled'`
+-   Configuration `'template.default_template_path'` renamed to `'template.paths.alternative'`
+-   Configuration `'template.template_engine'` renamed to `'template.driver'`
+-   Configuration `'template.template_path'` renamed to `'template.paths.templates'`
 -   Template variable `ACTIVE_ENVIRONMENT` renamed to `ENVIRONMENT`
 -   Template variable `PROJECT_CODE_NAME` renamed to `APP_CODE_NAME`
 -   Template variable `SYSTEM_NAME` renamed to `APP_NAME`
@@ -184,6 +186,7 @@
 -   Removed `Springy\Validation\Validator->getMessages()` method
 -   Removed `Springy\Validation\Validator->setDefaultErrorMessage()` method
 -   Removed `Springy\Validation\Validator->setMessages()` method
+-   Removed support to configuration `db` configuration files
 -   Removed support to configuration `'uri.common_urls'`
 -   Removed support to configuration `'uri.redirect_last_slash'`
 -   Removed support to configuration `'uri.force_slash_on_index'`
@@ -197,19 +200,39 @@
 
 ### Configuration files
 
-#### The Application file application.php
+#### The Application File Configuration: application.php
 
-##### Entry application.authentication
+##### Entry 'application.authentication'
 
--   `driver` the authentication driver closure
--   `hasher` the authentication hasher class name or closure
--   `identity` the authentication identity class name or closure
+-   `'driver'` : the authentication driver closure
+-   `'hasher'` : the authentication hasher class name or closure
+-   `'identity'` : the authentication identity class name or closure
 
-#### The database connection configuration database.php
+#### The Database Connection Configuration: database.php
 
-The database.php file in configuration dirs
+The dbms.php file in configuration directories is used by Springy\DBMS\Connection to configure itself connections to database servers.
 
-### Validation rules array
+-   `'default'` : name of the default connection
+-   `'connections'` : each connection configuration
+
+The `'connections'` configuration structure:
+
+-   `'driver'` : the DBMS server engine.
+-   `'database'` : the database name.
+-   `'username'` : the username.
+-   `'password'` : the password.
+-   `'host'` : the DBMS server host.
+-   `'port'` : the DBMS server port.
+-   `'socket'` : the DBMS server socket.
+-   `'persistent'` : the DBMS server engine.
+-   `'retries'` : connection retries in case of lost connection error.
+-   `'retry_sleep'` : sleep time in seconds between connection retries in case of lost connection error.
+
+##### Database Server Engine Supported
+
+-   `'mysql'` : MySQL server
+
+### Validation Rules Array
 
 The array of validation rules used by the class `Springy\Validation\Validator` must be in a structure where the name of the fields stays in each index of the array and the rule set in its value.
 
