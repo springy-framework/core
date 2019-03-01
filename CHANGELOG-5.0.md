@@ -80,6 +80,7 @@
 -   Method `Springy\Core\Copyright->printCopyright()` renamed to `Springy\Core\Copyright->content()`
 -   Method `Springy\Core\Debug::print_rc()` is no more static and was renamed to `Springy\Core\Copyright->highligh()`
 -   Method `Springy\Core\Debug::printOut()` is no more static and was renamed to `Springy\Core\Copyright->inject()`
+-   Method `Springy\DB::connected()` is no more static and was renamed to `Springy\Database\Connection->isConnected()`
 -   Method `Springy\Kernel::addIgnoredError()` moved to `Springy\Exceptions\Handler->addIgnoredError()`
 -   Method `Springy\Kernel::delIgnoredError()` moved to `Springy\Exceptions\Handler->delIgnoredError()`
 -   Method `Springy\Kernel::environment()` was separated in `Springy\Core\Kernel->getEnvironment()` and `Springy\Core\Kernel->setEnvironment()`
@@ -213,6 +214,7 @@
 The dbms.php file in configuration directories is used by Springy\DBMS\Connection to configure itself connections to database servers.
 
 -   `'default'` : name of the default connection
+-   `'cache'` : cache system for select queries
 -   `'connections'` : each connection configuration
 
 The `'connections'` configuration structure:
@@ -225,6 +227,7 @@ The `'connections'` configuration structure:
 -   `'port'` : the DBMS server port.
 -   `'socket'` : the DBMS server socket.
 -   `'persistent'` : the DBMS server engine.
+-   `'charset'` : the charset.
 -   `'retries'` : connection retries in case of lost connection error.
 -   `'retry_sleep'` : sleep time in seconds between connection retries in case of lost connection error.
 

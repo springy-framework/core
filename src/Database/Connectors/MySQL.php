@@ -1,6 +1,12 @@
 <?php
 /**
  * DMBS connector for MySQL servers.
+ *
+ * @copyright 2019 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/springy-framework/core/blob/master/LICENSE MIT
+ *
+ * @version   1.0.0
  */
 
 namespace Springy\Database\Connectors;
@@ -9,48 +15,44 @@ use Exception;
 use PDO;
 use Springy\Exceptions\SpringyException;
 
-class MySQL
+class MySQL extends Connector implements ConnectorInterface
 {
-    protected $options = [
-        PDO::ATTR_CASE => PDO::CASE_NATURAL,
-        PDO::ATTR_EMULATE_PREPARES => false,
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL,
-        PDO::ATTR_STRINGIFY_FETCHES => false,
-    ];
-    protected $pdo;
+    /** @var string|array the database host server */
     protected $host;
-    protected $socket;
+    /** @var int the database server port */
     protected $port;
-    protected $database;
-    protected $username;
-    protected $password;
+    /** @var int connection tentative possible */
     protected $retries;
+    /** @var int sleep time in seconds between each try connection */
     protected $retrySleep;
-    protected $servers = [];
+    /** @var string|array the database socket connection */
+    protected $socket;
 
-    public function __construct(array $config, string $charset = 'UTF8')
+    /**
+     * Constructor.
+     *
+     * @param array $config
+     */
+    public function __construct(array $config)
     {
-        $this->options = [
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \''.$charset.'\'',
-            PDO::ATTR_PERSISTENT => $config['persistent'] ?? false,
-        ];
+        $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \''.($config['charset'] ?? 'utf8').'\'';
+        $this->options[PDO::ATTR_PERSISTENT] = $config['persistent'] ?? true;
 
         $this->socket = false;
         $this->setHost($config);
-        $this->setDatabase($config);
+        $this->setDatabase($config['database'] ?? '');
         $this->port = $config['port'] ?? 3128;
-        $this->retries = $conf['retries'] ?? 3;
-        $this->retrySleep = $conf['retry_sleep'] ?? 1;
-        $this->setUsername($conf['username'] ?? '');
-        $this->setPassword($conf['password'] ?? '');
+        $this->setUsername($config['username'] ?? '');
+        $this->setPassword($config['password'] ?? '');
+        $this->retries = $config['retries'] ?? 3;
+        $this->retrySleep = $config['retry_sleep'] ?? 1;
     }
 
-    protected function getDsn(): string
-    {
-        return 'mysql:'.$this->getHostOrSocket().';dbname='.$this->getDatabase();
-    }
-
+    /**
+     * Gets string for HOST or SOCKET connector DSN.
+     *
+     * @return string
+     */
     protected function getHostOrSocket(): string
     {
         return $this->socket
@@ -58,6 +60,13 @@ class MySQL
             : 'host='.$this->host.';port='.$this->port;
     }
 
+    /**
+     * Sets the host property.
+     *
+     * @param array $config
+     *
+     * @return void
+     */
     protected function setHost(array $config)
     {
         if (($config['socket'] ?? false)) {
@@ -77,6 +86,13 @@ class MySQL
         $this->host = $host;
     }
 
+    /**
+     * Sets the socket property.
+     *
+     * @param array $config
+     *
+     * @return void
+     */
     protected function setSocket(array $config)
     {
         $socket = ($config['socket'] ?? '');
@@ -92,68 +108,13 @@ class MySQL
         $this->socket = $socket;
     }
 
-    public function connect(): PDO
+    /**
+     * Gets the DSN string.
+     *
+     * @return string
+     */
+    public function getDsn(): string
     {
-        do {
-            try {
-                $this->pdo = PDO($this->getDsn(), $this->username, $this->password, $this->options);
-            } catch (Exception $exception) {
-                if ($this->retries) {
-                    $this->retries -= 1;
-                    sleep($this->retrySleep);
-
-                    continue;
-                }
-
-                throw $exception;
-            }
-        } while ($this->pdo === null);
-
-        return $this->pdo;
-    }
-
-    public function getDatabase(): string
-    {
-        return $this->database;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    public function getPdo(): PDO
-    {
-        return $this->pdo;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    public function setDatabase(array $config)
-    {
-        $database = ($config['database'] ?? '');
-
-        if (!$database) {
-            throw new SpringyException('Database name undefined.');
-        }
-
-        $this->database = $database;
-    }
-
-    public function setPassword(string $password)
-    {
-        $this->password = $password;
-    }
-
-    public function setUsername(string $username)
-    {
-        if (!$username) {
-            throw new SpringyException('Database username undefined.');
-        }
-
-        $this->username = $username;
+        return 'mysql:'.$this->getHostOrSocket().';dbname='.$this->database;
     }
 }

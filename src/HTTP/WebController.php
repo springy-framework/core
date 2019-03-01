@@ -15,7 +15,6 @@ namespace Springy\HTTP;
 
 use Springy\Core\ControllerInterface;
 use Springy\Exceptions\Http403Error;
-use Springy\Exceptions\Http404Error;
 use Springy\Exceptions\SpringyException;
 use Springy\Security\AclManager;
 

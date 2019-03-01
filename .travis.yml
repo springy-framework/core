@@ -7,10 +7,13 @@ php:
 
 services:
   - memcached
+  - mysql
 
 before_install:
   - phpenv config-rm xdebug.ini || true
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+  - sudo mysql -e "USE mysql; GRANT EXECUTE, SELECT, ALTER, CREATE, CREATE TEMPORARY TABLES, DELETE, DROP, INDEX, INSERT, UPDATE ON `test`.* TO 'travis'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES;"
   - travis_retry composer self-update
 
 install:
