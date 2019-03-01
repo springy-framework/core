@@ -12,8 +12,8 @@ services:
 before_install:
   - phpenv config-rm xdebug.ini || true
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS `test`;'
-  - sudo mysql -e "USE mysql; GRANT ALL PRIVILEGES ON `test`.* TO 'travis'@'localhost'; FLUSH PRIVILEGES;"
+  - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS `test`;'
+  - sudo mysql -e "USE mysql; GRANT ALL PRIVILEGES ON `test`.* TO `travis`@`localhost`; FLUSH PRIVILEGES;"
   - travis_retry composer self-update
 
 install:

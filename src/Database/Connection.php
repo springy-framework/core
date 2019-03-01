@@ -241,7 +241,7 @@ class Connection
             $this->sqlErrorInfo = $this->resSQL->errorInfo();
 
             throw $err;
-        };
+        }
     }
 
     protected function bindValue($key, $value, $param, &$counter)
