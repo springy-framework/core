@@ -12,7 +12,7 @@ services:
 before_install:
   - phpenv config-rm xdebug.ini || true
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - mysql -e "CREATE DATABASE IF NOT EXISTS `test`;"
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
   - travis_retry composer self-update
 
 install:

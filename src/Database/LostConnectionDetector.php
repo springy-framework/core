@@ -16,7 +16,7 @@ trait LostConnectionDetector
     /**
      * Determine if the given exception was caused by a lost connection.
      *
-     * @param  Throwable $err
+     * @param Throwable $err
      *
      * @return bool
      */

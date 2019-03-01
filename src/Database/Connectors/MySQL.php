@@ -11,7 +11,6 @@
 
 namespace Springy\Database\Connectors;
 
-use Exception;
 use PDO;
 use Springy\Exceptions\SpringyException;
 

@@ -11,7 +11,6 @@
 
 namespace Springy\Database\Connectors;
 
-use PDO;
 use Springy\Exceptions\SpringyException;
 
 class SQLite extends Connector implements ConnectorInterface
