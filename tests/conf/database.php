@@ -12,7 +12,7 @@ return [
         ],
         'mysql_file' => [
             'driver' => 'mysql',
-            'host' => ['localhost', '127.0.0.1'],
+            'host' => ['localhost'],
             'username' => 'travis',
             'password' => '',
             'database' => 'test',
@@ -23,7 +23,7 @@ return [
         ],
         'mysql_mc' => [
             'driver' => 'mysql',
-            'host' => ['localhost', '127.0.0.1'],
+            'host' => ['localhost'],
             'username' => 'travis',
             'password' => '',
             'database' => 'test',
