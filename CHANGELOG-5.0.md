@@ -82,10 +82,14 @@
 -   Method `Springy\Core\Debug::print_rc()` is no more static and was renamed to `Springy\Core\Copyright->highligh()`
 -   Method `Springy\Core\Debug::printOut()` is no more static and was renamed to `Springy\Core\Copyright->inject()`
 -   Method `Springy\DB::connected()` is no more static and was renamed to `Springy\Database\Connection->isConnected()`
+-   Method `Springy\DB->errorCode()` was renamed to `Springy\Database\Connection->getErrorCode()`
+-   Method `Springy\DB->errorInfo()` was renamed to `Springy\Database\Connection->getErrorInfo()`
 -   Method `Springy\DB->execute()` was renamed to `Springy\Database\Connection->run()`
 -   Method `Springy\DB->driverName()` was renamed to `Springy\Database\Connection->getDriverName()`
 -   Method `Springy\DB->lastQuery()` was renamed to `Springy\Database\Connection->getLastQuery()`
 -   Method `Springy\DB->serverVersion()` was renamed to `Springy\Database\Connection->getServerVersion()`
+-   Method `Springy\DB->statmentErrorCode()` was renamed to `Springy\Database\Connection->getStatmentErrorCode()`
+-   Method `Springy\DB->statmentErrorInfo()` was renamed to `Springy\Database\Connection->getStatmentErrorInfo()`
 -   Method `Springy\Kernel::addIgnoredError()` moved to `Springy\Exceptions\Handler->addIgnoredError()`
 -   Method `Springy\Kernel::delIgnoredError()` moved to `Springy\Exceptions\Handler->delIgnoredError()`
 -   Method `Springy\Kernel::environment()` was separated in `Springy\Core\Kernel->getEnvironment()` and `Springy\Core\Kernel->setEnvironment()`
@@ -223,17 +227,17 @@
 
 ##### Entry 'application.authentication'
 
--   `'driver'` : the authentication driver closure
--   `'hasher'` : the authentication hasher class name or closure
--   `'identity'` : the authentication identity class name or closure
+-   `'driver'` : the authentication driver closure.
+-   `'hasher'` : the authentication hasher class name or closure.
+-   `'identity'` : the authentication identity class name or closure.
 
 #### The Database Connection Configuration: database.php
 
 The dbms.php file in configuration directories is used by Springy\DBMS\Connection to configure itself connections to database servers.
 
--   `'default'` : name of the default connection
--   `'cache'` : cache system for select queries
--   `'connections'` : each connection configuration
+-   `'default'` : name of the default connection.
+-   `'cache'` : cache system for select queries.
+-   `'connections'` : each connection configuration.
 
 The `'connections'` configuration structure:
 
@@ -245,9 +249,18 @@ The `'connections'` configuration structure:
 -   `'port'` : the DBMS server port.
 -   `'socket'` : the DBMS server socket.
 -   `'persistent'` : the DBMS server engine.
--   `'charset'` : the charset.
+-   `'charset'` : the charset of the database.
 -   `'retries'` : connection retries in case of lost connection error.
 -   `'retry_sleep'` : sleep time in seconds between connection retries in case of lost connection error.
+-   `'round_robin'` : round robin connection controller for the driver.
+
+The `'round_robin'` configuration structure:
+
+-   `'driver'` : round robin controller driver. Can be 'memcached', 'file' ou false/null to turns off.
+-   `'file'` : full path of the file used to save round robin control by 'file' driver.
+-   `'address'` : address of the Memcached server for 'memcached' driver.
+-   `'port'` : TCP port of the Memcached server for 'memcached' driver.
+-   `'key'` : round robin item key in the Memcached server for 'memcached' driver.
 
 ##### Database Server Engine Supported
 

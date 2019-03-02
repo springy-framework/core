@@ -21,16 +21,6 @@ class SQLite extends Connector implements ConnectorInterface
     protected $retrySleep = 0;
 
     /**
-     * Constructor.
-     *
-     * @param array $config
-     */
-    public function __construct(array $config)
-    {
-        $this->setDatabase($config['database'] ?? '');
-    }
-
-    /**
      * Gets the DSN string.
      *
      * @return string

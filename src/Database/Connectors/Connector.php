@@ -11,7 +11,9 @@
 
 namespace Springy\Database\Connectors;
 
+use Memcached;
 use PDO;
+use Springy\Exceptions\SpringyException;
 
 class Connector
 {
@@ -29,8 +31,133 @@ class Connector
     protected $password;
     /** @var PDO the PDO object */
     protected $pdo;
+    /** @var Closure the round robin controller */
+    protected $roundRobin;
     /** @var string the database username */
     protected $username;
+
+    /**
+     * Constructor.
+     *
+     * @param array $config
+     */
+    public function __construct(array $config)
+    {
+        $this->setDatabase($config['database'] ?? '');
+        $this->setUsername($config['username'] ?? '');
+        $this->setPassword($config['password'] ?? '');
+        $this->configRoundRobin($config['round_robin'] ?? []);
+    }
+
+    /**
+     * Configures the round robin controller driver.
+     *
+     * @param array $config
+     *
+     * @return void
+     */
+    protected function configRoundRobin(array $config)
+    {
+        $driver = $config['driver'] ?? false;
+        if ($driver === false) {
+            $this->roundRobin = function (array $list) {
+                return $list[0];
+            };
+
+            return;
+        }
+
+        $drivers = [
+            'file'      => 'rRobinFile',
+            'memcached' => 'rRobinMemcached',
+        ];
+
+        if (!isset($drivers[$driver])) {
+            throw new SpringyException('Round robin driver not supported.');
+        }
+
+        $driver = $drivers[$driver];
+
+        call_user_func([$this, $driver], $config);
+    }
+
+    /**
+     * Instantiates round robin controller by file driver.
+     *
+     * @param array $config
+     *
+     * @return void
+     */
+    protected function rRobinFile(array $config)
+    {
+        $file = $config['file'] ?? null;
+        if ($file === null) {
+            throw new SpringyException('Round robin file undefined');
+        }
+
+        if (!file_exists($file)) {
+            file_put_contents($file, '-1');
+        }
+
+        $this->roundRobin = function (array $list) use ($file) {
+            $next = ((int) file_get_contents($file)) + 1;
+
+            if ($next >= count($list)) {
+                $next = 0;
+            }
+
+            file_put_contents($file, $next);
+
+            return $list[$next];
+        };
+    }
+
+    /**
+     * Instantiates round robin controller by Memcached driver.
+     *
+     * @param array $config
+     *
+     * @return void
+     */
+    protected function rRobinMemcached(array $config)
+    {
+        $address = $config['address'] ?? null;
+        if ($address === null) {
+            throw new SpringyException('Round robin Memcached address undefined');
+        }
+
+        $port = $config['port'] ?? '11211';
+        $key = $config['key'] ?? 'database_round_robin';
+
+        $this->roundRobin = function (array $list) use ($address, $port, $key) {
+            $memCached = new Memcached();
+            $memCached->addServer($address, $port);
+
+            if (!($next = (int) $memCached->get($key))) {
+                $next = -1;
+            }
+
+            if (++$next >= count($list)) {
+                $next = 0;
+            }
+
+            $memCached->set($key, $next, 0);
+
+            return $list[$next];
+        };
+    }
+
+    /**
+     * Executes the round robin controller to get next entry in the list.
+     *
+     * @param array $list
+     *
+     * @return mixed
+     */
+    protected function setRoundRobin(array $list)
+    {
+        return call_user_func($this->roundRobin, $list);
+    }
 
     /**
      * Connects with the database.
@@ -134,10 +261,6 @@ class Connector
      */
     public function setUsername(string $username)
     {
-        if (!$username) {
-            throw new SpringyException('Database username undefined.');
-        }
-
         $this->username = $username;
     }
 }

@@ -140,10 +140,10 @@ class Connection
         ]);
 
         if ($this->statement === false) {
-            $this->sqlErrorCode = $this->getPdo()->errorCode();
-            $this->sqlErrorInfo = $this->getPdo()->errorInfo();
+            $this->lastErrorCode = $this->getPdo()->errorCode();
+            $this->lastErrorInfo = $this->getPdo()->errorInfo();
 
-            throw new SpringyException('Can\'t prepare query.', $this->sqlErrorCode);
+            throw new SpringyException('Can\'t prepare query.', $this->lastErrorCode);
         }
 
         $this->bindParameters();
@@ -161,8 +161,8 @@ class Connection
                     break;
                 }
 
-                $this->sqlErrorCode = $this->statement->errorCode();
-                $this->sqlErrorInfo = $this->statement->errorInfo();
+                $this->lastErrorCode = $this->statement->errorCode();
+                $this->lastErrorInfo = $this->statement->errorInfo();
 
                 throw $err;
             } while (false);
@@ -174,7 +174,7 @@ class Connection
     }
 
     /**
-     * Gets the PDO object from current connection identity,
+     * Gets the PDO object from current connection identity.
      *
      * @return PDO
      */
@@ -549,6 +549,26 @@ class Connection
     }
 
     /**
+     * Returns the last error code occurred on the PDO object.
+     *
+     * @return string
+     */
+    public function getErrorCode(): string
+    {
+        return $this->getPdo()->errorCode() ?? '';
+    }
+
+    /**
+     * Returns the array with last error occurred on the PDO object.
+     *
+     * @return array
+     */
+    public function getErrorInfo(): array
+    {
+        return $this->getPdo()->errorInfo() ?? ['', '', ''];
+    }
+
+    /**
      * Returns the last executed query.
      *
      * @return string
@@ -566,6 +586,26 @@ class Connection
     public function getServerVersion()
     {
         return $this->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION);
+    }
+
+    /**
+     * Returns the error code occurred on last query executed.
+     *
+     * @return string
+     */
+    public function getStatmentErrorCode(): string
+    {
+        return $this->lastErrorCode ?? '';
+    }
+
+    /**
+     * Returns the error information occurred on last query executed.
+     *
+     * @return array
+     */
+    public function getStatmentErrorInfo(): array
+    {
+        return $this->lastErrorInfo ?? ['', '', ''];
     }
 
     /**

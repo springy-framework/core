@@ -55,4 +55,22 @@ class ConnectionTest extends TestCase
         $result = $connection->select('SELECT column1 FROM test WHERE column1 BETWEEN 2 AND 4');
         $this->assertCount(3, $result);
     }
+
+    public function testMySqlConnectionWithFileRoundRobin()
+    {
+        $connection = new Connection('mysql_file');
+        $this->assertTrue($connection->isConnected());
+
+        $connection->disconnect();
+        $this->assertFalse($connection->isConnected());
+    }
+
+    public function testMySqlConnectionWithMemcachedRoundRobin()
+    {
+        $connection = new Connection('mysql_mc');
+        $this->assertTrue($connection->isConnected());
+
+        $connection->disconnect();
+        $this->assertFalse($connection->isConnected());
+    }
 }

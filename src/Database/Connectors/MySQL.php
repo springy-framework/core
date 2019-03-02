@@ -34,15 +34,14 @@ class MySQL extends Connector implements ConnectorInterface
      */
     public function __construct(array $config)
     {
-        $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \''.($config['charset'] ?? 'utf8').'\'';
+        parent::__construct($config);
+
+        $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \''.($config['charset'] ?? 'utf8mb4').'\'';
         $this->options[PDO::ATTR_PERSISTENT] = $config['persistent'] ?? true;
 
         $this->socket = false;
         $this->setHost($config);
-        $this->setDatabase($config['database'] ?? '');
         $this->port = $config['port'] ?? 3128;
-        $this->setUsername($config['username'] ?? '');
-        $this->setPassword($config['password'] ?? '');
         $this->retries = $config['retries'] ?? 3;
         $this->retrySleep = $config['retry_sleep'] ?? 1;
     }
@@ -75,7 +74,7 @@ class MySQL extends Connector implements ConnectorInterface
         $host = ($config['host'] ?? '');
 
         if (is_array($host)) {
-            return $this->setRoundRobin($config);
+            return $this->setRoundRobin($host);
         }
 
         if (!$host) {
@@ -97,7 +96,7 @@ class MySQL extends Connector implements ConnectorInterface
         $socket = ($config['socket'] ?? '');
 
         if (is_array($socket)) {
-            return $this->setRoundRobin($config);
+            return $this->setRoundRobin($socket);
         }
 
         if (!$socket) {
