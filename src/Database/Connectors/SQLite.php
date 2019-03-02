@@ -15,6 +15,11 @@ use Springy\Exceptions\SpringyException;
 
 class SQLite extends Connector implements ConnectorInterface
 {
+    /** @var int turning off connection tentative possible */
+    protected $retries = 0;
+    /** @var int sleep time in seconds between each try connection */
+    protected $retrySleep = 0;
+
     /**
      * Constructor.
      *

@@ -26,32 +26,29 @@ class Connection
 
     /** @var array cache configuration */
     protected $cache;
-    /** @var array the record cache statement */
-    private $cacheStatement;
+    /** @var int the cache life time for next SQL statement */
+    protected $cacheLifeTime;
     /** @var array connection instances */
     private static $conectionIds = [];
     /** @var string current identity connection */
     protected $identity;
-    /** @var int default expiration time in seconds for cached select */
-    private $cacheExpires;
     /** @var mixed last query execution error code */
     protected $lastErrorCode;
     /** @var mixed last query execution error information */
     protected $lastErrorInfo;
     /** @var array last query execution prepare statements */
     protected $lastValues;
-    /** @var PDOStatement the prepared statement */
-    protected $resSQL;
+    /** @var PDOStatement|array the SQL statement */
+    protected $statement;
 
     /**
      * Constructor.
      *
-     * @param string   $identity     database identity configuration key.
-     * @param int|null $cacheExpires cached query expiration time in seconds.
+     * @param string $identity database identity configuration key.
      */
-    public function __construct(string $identity = null, $cacheExpires = null)
+    public function __construct(string $identity = null)
     {
-        $this->cacheExpires = $cacheExpires;
+        $this->cacheLifeTime = 0;
         $this->identity = $identity ?? config_get('database.default');
         $this->lastValues = [];
 
@@ -63,14 +60,124 @@ class Connection
      */
     public function __destruct()
     {
-        if ($this->resSQL === null) {
+        if ($this->statement instanceof PDOStatement) {
+            $this->statement->closeCursor();
+        }
+
+        $this->statement = null;
+    }
+
+    /**
+     * Bind values to parameters.
+     *
+     * @return void
+     */
+    protected function bindParameters()
+    {
+        if (!count($this->lastValues)) {
             return;
         }
 
-        $this->resSQL->closeCursor();
-        $this->resSQL = null;
+        $counter = 0;
+
+        foreach ($this->lastValues as $key => $value) {
+            switch (gettype($value)) {
+                case 'boolean':
+                    $param = PDO::PARAM_BOOL;
+                break;
+                case 'integer':
+                    $param = PDO::PARAM_INT;
+                break;
+                case 'NULL':
+                    $param = PDO::PARAM_NULL;
+                break;
+                default:
+                    $param = PDO::PARAM_STR;
+                break;
+            }
+
+            $this->bindValue($key, $value, $param, $counter);
+        }
     }
 
+    /**
+     * Binds a value to a parameter.
+     *
+     * @param mixed $key
+     * @param mixed $value
+     * @param int   $param
+     * @param int   $counter
+     *
+     * @return void
+     */
+    protected function bindValue($key, $value, $param, &$counter)
+    {
+        if (is_numeric($key)) {
+            $this->statement->bindValue(++$counter, $value, $param);
+
+            return;
+        }
+
+        $this->statement->bindValue(':'.$key, $value, $param);
+    }
+
+    /**
+     * Executes the query.
+     *
+     * @throws PDOException
+     * @throws SpringyException
+     *
+     * @return void
+     */
+    protected function executeQuery()
+    {
+        if ($this->statement !== null) {
+            return;
+        }
+
+        $this->statement = $this->getPdo()->prepare($this->lastQuery, [
+            PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY,
+        ]);
+
+        if ($this->statement === false) {
+            $this->sqlErrorCode = $this->getPdo()->errorCode();
+            $this->sqlErrorInfo = $this->getPdo()->errorInfo();
+
+            throw new SpringyException('Can\'t prepare query.', $this->sqlErrorCode);
+        }
+
+        $this->bindParameters();
+        $this->statement->closeCursor();
+
+        try {
+            $this->statement->execute();
+        } catch (Throwable $err) {
+            do {
+                if ($this->isLostConnection($err)) {
+                    $this->connect();
+
+                    $this->statement->execute();
+
+                    break;
+                }
+
+                $this->sqlErrorCode = $this->statement->errorCode();
+                $this->sqlErrorInfo = $this->statement->errorInfo();
+
+                throw $err;
+            } while (false);
+        }
+
+        if ($this->cacheLifeTime) {
+            $this->saveCache();
+        }
+    }
+
+    /**
+     * Gets the PDO object from current connection identity,
+     *
+     * @return PDO
+     */
     protected function getPdo(): PDO
     {
         if (!isset(self::$conectionIds[$this->identity])) {
@@ -78,6 +185,82 @@ class Connection
         }
 
         return self::$conectionIds[$this->identity]->getPdo();
+    }
+
+    /**
+     * Loads rows from cache if applicable.
+     *
+     * @return void
+     */
+    protected function loadCache()
+    {
+        // Clears the cache statement
+        $this->statement = null;
+
+        if ($this->cacheLifeTime <= 0 || $this->cache['driver'] != 'memcached') {
+            return;
+        }
+
+        $cacheKey = md5(implode('//', array_merge([$this->lastQuery], $this->lastValues)));
+
+        try {
+            $mmc = new Memcached();
+            $mmc->addServer($this->cache['host'], $this->cache['port']);
+
+            if ($sql = $mmc->get('dbCache_'.$cacheKey)) {
+                $this->statement = $sql;
+            }
+        } catch (Exception $e) {
+            $this->statement = null;
+        }
+    }
+
+    /**
+     * Saves the SQL statement rows in cache if applicable.
+     *
+     * @return void
+     */
+    protected function saveCache()
+    {
+        if ($this->cacheLifeTime <= 0 || $this->cache['driver'] != 'memcached') {
+            return;
+        }
+
+        $cacheKey = md5(implode('//', array_merge([$this->lastQuery], $this->lastValues)));
+
+        try {
+            $mmc = new Memcached();
+            $mmc->addServer($this->cache['host'], $this->cache['port']);
+
+            $rows = $this->fetchAll();
+
+            $mmc->set('dbCache_'.$cacheKey, $rows, $this->cacheLifeTime);
+
+            $this->statement->closeCursor();
+            $this->statement = $rows;
+        } catch (Throwable $err) {
+            debug($this->lastQuery, 'Erro: '.$err->getMessage());
+        }
+    }
+
+    /**
+     * Saves the query string in lastQuery property.
+     *
+     * @param string $query
+     *
+     * @return void
+     */
+    protected function setLastQuery(string $query)
+    {
+        if ($this->cacheLifeTime > 0
+            && strtoupper(substr(ltrim($query), 0, 19)) == 'SELECT FOUND_ROWS()'
+            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
+            $this->lastQuery = $query.'; /* '.md5(implode('//', array_merge([$this->lastQuery], $this->lastValues))).' */';
+
+            return;
+        }
+
+        $this->lastQuery = $query;
     }
 
     /**
@@ -172,186 +355,228 @@ class Connection
         $this->getPdo()->rollBack();
     }
 
-    protected function saveQuery(string $query, int $cacheLifeTime = null)
-    {
-        if ((is_int($this->cacheExpires) || is_int($cacheLifeTime))
-            && strtoupper(substr(ltrim($query), 0, 19)) == 'SELECT FOUND_ROWS()'
-            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
-            $this->lastQuery = $query.'; /* '.md5(implode('//', array_merge([$this->lastQuery], $this->lastValues))).' */';
-
-            return;
-        }
-
-        $this->lastQuery = $query;
-    }
-
-    protected function chkCache(int $cacheLifeTime = null)
-    {
-        // Clears the cache statement
-        $this->cacheStatement = null;
-
-        if ($cacheLifeTime === null || $this->cache['driver'] != 'memcached') {
-            return;
-        }
-
-        $cacheKey = md5(implode('//', array_merge([$this->lastQuery], $this->lastValues)));
-
-        try {
-            $mmc = new Memcached();
-            $mmc->addServer($this->cache['host'], $this->cache['port']);
-
-            if ($sql = $mmc->get('dbCache_'.$cacheKey)) {
-                $this->cacheStatement = $sql;
-            }
-        } catch (Exception $e) {
-            $this->cacheStatement = null;
-        }
-    }
-
-    protected function doExecute()
-    {
-        if ($this->cacheStatement !== null) {
-            return;
-        }
-
-        $this->resSQL = $this->getPdo()->prepare($this->lastQuery);
-
-        if ($this->resSQL === false) {
-            $this->sqlErrorCode = $this->resSQL->errorCode();
-            $this->sqlErrorInfo = $this->resSQL->errorInfo();
-
-            throw new SpringyException('Can\'t prepare query.');
-        }
-
-        $this->prepare();
-        $this->resSQL->closeCursor();
-
-        try {
-            $this->resSQL->execute();
-        } catch (Throwable $err) {
-            if ($this->isLostConnection($err)) {
-                $this->connect();
-
-                $this->resSQL->execute();
-
-                return;
-            }
-
-            $this->sqlErrorCode = $this->resSQL->errorCode();
-            $this->sqlErrorInfo = $this->resSQL->errorInfo();
-
-            throw $err;
-        }
-    }
-
-    protected function bindValue($key, $value, $param, &$counter)
-    {
-        if (is_numeric($key)) {
-            $this->resSQL->bindValue(++$counter, $value, $param);
-
-            return;
-        }
-
-        $this->resSQL->bindValue(':'.$key, $value, $param);
-    }
-
-    protected function prepare()
-    {
-        if (!count($this->lastValues)) {
-            return;
-        }
-
-        $counter = 0;
-
-        foreach ($this->lastValues as $key => $value) {
-            switch (gettype($value)) {
-                case 'boolean':
-                    $param = \PDO::PARAM_BOOL;
-                break;
-                case 'integer':
-                    $param = \PDO::PARAM_INT;
-                break;
-                case 'NULL':
-                    $param = \PDO::PARAM_NULL;
-                break;
-                default:
-                    $param = \PDO::PARAM_STR;
-                break;
-            }
-
-            $this->bindValue($key, $value, $param, $counter);
-        }
-    }
-
-    protected function saveCache(int $cacheLifeTime = null)
-    {
-        $lifeTime = $cacheLifeTime ?? $this->cacheExpires;
-
-        if ($lifeTime === null
-            || $this->cacheStatement !== null
-            || $this->cache['driver'] != 'memcached'
-            || strtoupper(substr(ltrim($this->lastQuery), 0, 7)) != 'SELECT ') {
-            return;
-        }
-
-        $cacheKey = md5(implode('//', array_merge([$this->lastQuery], $this->lastValues)));
-
-        try {
-            $mmc = new Memcached();
-            $mmc->addServer($this->cache['host'], $this->cache['port']);
-
-            $this->cacheStatement = $this->fetchAll();
-
-            $mmc->set('dbCache_'.$cacheKey, $this->cacheStatement, $lifeTime);
-
-            $this->resSQL->closeCursor();
-            $this->resSQL = null;
-        } catch (Exception $err) {
-            debug($this->lastQuery, 'Erro: '.$err->getMessage());
-        }
-    }
-
     /**
      * Executes a query.
      *
-     * @param string   $query
-     * @param array    $prepareParams
-     * @param int|null $cacheLifeTime cache expiration time (in seconds) for SELECT queries or null for no cached query.
+     * @param string $query
+     * @param array  $params
      *
-     * @return bool
+     * @return void
      */
-    public function run(string $query, array $prepareParams = [], int $cacheLifeTime = null)
+    public function run(string $query, array $params = [])
     {
         $this->lastErrorCode = null;
         $this->lastErrorInfo = null;
-        $this->resSQL = null;
+        $this->statement = null;
 
-        $this->saveQuery($query, $cacheLifeTime);
+        $this->setLastQuery($query);
 
-        $this->lastValues = $prepareParams;
+        $this->lastValues = $params;
 
         $query = null;
 
-        $this->chkCache($cacheLifeTime);
-        $this->doExecute();
-        $this->saveCache($cacheLifeTime);
+        $this->loadCache();
+        $this->executeQuery();
+    }
+
+    /**
+     * Runs a select query.
+     *
+     * @param string $query
+     * @param array  $params
+     * @param int    $fetchStyle
+     * @param int    $cacheLifeTime
+     *
+     * @return array|bool
+     */
+    public function select(
+        string $query,
+        array $params = [],
+        int $fetchStyle = PDO::FETCH_ASSOC,
+        int $cacheLifeTime = 0
+    ) {
+        $this->cacheLifeTime = $cacheLifeTime;
+        $this->run($query, $params);
+        $this->statement = $this->fetchAll($fetchStyle);
+        $this->cacheLifeTime = 0;
+
+        return $this->statement;
+    }
+
+    /**
+     * Returns the number of rows affected by the last SQL statement.
+     *
+     * @return int
+     */
+    public function affectedRows(): int
+    {
+        if ($this->statement instanceof PDOStatement) {
+            return $this->statement->rowCount();
+        } elseif (is_array($this->statement)) {
+            return count($this->statement);
+        }
+
+        return 0;
     }
 
     /**
      * Returns all rows of the resultset.
      *
-     * @param int $resultType
+     * @param int $fetchStyle
      *
-     * @return array
+     * @return array|bool
      */
-    public function fetchAll($resultType = PDO::FETCH_ASSOC): array
+    public function fetchAll($fetchStyle = PDO::FETCH_ASSOC)
     {
-        if ($this->cacheStatement !== null) {
-            return $this->cacheStatement;
-        } elseif ($this->resSQL instanceof PDOStatement) {
-            return $this->resSQL->fetchAll($resultType);
+        if ($this->statement instanceof PDOStatement) {
+            $rows = $this->statement->fetchAll($fetchStyle);
+            $this->statement->closeCursor();
+            $this->statement = $rows;
         }
 
-        return [];
+        return $this->statement;
+    }
+
+    /**
+     * Returns the current row of the resultset and moves the cursor to next record.
+     *
+     * @param int $fetchStyle
+     *
+     * @return array|bool
+     */
+    public function fetchCurrent($fetchStyle = PDO::FETCH_ASSOC)
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->fetchAll($fetchStyle);
+        }
+
+        return current($this->statement);
+    }
+
+    /**
+     * Resets the cursor to the first row of the statement and returns it.
+     *
+     * @param int $fetchStyle
+     *
+     * @return array|bool
+     */
+    public function fetchFirst($fetchStyle = PDO::FETCH_ASSOC)
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->fetchAll($fetchStyle);
+        }
+
+        return reset($this->statement);
+    }
+
+    /**
+     * Moves the cursor to the last row of the statement and returns it.
+     *
+     * @param int $fetchStyle
+     *
+     * @return array|bool
+     */
+    public function fetchLast($fetchStyle = PDO::FETCH_ASSOC)
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->fetchAll($fetchStyle);
+        }
+
+        return end($this->statement);
+    }
+
+    /**
+     * Returns the current row of the statement and moves the cursor to the next row.
+     *
+     * @param int $fetchStyle
+     *
+     * @return array|bool
+     */
+    public function fetchNext($fetchStyle = PDO::FETCH_ASSOC)
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->fetchAll($fetchStyle);
+        }
+
+        $current = current($this->statement);
+        next($this->statement);
+
+        return $current;
+    }
+
+    /**
+     * Moves the cursor the previous row of the statement and returns it.
+     *
+     * @param int $fetchStyle
+     *
+     * @return array|bool
+     */
+    public function fetchPrev($fetchStyle = PDO::FETCH_ASSOC)
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->fetchAll($fetchStyle);
+        }
+
+        return prev($this->statement);
+    }
+
+    /**
+     * Returns the value of a column.
+     *
+     * @param mixed $var
+     *
+     * @return mixed
+     */
+    public function getColumn($var, $fetchStyle = PDO::FETCH_ASSOC)
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->fetchAll($fetchStyle);
+        }
+
+        $current = current($this->statement);
+
+        return $current[$var] ?? null;
+    }
+
+    /**
+     * Returns the database driver name of the current connection.
+     *
+     * @return mixed
+     */
+    public function getDriverName()
+    {
+        return $this->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
+    }
+
+    /**
+     * Returns the last executed query.
+     *
+     * @return string
+     */
+    public function getLastQuery(): string
+    {
+        return $this->lastQuery ?? '';
+    }
+
+    /**
+     * Returns the DBMS version informations.
+     *
+     * @return mixed
+     */
+    public function getServerVersion()
+    {
+        return $this->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION);
+    }
+
+    /**
+     * Returns the value of the auto increment columns in last INSERT.
+     *
+     * @param string $name
+     *
+     * @return int
+     */
+    public function lastInsertedId(string $name = null)
+    {
+        return $this->getPdo()->lastInsertId($name);
     }
 }

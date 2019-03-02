@@ -19,6 +19,7 @@
 -   Added `Springy\Core\Kernel->httpResponse` method
 -   Added `Springy\Core\Kernel->setCharset` method
 -   Added `Springy\Core\Kernel->setUp` method
+-   Added `Springy\Database\Connection->fetchCurrent()` method
 -   Added `Springy\Exceptions\Handler` class
 -   Added `Springy\Exceptions\Http403Error` class
 -   Added `Springy\Exceptions\Http404Error` class
@@ -81,6 +82,10 @@
 -   Method `Springy\Core\Debug::print_rc()` is no more static and was renamed to `Springy\Core\Copyright->highligh()`
 -   Method `Springy\Core\Debug::printOut()` is no more static and was renamed to `Springy\Core\Copyright->inject()`
 -   Method `Springy\DB::connected()` is no more static and was renamed to `Springy\Database\Connection->isConnected()`
+-   Method `Springy\DB->execute()` was renamed to `Springy\Database\Connection->run()`
+-   Method `Springy\DB->driverName()` was renamed to `Springy\Database\Connection->getDriverName()`
+-   Method `Springy\DB->lastQuery()` was renamed to `Springy\Database\Connection->getLastQuery()`
+-   Method `Springy\DB->serverVersion()` was renamed to `Springy\Database\Connection->getServerVersion()`
 -   Method `Springy\Kernel::addIgnoredError()` moved to `Springy\Exceptions\Handler->addIgnoredError()`
 -   Method `Springy\Kernel::delIgnoredError()` moved to `Springy\Exceptions\Handler->delIgnoredError()`
 -   Method `Springy\Kernel::environment()` was separated in `Springy\Core\Kernel->getEnvironment()` and `Springy\Core\Kernel->setEnvironment()`
@@ -140,6 +145,18 @@
 -   Removed `Springy\Cookie::contents()` method
 -   Removed `Springy\Cookie::del()` method
 -   Removed `Springy\CreditCardValidation` class
+-   Removed `Springy\DB::castDateBrToDb()` method
+-   Removed `Springy\DB::castDateDbToBr()` method
+-   Removed `Springy\DB::dateToStr()` method
+-   Removed `Springy\DB::dateToTime()` method
+-   Removed `Springy\DB::disableReportError()` method
+-   Removed `Springy\DB::enableReportError()` method
+-   Removed `Springy\DB::longBrazilianDate()` method
+-   Removed `Springy\DB::makeDbDateTime()` method
+-   Removed `Springy\DB::rollBackAll()` method
+-   Removed `Springy\DB::transactionAllRollBack()` method
+-   Removed `Springy\DB->get_all()` method
+-   Removed `Springy\DB->num_rows()` method
 -   Removed `Springy\DBDelete` class
 -   Removed `Springy\DBExpression` class
 -   Removed `Springy\DBFiltro` class
@@ -187,6 +204,7 @@
 -   Removed `Springy\Validation\Validator->getMessages()` method
 -   Removed `Springy\Validation\Validator->setDefaultErrorMessage()` method
 -   Removed `Springy\Validation\Validator->setMessages()` method
+-   Removed `$cacheLifeTime` parameters from `Springy\Database\Connection::__construct`
 -   Removed support to configuration `db` configuration files
 -   Removed support to configuration `'uri.common_urls'`
 -   Removed support to configuration `'uri.redirect_last_slash'`
