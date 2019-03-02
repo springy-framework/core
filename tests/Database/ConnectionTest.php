@@ -40,18 +40,24 @@ class ConnectionTest extends TestCase
 
         $row = $connection->fetchCurrent();
         $this->assertEquals(3, $row['column1'] ?? null);
+    }
 
-        $connection->disconnect();
-        $this->assertFalse($connection->isConnected());
+    public function testMySqlConnectionWithFileRoundRobin()
+    {
+        $connection = new Connection('mysql_file');
+        $this->assertTrue($connection->isConnected());
+    }
+
+    public function testMySqlConnectionWithMemcachedRoundRobin()
+    {
+        $connection = new Connection('mysql_mc');
+        $this->assertTrue($connection->isConnected());
     }
 
     public function testConnectionPostgres()
     {
         $connection = new Connection('postgres');
         $this->assertTrue($connection->isConnected());
-
-        $connection->disconnect();
-        $this->assertFalse($connection->isConnected());
     }
 
     public function testConnectionSQLite()
@@ -63,23 +69,5 @@ class ConnectionTest extends TestCase
         $connection->run('INSERT INTO test(column1) VALUES (1), (2), (3), (4), (5), (6)');
         $result = $connection->select('SELECT column1 FROM test WHERE column1 BETWEEN 2 AND 4');
         $this->assertCount(3, $result);
-    }
-
-    public function testMySqlConnectionWithFileRoundRobin()
-    {
-        $connection = new Connection('mysql_file');
-        $this->assertTrue($connection->isConnected());
-
-        $connection->disconnect();
-        $this->assertFalse($connection->isConnected());
-    }
-
-    public function testMySqlConnectionWithMemcachedRoundRobin()
-    {
-        $connection = new Connection('mysql_mc');
-        $this->assertTrue($connection->isConnected());
-
-        $connection->disconnect();
-        $this->assertFalse($connection->isConnected());
     }
 }
