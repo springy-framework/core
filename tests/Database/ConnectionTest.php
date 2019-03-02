@@ -45,6 +45,15 @@ class ConnectionTest extends TestCase
         $this->assertFalse($connection->isConnected());
     }
 
+    public function testConnectionPostgres()
+    {
+        $connection = new Connection('postgres');
+        $this->assertTrue($connection->isConnected());
+
+        $connection->disconnect();
+        $this->assertFalse($connection->isConnected());
+    }
+
     public function testConnectionSQLite()
     {
         $connection = new Connection('sqlite');

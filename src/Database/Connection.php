@@ -279,8 +279,11 @@ class Connection
 
         $config = Kernel::getInstance()->configuration();
         $drivers = [
-            'mysql'  => 'MySQL',
-            'sqlite' => 'SQLite',
+            'mysql'      => 'MySQL',
+            'pgsql'      => 'PostgreSQL',
+            'postgre'    => 'PostgreSQL',
+            'postgresql' => 'PostgreSQL',
+            'sqlite'     => 'SQLite',
         ];
 
         $driver = $config->get('database.connections.'.$this->identity.'.driver');

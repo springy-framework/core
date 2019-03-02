@@ -17,6 +17,8 @@ use Springy\Exceptions\SpringyException;
 
 class Connector
 {
+    /** @var string charset configuration */
+    protected $charset;
     /** @var string name of the database */
     protected $database;
     /** @var array PDO constructor options */
@@ -33,6 +35,8 @@ class Connector
     protected $pdo;
     /** @var Closure the round robin controller */
     protected $roundRobin;
+    /** @var string timezone configuration */
+    protected $timezone;
     /** @var string the database username */
     protected $username;
 
@@ -43,6 +47,7 @@ class Connector
      */
     public function __construct(array $config)
     {
+        $this->timezone = $config['timezone'] ?? '';
         $this->setDatabase($config['database'] ?? '');
         $this->setUsername($config['username'] ?? '');
         $this->setPassword($config['password'] ?? '');
@@ -180,6 +185,10 @@ class Connector
                 throw $exception;
             }
         } while ($this->pdo === null);
+
+        if (is_callable([$this, 'afterConnectSettings'])) {
+            $this->afterConnectSettings();
+        }
 
         return $this->pdo;
     }

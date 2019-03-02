@@ -36,14 +36,27 @@ class MySQL extends Connector implements ConnectorInterface
     {
         parent::__construct($config);
 
-        $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \''.($config['charset'] ?? 'utf8mb4').'\'';
-        $this->options[PDO::ATTR_PERSISTENT] = $config['persistent'] ?? true;
-
-        $this->socket = false;
-        $this->setHost($config);
-        $this->port = $config['port'] ?? 3128;
+        $this->charset = $config['charset'] ?? 'utf8mb4';
+        $this->port = $config['port'] ?? '3128';
         $this->retries = $config['retries'] ?? 3;
         $this->retrySleep = $config['retry_sleep'] ?? 1;
+        $this->socket = false;
+        $this->setHost($config);
+
+        $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \''.$this->charset.'\'';
+        $this->options[PDO::ATTR_PERSISTENT] = $config['persistent'] ?? true;
+    }
+
+    /**
+     * Configures database connection after the connection stablished.
+     *
+     * @return void
+     */
+    protected function afterConnectSettings()
+    {
+        if ($this->timezone) {
+            $this->pdo->prepare('SET time_zone="'.$this->timezone.'"')->execute();
+        }
     }
 
     /**

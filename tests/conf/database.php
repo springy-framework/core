@@ -32,6 +32,13 @@ return [
                 'address' => 'localhost',
             ],
         ],
+        'postgres' => [
+            'driver' => 'pgsql',
+            'host' => 'localhost',
+            'username' => 'test',
+            'password' => '123',
+            'database' => 'test',
+        ],
         'sqlite' => [
             'driver' => 'sqlite',
             'database' => ':memory:',

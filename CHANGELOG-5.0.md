@@ -250,9 +250,12 @@ The dbms.php file in configuration directories is used by Springy\DBMS\Connectio
 -   `'socket'` : the DBMS server socket.
 -   `'persistent'` : the DBMS server engine.
 -   `'charset'` : the charset of the database.
+-   `'timezone'` : the timezone of the database.
 -   `'retries'` : connection retries in case of lost connection error.
 -   `'retry_sleep'` : sleep time in seconds between connection retries in case of lost connection error.
 -   `'round_robin'` : round robin connection controller for the driver.
+-   `'sslmode'`, `'sslcert'`, `'sslkey'`, `'sslrootcert'` : SSL connection options for PostgreSQL driver.
+-   `'schema'` :  schema configuration for PostgreSQL driver.
 
 ###### Database Supported `'connections.*.drivers'`
 
