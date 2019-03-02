@@ -239,7 +239,7 @@ The dbms.php file in configuration directories is used by Springy\DBMS\Connectio
 -   `'cache'` : cache system for select queries.
 -   `'connections'` : each connection configuration.
 
-The `'connections'` configuration structure:
+##### The `'connections'` Configuration Structure
 
 -   `'driver'` : the DBMS server engine.
 -   `'database'` : the database name.
@@ -254,17 +254,18 @@ The `'connections'` configuration structure:
 -   `'retry_sleep'` : sleep time in seconds between connection retries in case of lost connection error.
 -   `'round_robin'` : round robin connection controller for the driver.
 
-The `'round_robin'` configuration structure:
+###### Database Supported `'connections.*.drivers'`
+
+-   `'mysql'` : MySQL server.
+-   `'sqlite'` : SQLite3 database.
+
+###### The `'connections.*.round_robin'` Configuration Structure
 
 -   `'driver'` : round robin controller driver. Can be 'memcached', 'file' ou false/null to turns off.
 -   `'file'` : full path of the file used to save round robin control by 'file' driver.
 -   `'address'` : address of the Memcached server for 'memcached' driver.
 -   `'port'` : TCP port of the Memcached server for 'memcached' driver.
 -   `'key'` : round robin item key in the Memcached server for 'memcached' driver.
-
-##### Database Server Engine Supported
-
--   `'mysql'` : MySQL server
 
 ### Validation Rules Array
 
