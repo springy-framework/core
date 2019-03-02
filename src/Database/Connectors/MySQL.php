@@ -87,7 +87,7 @@ class MySQL extends Connector implements ConnectorInterface
         $host = ($config['host'] ?? '');
 
         if (is_array($host)) {
-            return $this->setRoundRobin($host);
+            $host = $this->setRoundRobin($host);
         }
 
         if (!$host) {
@@ -109,7 +109,7 @@ class MySQL extends Connector implements ConnectorInterface
         $socket = ($config['socket'] ?? '');
 
         if (is_array($socket)) {
-            return $this->setRoundRobin($socket);
+            $socket = $this->setRoundRobin($socket);
         }
 
         if (!$socket) {

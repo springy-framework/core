@@ -87,7 +87,7 @@ class PostgreSQL extends Connector implements ConnectorInterface
         $host = ($config['host'] ?? '');
 
         if (is_array($host)) {
-            return $this->setRoundRobin($host);
+            $host = $this->setRoundRobin($host);
         }
 
         $this->host = $host;
