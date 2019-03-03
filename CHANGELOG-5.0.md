@@ -20,6 +20,7 @@
 -   Added `Springy\Core\Kernel->setCharset` method
 -   Added `Springy\Core\Kernel->setUp` method
 -   Added `Springy\Database\Condition` class
+-   Added `Springy\Database\Conditions->addSubConditions` class
 -   Added `Springy\Database\Connection->fetchCurrent()` method
 -   Added `Springy\Database\OperatorComparationInterface` interface
 -   Added `Springy\Database\OperatorGroupInterface` interface
