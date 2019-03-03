@@ -19,7 +19,10 @@
 -   Added `Springy\Core\Kernel->httpResponse` method
 -   Added `Springy\Core\Kernel->setCharset` method
 -   Added `Springy\Core\Kernel->setUp` method
+-   Added `Springy\Database\Condition` class
 -   Added `Springy\Database\Connection->fetchCurrent()` method
+-   Added `Springy\Database\OperatorComparationInterface` interface
+-   Added `Springy\Database\OperatorGroupInterface` interface
 -   Added `Springy\Exceptions\Handler` class
 -   Added `Springy\Exceptions\Http403Error` class
 -   Added `Springy\Exceptions\Http404Error` class
@@ -66,6 +69,7 @@
 -   The `Springy\Core\Debug` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\Core\Kernel` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\DB` class was moved and renamed to `Springy\Database\Connection`
+-   The `Springy\DB\Conditions` class was moved and renamed to `Springy\Database\Conditions`
 -   The `Springy\Files\File` class was moved to `Springy\Utils` namespace
 -   The `Springy\Files\UploadedFile` class was moved to `Springy\HTTP` namespace
 -   The `Springy\Mail` class was moved and renamed to `Springy\Mail\Mailer`
@@ -74,6 +78,7 @@
 -   The `Springy\HTTP\URI` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\HTTP\URI` class is no longer responsible for determining the controller. This becomes the responsibility of the `Kernel` class.
 -   The `Springy\Kernel` class was moved to `Springy\Core` namespace
+-   The `Springy\Model` class was moved and renamed to `Springy\Database\Model`
 -   The `Springy\Security\DBAuthDriver` class was renamed to `Springy\Security\AuthDrive`
 -   The `Springy\Session` class was moved to `Springy\HTTP` namespace
 -   The `Springy\Template` class was moved to `Springy\Template` namespace
@@ -90,6 +95,7 @@
 -   Method `Springy\DB->serverVersion()` was renamed to `Springy\Database\Connection->getServerVersion()`
 -   Method `Springy\DB->statmentErrorCode()` was renamed to `Springy\Database\Connection->getStatmentErrorCode()`
 -   Method `Springy\DB->statmentErrorInfo()` was renamed to `Springy\Database\Connection->getStatmentErrorInfo()`
+-   Method `Springy\DB\Conditions->condition()` was renamed to `Springy\Database\Conditions->add()`
 -   Method `Springy\Kernel::addIgnoredError()` moved to `Springy\Exceptions\Handler->addIgnoredError()`
 -   Method `Springy\Kernel::delIgnoredError()` moved to `Springy\Exceptions\Handler->delIgnoredError()`
 -   Method `Springy\Kernel::environment()` was separated in `Springy\Core\Kernel->getEnvironment()` and `Springy\Core\Kernel->setEnvironment()`
@@ -161,6 +167,7 @@
 -   Removed `Springy\DB::transactionAllRollBack()` method
 -   Removed `Springy\DB->get_all()` method
 -   Removed `Springy\DB->num_rows()` method
+-   Removed `Springy\DB\Conditions->filter()` method
 -   Removed `Springy\DBDelete` class
 -   Removed `Springy\DBExpression` class
 -   Removed `Springy\DBFiltro` class
@@ -209,6 +216,7 @@
 -   Removed `Springy\Validation\Validator->setDefaultErrorMessage()` method
 -   Removed `Springy\Validation\Validator->setMessages()` method
 -   Removed `$cacheLifeTime` parameters from `Springy\Database\Connection::__construct`
+-   Removed comparison constants aliases from `Springy\Database\Conditions` class
 -   Removed support to configuration `db` configuration files
 -   Removed support to configuration `'uri.common_urls'`
 -   Removed support to configuration `'uri.redirect_last_slash'`
