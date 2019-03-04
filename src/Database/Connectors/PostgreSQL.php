@@ -15,6 +15,9 @@ use PDO;
 
 class PostgreSQL extends Connector implements ConnectorInterface
 {
+    protected $encloseCharOpn = '"';
+    protected $encloseCharCls = '"';
+
     /** @var string|array the database host server */
     protected $host;
     /** @var int the database server port */

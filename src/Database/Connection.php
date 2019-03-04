@@ -28,8 +28,8 @@ class Connection
     protected $cache;
     /** @var int the cache life time for next SQL statement */
     protected $cacheLifeTime;
-    /** @var array connection instances */
-    private static $conectionIds = [];
+    /** @var int the style to fetch rows statement */
+    protected $fetchStyle;
     /** @var string current identity connection */
     protected $identity;
     /** @var mixed last query execution error code */
@@ -41,6 +41,9 @@ class Connection
     /** @var PDOStatement|array the SQL statement */
     protected $statement;
 
+    /** @var array connection instances */
+    protected static $conectionIds = [];
+
     /**
      * Constructor.
      *
@@ -49,6 +52,7 @@ class Connection
     public function __construct(string $identity = null)
     {
         $this->cacheLifeTime = 0;
+        $this->fetchStyle = PDO::FETCH_ASSOC;
         $this->identity = $identity ?? config_get('database.default');
         $this->lastValues = [];
 
@@ -317,6 +321,18 @@ class Connection
     }
 
     /**
+     * Encloses the keyword by enclosure char to escapes it.
+     *
+     * @param string $keyword
+     *
+     * @return string
+     */
+    public function enclose(string $keyword): string
+    {
+        return $this->getConnector()->enclose($keyword);
+    }
+
+    /**
      * Returns true if connection was stablished.
      *
      * @return bool
@@ -395,12 +411,13 @@ class Connection
     public function select(
         string $query,
         array $params = [],
-        int $fetchStyle = PDO::FETCH_ASSOC,
+        int $fetchStyle = null,
         int $cacheLifeTime = 0
     ) {
         $this->cacheLifeTime = $cacheLifeTime;
         $this->run($query, $params);
-        $this->statement = $this->fetchAll($fetchStyle);
+        $this->fetchStyle = $fetchStyle ?? $this->fetchStyle;
+        $this->statement = $this->fetchAll();
         $this->cacheLifeTime = 0;
 
         return $this->statement;
@@ -423,16 +440,31 @@ class Connection
     }
 
     /**
-     * Returns all rows of the resultset.
-     *
-     * @param int $fetchStyle
+     * Returns the current row of the statement and moves the cursor to the next row.
      *
      * @return array|bool
      */
-    public function fetchAll($fetchStyle = PDO::FETCH_ASSOC)
+    public function fetch()
     {
         if ($this->statement instanceof PDOStatement) {
-            $rows = $this->statement->fetchAll($fetchStyle);
+            $this->fetchAll();
+        }
+
+        $current = current($this->statement);
+        next($this->statement);
+
+        return $current;
+    }
+
+    /**
+     * Returns all rows of the resultset.
+     *
+     * @return array|bool
+     */
+    public function fetchAll()
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $rows = $this->statement->fetchAll();
             $this->statement->closeCursor();
             $this->statement = $rows;
         }
@@ -443,14 +475,12 @@ class Connection
     /**
      * Returns the current row of the resultset and moves the cursor to next record.
      *
-     * @param int $fetchStyle
-     *
      * @return array|bool
      */
-    public function fetchCurrent($fetchStyle = PDO::FETCH_ASSOC)
+    public function fetchCurrent()
     {
         if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll($fetchStyle);
+            $this->fetchAll();
         }
 
         return current($this->statement);
@@ -459,14 +489,12 @@ class Connection
     /**
      * Resets the cursor to the first row of the statement and returns it.
      *
-     * @param int $fetchStyle
-     *
      * @return array|bool
      */
-    public function fetchFirst($fetchStyle = PDO::FETCH_ASSOC)
+    public function fetchFirst()
     {
         if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll($fetchStyle);
+            $this->fetchAll();
         }
 
         return reset($this->statement);
@@ -475,49 +503,42 @@ class Connection
     /**
      * Moves the cursor to the last row of the statement and returns it.
      *
-     * @param int $fetchStyle
-     *
      * @return array|bool
      */
-    public function fetchLast($fetchStyle = PDO::FETCH_ASSOC)
+    public function fetchLast()
     {
         if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll($fetchStyle);
+            $this->fetchAll();
         }
 
         return end($this->statement);
     }
 
     /**
-     * Returns the current row of the statement and moves the cursor to the next row.
+     * Returns the next row of the statement.
      *
-     * @param int $fetchStyle
+     * Be careful when using this method because it moves the cursos before fetch the record.
      *
      * @return array|bool
      */
-    public function fetchNext($fetchStyle = PDO::FETCH_ASSOC)
+    public function fetchNext()
     {
         if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll($fetchStyle);
+            $this->fetchAll();
         }
 
-        $current = current($this->statement);
-        next($this->statement);
-
-        return $current;
+        return next($this->statement);
     }
 
     /**
      * Moves the cursor the previous row of the statement and returns it.
      *
-     * @param int $fetchStyle
-     *
      * @return array|bool
      */
-    public function fetchPrev($fetchStyle = PDO::FETCH_ASSOC)
+    public function fetchPrev()
     {
         if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll($fetchStyle);
+            $this->fetchAll();
         }
 
         return prev($this->statement);
@@ -530,15 +551,29 @@ class Connection
      *
      * @return mixed
      */
-    public function getColumn($var, $fetchStyle = PDO::FETCH_ASSOC)
+    public function getColumn($var)
     {
         if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll($fetchStyle);
+            $this->fetchAll();
         }
 
         $current = current($this->statement);
 
         return $current[$var] ?? null;
+    }
+
+    /**
+     * Gets the connector object.
+     *
+     * @return Connector
+     */
+    public function getConnector()
+    {
+        if (!isset(self::$conectionIds[$this->identity])) {
+            $this->connect();
+        }
+
+        return self::$conectionIds[$this->identity];
     }
 
     /**

@@ -51,9 +51,16 @@ class ConditionsTest extends TestCase
     public function testParse()
     {
         $string = $this->conditions->parse();
-        $this->assertStringStartsWith('column_a = ?', $string);
-        $this->assertStringEndsWith('column_b = ?', $string);
         $this->assertEquals('column_a = ? AND column_b = ?', $string);
+    }
+
+    public function testAddValueAsColumn()
+    {
+        $this->conditions->clear();
+        $this->conditions->addColumnsComparation('column_a', 'column_b', Condition::OP_GREATER);
+
+        $string = $this->conditions->parse();
+        $this->assertEquals('column_a > column_b', $string);
     }
 
     public function testToString()

@@ -22,8 +22,11 @@
 -   Added `Springy\Database\Condition` class
 -   Added `Springy\Database\Conditions->addSubConditions` class
 -   Added `Springy\Database\Connection->fetchCurrent()` method
+-   Added `Springy\Database\DatabaseCommand` class
 -   Added `Springy\Database\OperatorComparationInterface` interface
 -   Added `Springy\Database\OperatorGroupInterface` interface
+-   Added `Springy\Database\Join` class
+-   Added `Springy\Database\Select` class
 -   Added `Springy\Exceptions\Handler` class
 -   Added `Springy\Exceptions\Http403Error` class
 -   Added `Springy\Exceptions\Http404Error` class
@@ -79,7 +82,7 @@
 -   The `Springy\HTTP\URI` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\HTTP\URI` class is no longer responsible for determining the controller. This becomes the responsibility of the `Kernel` class.
 -   The `Springy\Kernel` class was moved to `Springy\Core` namespace
--   The `Springy\Model` class was moved and renamed to `Springy\Database\Model`
+-   The `Springy\Model` class was moved to `Springy\Database\Model` namespace
 -   The `Springy\Security\DBAuthDriver` class was renamed to `Springy\Security\AuthDrive`
 -   The `Springy\Session` class was moved to `Springy\HTTP` namespace
 -   The `Springy\Template` class was moved to `Springy\Template` namespace
@@ -91,6 +94,7 @@
 -   Method `Springy\DB->errorCode()` was renamed to `Springy\Database\Connection->getErrorCode()`
 -   Method `Springy\DB->errorInfo()` was renamed to `Springy\Database\Connection->getErrorInfo()`
 -   Method `Springy\DB->execute()` was renamed to `Springy\Database\Connection->run()`
+-   Method `Springy\DB->fetchNext()` was renamed to `Springy\Database\Connection->fetch()`
 -   Method `Springy\DB->driverName()` was renamed to `Springy\Database\Connection->getDriverName()`
 -   Method `Springy\DB->lastQuery()` was renamed to `Springy\Database\Connection->getLastQuery()`
 -   Method `Springy\DB->serverVersion()` was renamed to `Springy\Database\Connection->getServerVersion()`
@@ -110,6 +114,7 @@
 -   Method `Springy\Mail->setTemplate()` renamed to `Springy\Mail\Mailer->setTemplateId()`
 -   Method `Springy\Mail->subject()` renamed to `Springy\Mail\Mailer->setSubject()`
 -   Method `Springy\Mail->to()` renamed to `Springy\Mail\Mailer->addTo()`
+-   Method `Springy\Model->query()` renamed to `Springy\Database\Model->select()`
 -   Method `Springy\Security\AclManager->isPermitted` renamed to `Springy\Security\AclManager->hasPermission()`
 -   Method `Springy\Security\Strings::validateEmailAddress` moved and renamed to `Springy\Utils\StringUtils->isValidEmailAddress()`
 -   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `Springy\Security\AclUserInterface->hasPermissionFor()`

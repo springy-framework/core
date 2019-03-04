@@ -29,6 +29,13 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
         $this->parameters = [];
     }
 
+    /**
+     * Adds the condition value to the parameters array.
+     *
+     * @param Condition $condition
+     *
+     * @return void
+     */
     protected function addParameters(Condition $condition)
     {
         $value = $condition->value;
@@ -103,10 +110,11 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
     /**
      * Adds a condition to the conditions list.
      *
-     * @param string $column     the column name.
-     * @param mixed  $value      the value of the condition.
-     * @param string $operator   the comparison operator.
-     * @param string $expression the expression to put before this condition.
+     * @param string $column      the column name.
+     * @param mixed  $value       the value of the condition.
+     * @param string $operator    the comparison operator.
+     * @param string $expression  the expression to put before this condition.
+     * @param bool   $compareCols set this true to define the value as a column name or a function
      *
      * @return void
      */
@@ -114,9 +122,29 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
         string $column,
         $value = null,
         string $operator = self::OP_EQUAL,
+        string $expression = self::COND_AND,
+        bool $compareCols = false
+    ) {
+        $this->conditions[] = new Condition($column, $value, $operator, $expression, $compareCols);
+    }
+
+    /**
+     * Adds a condition at the conditions list to compares two columns.
+     *
+     * @param string $column1     the first column name.
+     * @param mixed  $column2     the second column name.
+     * @param string $operator    the comparison operator.
+     * @param string $expression  the expression to put before this condition.
+     *
+     * @return void
+     */
+    public function addColumnsComparation(
+        string $column1,
+        string $column2,
+        string $operator = self::OP_EQUAL,
         string $expression = self::COND_AND
     ) {
-        $this->conditions[] = new Condition($column, $value, $operator, $expression);
+        $this->conditions[] = new Condition($column1, $column2, $operator, $expression, true);
     }
 
     /**

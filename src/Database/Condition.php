@@ -23,6 +23,8 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
     protected $operator;
     /** @var mixed the comparation value */
     protected $value;
+    /** @var bool determines whether the value is a column or a funcion */
+    protected $valueIsColumn;
 
     /**
      * Constructor.
@@ -31,17 +33,20 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
      * @param mixed  $value
      * @param string $operator
      * @param string $expression
+     * @param bool   $compareColumns set this true to define the value as a column name or a function
      */
     public function __construct(
         string $column,
         $value,
         string $operator = self::OP_EQUAL,
-        string $expression = self::COND_AND
+        string $expression = self::COND_AND,
+        bool $compareColumns = false
     ) {
         $this->column = $column;
         $this->value = $value;
         $this->operator = strtoupper($operator);
         $this->expression = $expression;
+        $this->valueIsColumn = $compareColumns;
     }
 
     /**
@@ -72,7 +77,7 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
             throw new SpringyException('Property "'.$name.'" does not exists.');
         }
 
-        return $this->$name = $value;
+        $this->$name = $value;
     }
 
     /**
@@ -123,7 +128,7 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
      */
     protected function comparationGeneral(): string
     {
-        return $this->column.' '.$this->operator.' ?';
+        return $this->column.' '.$this->operator.' '.$this->getQuestionMark();
     }
 
     /**
@@ -148,8 +153,18 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
      */
     protected function comparationMatch(): string
     {
-        return 'MATCH ('.$this->column.') AGAINST (?'.(
+        return 'MATCH ('.$this->column.') AGAINST ('.$this->getQuestionMark().(
                 $thos->operator === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : ''
             ).')';
+    }
+
+    /**
+     * Gets the question mark or value property as a field name.
+     *
+     * @return string
+     */
+    protected function getQuestionMark(): string
+    {
+        return $this->valueIsColumn ? $this->value : '?';
     }
 }

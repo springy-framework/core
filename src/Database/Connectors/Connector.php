@@ -21,6 +21,8 @@ class Connector
     protected $charset;
     /** @var string name of the database */
     protected $database;
+    protected $encloseCharOpn = '`';
+    protected $encloseCharCls = '`';
     /** @var array PDO constructor options */
     protected $options = [
         PDO::ATTR_CASE => PDO::CASE_NATURAL,
@@ -191,6 +193,22 @@ class Connector
         }
 
         return $this->pdo;
+    }
+
+    /**
+     * Encloses the keyword by enclosure char to escapes it.
+     *
+     * @param string $keyword
+     *
+     * @return string
+     */
+    public function enclose(string $keyword): string
+    {
+        if ($keyword === '*' || substr($keyword, 0, 1) == $this->encloseCharOpn) {
+            return $keyword;
+        }
+
+        return $this->encloseCharOpn.$keyword.$this->encloseCharCls;
     }
 
     /**

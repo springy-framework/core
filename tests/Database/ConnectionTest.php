@@ -17,6 +17,8 @@ class ConnectionTest extends TestCase
     {
         $connection = new Connection('mysql');
         $this->assertTrue($connection->isConnected());
+        $this->assertEquals('`test`', $connection->enclose('test'));
+        $this->assertEquals('*', $connection->enclose('*'));
 
         $connection->run('CREATE TABLE IF NOT EXISTS test_spf(column1 INT)');
         $connection->run('TRUNCATE TABLE test_spf');
@@ -30,16 +32,19 @@ class ConnectionTest extends TestCase
         $this->assertEquals(2, $row['column1'] ?? null);
 
         $row = $connection->fetchNext();
+        $this->assertEquals(3, $row['column1'] ?? null);
+
+        $row = $connection->fetchPrev();
+        $this->assertEquals(2, $row['column1'] ?? null);
+
+        $row = $connection->fetch();
         $this->assertEquals(2, $row['column1'] ?? null);
 
         $row = $connection->fetchLast();
         $this->assertEquals(4, $row['column1'] ?? null);
 
-        $row = $connection->fetchPrev();
-        $this->assertEquals(3, $row['column1'] ?? null);
-
         $row = $connection->fetchCurrent();
-        $this->assertEquals(3, $row['column1'] ?? null);
+        $this->assertEquals(4, $row['column1'] ?? null);
     }
 
     public function testMySqlConnectionWithFileRoundRobin()
@@ -58,12 +63,14 @@ class ConnectionTest extends TestCase
     {
         $connection = new Connection('postgres');
         $this->assertTrue($connection->isConnected());
+        $this->assertEquals('"test"', $connection->enclose('test'));
     }
 
     public function testConnectionSQLite()
     {
         $connection = new Connection('sqlite');
         $this->assertTrue($connection->isConnected());
+        $this->assertEquals('"test"', $connection->enclose('test'));
 
         $connection->run('CREATE TABLE test(column1 int)');
         $connection->run('INSERT INTO test(column1) VALUES (1), (2), (3), (4), (5), (6)');
