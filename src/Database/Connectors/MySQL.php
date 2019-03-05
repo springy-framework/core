@@ -119,6 +119,14 @@ class MySQL extends Connector implements ConnectorInterface
         $this->socket = $socket;
     }
 
+    public function foundRowsSelect(string $select): string
+    {
+        $reg = '/^(SELECT )(.*)$/mi';
+        $subst = '$1FOUND_ROWS() AS found_rows;';
+
+        return preg_replace($reg, $subst, $select);
+    }
+
     /**
      * Gets the DSN string.
      *
@@ -127,5 +135,13 @@ class MySQL extends Connector implements ConnectorInterface
     public function getDsn(): string
     {
         return 'mysql:'.$this->getHostOrSocket().';dbname='.$this->database;
+    }
+
+    public function paginatedSelect(string $select): string
+    {
+        $reg = '/^(SELECT )(SQL_CALC_FOUND_ROWS ){0}((.*)( LIMIT [\d]+)( OFFSET [\d]+)?.*){1}$/mi';
+        $subst = '$1SQL_CALC_FOUND_ROWS $3';
+
+        return preg_replace($reg, $subst, $select);
     }
 }

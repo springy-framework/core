@@ -96,6 +96,14 @@ class PostgreSQL extends Connector implements ConnectorInterface
         $this->host = $host;
     }
 
+    public function foundRowsSelect(string $select): string
+    {
+        $reg = '/^(SELECT )(.*)$/mi';
+        $subst = '';
+
+        return preg_replace($reg, $subst, $select);
+    }
+
     /**
      * Gets the DSN string.
      *
@@ -105,5 +113,13 @@ class PostgreSQL extends Connector implements ConnectorInterface
     {
         return 'pgsql:'.($this->host ? 'host='.$this->host : '')
             .';port='.$this->port.';dbname='.$this->database.$this->ssl;
+    }
+
+    public function paginatedSelect(string $select): string
+    {
+        $reg = '/^(SELECT )(.+)( FROM (.*)( LIMIT [\d]+)( OFFSET [\d]+)?.*){1}$/mi';
+        $subst = '$1$2, COUNT(*) OVER() AS found_rows$3';
+
+        return preg_replace($reg, $subst, $select);
     }
 }

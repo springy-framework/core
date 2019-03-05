@@ -26,6 +26,11 @@
 -   Added `Springy\Database\OperatorComparationInterface` interface
 -   Added `Springy\Database\OperatorGroupInterface` interface
 -   Added `Springy\Database\Join` class
+-   Added `Springy\Database\Model->addJoin()` method
+-   Added `Springy\Database\Model->clearGroupBy()` method
+-   Added `Springy\Database\Model->setFetchAsObject()` method
+-   Added `Springy\Database\Model->setGroupBy()` method
+-   Added `Springy\Database\Model->setHaving()` method
 -   Added `Springy\Database\Select` class
 -   Added `Springy\Exceptions\Handler` class
 -   Added `Springy\Exceptions\Http403Error` class
@@ -59,6 +64,10 @@
 -   Added configuration entry `'application.authentication'` (see bellow)
 -   Added configuration entry `'template.auto_escape'`
 -   Added configuration entry `'template.file_sufix'`
+-   Added property `$dbIdentity` into `Springy\Database\Model` class
+-   Added property `$defaultLimit` into `Springy\Database\Model` class
+-   Added property `$errorIfColNotExists` into `Springy\Database\Model` class
+-   Added property `$fetchAsObject` into `Springy\Database\Model` class
 
 ### Changed
 
@@ -90,6 +99,9 @@
 -   Method `Springy\Core\Copyright->printCopyright()` renamed to `Springy\Core\Copyright->content()`
 -   Method `Springy\Core\Debug::print_rc()` is no more static and was renamed to `Springy\Core\Copyright->highligh()`
 -   Method `Springy\Core\Debug::printOut()` is no more static and was renamed to `Springy\Core\Copyright->inject()`
+-   Method `Springy\Database\Model->end()` only moves the cursor pointer and does not returns value any more
+-   Method `Springy\Database\Model->next()` only moves the cursor pointer and does not returns value any more
+-   Method `Springy\Database\Model->prev()` only moves the cursor pointer and does not returns value any more
 -   Method `Springy\DB::connected()` is no more static and was renamed to `Springy\Database\Connection->isConnected()`
 -   Method `Springy\DB->errorCode()` was renamed to `Springy\Database\Connection->getErrorCode()`
 -   Method `Springy\DB->errorInfo()` was renamed to `Springy\Database\Connection->getErrorInfo()`
@@ -114,7 +126,9 @@
 -   Method `Springy\Mail->setTemplate()` renamed to `Springy\Mail\Mailer->setTemplateId()`
 -   Method `Springy\Mail->subject()` renamed to `Springy\Mail\Mailer->setSubject()`
 -   Method `Springy\Mail->to()` renamed to `Springy\Mail\Mailer->addTo()`
+-   Method `Springy\Model->all()` renamed to `Springy\Database\Model->rows()`
 -   Method `Springy\Model->query()` renamed to `Springy\Database\Model->select()`
+-   Method `Springy\Model->rows()` renamed to `Springy\Database\Model->rowsCount()`
 -   Method `Springy\Security\AclManager->isPermitted` renamed to `Springy\Security\AclManager->hasPermission()`
 -   Method `Springy\Security\Strings::validateEmailAddress` moved and renamed to `Springy\Utils\StringUtils->isValidEmailAddress()`
 -   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `Springy\Security\AclUserInterface->hasPermissionFor()`
@@ -130,6 +144,7 @@
 -   Method `Springy\Validation\Validator->messages()` was renamed to `Springy\Validation\Validator->getErrors()`
 -   Constant `Springy\Template::TPL_ENGINE_SMARTY` renamed to `Springy\Exceptions\SpringyException::DRV_SMARTY`
 -   Constant `Springy\Template::TPL_ENGINE_TWIG` renamed to `Springy\Exceptions\SpringyException::DRV_TWIG`
+-   Property `Springy\Database\Model::$primaryKey` must be array
 -   Main configuration file `sysconf.php` moved from the web server root directory to the configuration directory and renamed to `main.php`
 -   Main system configuration `SYSTEM_NAME` renamed to `main.app.name`
 -   Main system configuration `SYSTEM_VERSION` renamed to `main.app.version`
@@ -197,6 +212,9 @@
 -   Removed `Springy\Kernel::registerTemplateFunction()` method
 -   Removed `Springy\Mail->body()` method. See new methods `Springy\Mail\Mailer->setBody()` and `Springy\Mail\Mailer->setAlternativeBody()`
 -   Removed `Springy\Mail->setHeader()` method
+-   Removed `Springy\Model->groupBy()` method
+-   Removed `Springy\Model->having()` method
+-   Removed `Springy\Model->reset()` method
 -   Removed `Springy\Session::getAll()` method
 -   Removed `Springy\Security\AclManager->getCurrentAction()` method
 -   Removed `Springy\Security\AclManager->getCurrentController()` method

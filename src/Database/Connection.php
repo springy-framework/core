@@ -464,7 +464,7 @@ class Connection
     public function fetchAll()
     {
         if ($this->statement instanceof PDOStatement) {
-            $rows = $this->statement->fetchAll();
+            $rows = $this->statement->fetchAll($this->fetchStyle);
             $this->statement->closeCursor();
             $this->statement = $rows;
         }

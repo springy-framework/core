@@ -26,6 +26,7 @@ class Select extends DatabaseCommand implements OperatorComparationInterface, Op
     protected $orderBy;
     protected $limit;
     protected $parameters;
+    protected $rows;
 
     public function __construct(Connection $connection, string $table = null, string $alias = null)
     {
@@ -38,26 +39,29 @@ class Select extends DatabaseCommand implements OperatorComparationInterface, Op
         $this->parameters = [];
         $this->table = $table;
         $this->tableAlias = $alias;
+        $this->rows = [];
 
         parent::__construct();
     }
 
     public function __toString()
     {
+        $this->parameters = [];
+
         $select = 'SELECT '.$this->strColumns()
             .' FROM '.$this->getTableNameAndAlias()
-            .$this->getJoins()
-            .$this->getWhere()
-            .$this->getOrderBy()
-            .$this->getGroupBy()
-            .$this->getHaving()
+            .$this->strJoins()
+            .$this->strWhere()
+            .$this->strOrderBy()
+            .$this->strGroupBy()
+            .$this->strHaving()
             .($this->limit ? ' LIMIT '.$this->limit : '')
             .($this->offset ? ' OFFSET '.$this->offset : '');
 
         return $select;
     }
 
-    protected function getGroupBy(): string
+    protected function strGroupBy(): string
     {
         if (!count($this->groupBy)) {
             return '';
@@ -66,7 +70,7 @@ class Select extends DatabaseCommand implements OperatorComparationInterface, Op
         return ' GROUP BY '.implode(', ', $this->groupBy);
     }
 
-    protected function getHaving(): string
+    protected function strHaving(): string
     {
         $having = $this->having->parse();
         $this->parameters = array_merge($this->parameters, $this->having->params());
@@ -74,7 +78,7 @@ class Select extends DatabaseCommand implements OperatorComparationInterface, Op
         return $having ? ' HAVING '.$this->having : '';
     }
 
-    protected function getJoins(): string
+    protected function strJoins(): string
     {
         $joins = '';
         foreach ($this->joins as $join) {
@@ -86,7 +90,7 @@ class Select extends DatabaseCommand implements OperatorComparationInterface, Op
         return $joins;
     }
 
-    protected function getOrderBy(): string
+    protected function strOrderBy(): string
     {
         if (!count($this->orderBy)) {
             return '';
@@ -95,7 +99,7 @@ class Select extends DatabaseCommand implements OperatorComparationInterface, Op
         return ' ORDER BY '.implode(', ', $this->orderBy);
     }
 
-    protected function getWhere(): string
+    protected function strWhere(): string
     {
         $where = $this->conditions->parse();
         $this->parameters = $this->conditions->params();
@@ -151,6 +155,43 @@ class Select extends DatabaseCommand implements OperatorComparationInterface, Op
     public function addOrderBy(string $name, string $direction = self::ORDER_ASC)
     {
         $this->orderBy[] = $name.($direction != self::ORDER_ASC ? ' '.$direction : '');
+    }
+
+    public function foundRows(): int
+    {
+        $select = $this->parseFoundRows();
+
+        if ($select === '' && count($this->rows) > 0 && in_array('found_rows', $this->rows[0])) {
+            return (int) $this->rows[0]['found_rows'];
+        }
+
+        return (int) $this->connection->select($select, $this->parameters)[0]['found_rows'];
+    }
+
+    public function parseFoundRows(): string
+    {
+        $this->parameters = [];
+
+        $select = 'SELECT '.$this->strColumns()
+        .' FROM '.$this->getTableNameAndAlias()
+        .$this->strJoins()
+        .$this->strWhere();
+
+        return $this->connection->getConnector()->foundRowsSelect($select);
+    }
+
+    public function parsePaginated(): string
+    {
+        return $this->connection->getConnector()->paginatedSelect($this->__toString());
+    }
+
+    public function run(bool $paginated = false): array
+    {
+        $select = ($paginated ? $this->parsePaginated() : $this->__toString());
+
+        $this->rows = $this->connection->select($select, $this->parameters);
+
+        return $this->rows;
     }
 
     public function setGroupBy(array $groupBy)

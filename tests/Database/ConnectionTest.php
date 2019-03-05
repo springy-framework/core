@@ -20,31 +20,36 @@ class ConnectionTest extends TestCase
         $this->assertEquals('`test`', $connection->enclose('test'));
         $this->assertEquals('*', $connection->enclose('*'));
 
-        $connection->run('CREATE TABLE IF NOT EXISTS test_spf(column1 INT)');
-        $connection->run('TRUNCATE TABLE test_spf');
-        $connection->run('INSERT INTO test_spf(column1) VALUES (1), (2), (3), (4), (5), (6)');
-        $result = $connection->select('SELECT column1 FROM test_spf WHERE column1 BETWEEN ? AND ?', [2, 4]);
-        $this->assertCount(3, $result);
+        $sql = 'CREATE TABLE IF NOT EXISTS `test_spf` ('
+            .'`id` INT NOT NULL AUTO_INCREMENT, '
+            .'`name` VARCHAR(20) NULL, '
+            .'PRIMARY KEY (`id`))';
 
-        $this->assertEquals(3, $connection->affectedRows());
+        $connection->run($sql);
+        $connection->run('TRUNCATE TABLE test_spf');
+        $connection->run('INSERT INTO test_spf(`name`) VALUES (\'Homer\'), (\'Marge\'), (\'Lisa\'), (\'Bart\'), (\'Maggie\'), (\'Santa\'\'s Helper\')');
+        $result = $connection->select('SELECT `id`, `name` FROM test_spf WHERE `id` BETWEEN ? AND ? ORDER BY `id`', [2, 5]);
+        $this->assertCount(4, $result);
+
+        $this->assertEquals(4, $connection->affectedRows());
 
         $row = $connection->fetchFirst();
-        $this->assertEquals(2, $row['column1'] ?? null);
+        $this->assertEquals('Marge', $row['name'] ?? null);
 
         $row = $connection->fetchNext();
-        $this->assertEquals(3, $row['column1'] ?? null);
+        $this->assertEquals('Lisa', $row['name'] ?? null);
 
         $row = $connection->fetchPrev();
-        $this->assertEquals(2, $row['column1'] ?? null);
+        $this->assertEquals('Marge', $row['name'] ?? null);
 
         $row = $connection->fetch();
-        $this->assertEquals(2, $row['column1'] ?? null);
+        $this->assertEquals(2, $row['id'] ?? null);
 
         $row = $connection->fetchLast();
-        $this->assertEquals(4, $row['column1'] ?? null);
+        $this->assertEquals('Maggie', $row['name'] ?? null);
 
         $row = $connection->fetchCurrent();
-        $this->assertEquals(4, $row['column1'] ?? null);
+        $this->assertEquals(5, $row['id'] ?? null);
     }
 
     public function testMySqlConnectionWithFileRoundRobin()

@@ -211,6 +211,14 @@ class Connector
         return $this->encloseCharOpn.$keyword.$this->encloseCharCls;
     }
 
+    public function foundRowsSelect(string $select): string
+    {
+        $reg = '/(SELECT )(.*)( FROM .*)( ORDER BY .+)?( GROUP BY .+( HAVING .*)?)( LIMIT [\d]+)( OFFSET [\d]+.*)?/mi';
+        $subst = '$1COUNT(0) AS found_rows$3;';
+
+        return preg_replace($reg, $subst, $select);
+    }
+
     /**
      * Gets the database name.
      *
@@ -249,6 +257,14 @@ class Connector
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    public function paginatedSelect(string $select): string
+    {
+        $reg = '/^(SELECT )(.*)$/mi';
+        $subst = '$1$2';
+
+        return preg_replace($reg, $subst, $select);
     }
 
     /**
