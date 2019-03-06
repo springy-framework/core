@@ -69,7 +69,7 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
      * Sets a property value.
      *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function __set(string $name, $value)
     {

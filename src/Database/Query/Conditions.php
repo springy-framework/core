@@ -131,10 +131,10 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
     /**
      * Adds a condition at the conditions list to compares two columns.
      *
-     * @param string $column1     the first column name.
-     * @param mixed  $column2     the second column name.
-     * @param string $operator    the comparison operator.
-     * @param string $expression  the expression to put before this condition.
+     * @param string $column1    the first column name.
+     * @param mixed  $column2    the second column name.
+     * @param string $operator   the comparison operator.
+     * @param string $expression the expression to put before this condition.
      *
      * @return void
      */
@@ -152,6 +152,7 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
      *
      * @param self   $conditions
      * @param string $expression
+     *
      * @return void
      */
     public function addSubConditions(self $conditions, $expression = self::COND_AND)

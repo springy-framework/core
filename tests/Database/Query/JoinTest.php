@@ -9,7 +9,6 @@
  * @version   1.0.0
  */
 use PHPUnit\Framework\TestCase;
-use Springy\Database\Query\Where;
 use Springy\Database\Query\Join;
 use Springy\Exceptions\SpringyException;
 

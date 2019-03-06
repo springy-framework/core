@@ -24,7 +24,7 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
      */
     public function __construct(Conditions $conditions = null)
     {
-        $this->conditions = $conditions ?? new Conditions;
+        $this->conditions = $conditions ?? new Conditions();
     }
 
     /**
