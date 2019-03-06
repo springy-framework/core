@@ -11,8 +11,8 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Database\Connection;
 use Springy\Database\Query\Insert;
-use Springy\Exceptions\SpringyException;
 use Springy\Database\Query\Value;
+use Springy\Exceptions\SpringyException;
 
 class InsertTest extends TestCase
 {

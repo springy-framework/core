@@ -9,7 +9,6 @@
  * @version   1.0.0
  */
 
-
 namespace Springy\Database\Query;
 
 class Value

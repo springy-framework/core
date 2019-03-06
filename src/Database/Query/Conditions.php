@@ -11,8 +11,6 @@
 
 namespace Springy\Database\Query;
 
-use Springy\Exceptions\SpringyException;
-
 class Conditions implements OperatorComparationInterface, OperatorGroupInterface
 {
     /** @var array the conditions */

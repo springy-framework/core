@@ -300,7 +300,7 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
     /**
      * Runs the SELECT command and returns the found rows.
      *
-     * @param boolean $paginated
+     * @param bool $paginated
      *
      * @return array
      */
