@@ -20,11 +20,18 @@ class Join extends CommandBase implements OperatorComparationInterface, Operator
     const RIGHT_OUTER = 'RIGHT OUTER JOIN';
     const OUTER = 'OUTER JOIN';
 
+    /** @var string the type of join */
     protected $joinType;
 
+    /**
+     * Constructor.
+     *
+     * @param string     $table
+     * @param string     $join
+     * @param Conditions $onCondition
+     */
     public function __construct(string $table, string $join = self::INNER, Conditions $onCondition = null)
     {
-
         $this->table = $table;
         $this->joinType = $join;
         $this->parameters = [];
@@ -32,6 +39,11 @@ class Join extends CommandBase implements OperatorComparationInterface, Operator
         parent::__construct($onCondition);
     }
 
+    /**
+     * Converts the object to its string format.
+     *
+     * @return string
+     */
     public function __toString()
     {
         $join = $this->joinType.' '.$this->getTableNameAndAlias().$this->getOn();
@@ -39,7 +51,14 @@ class Join extends CommandBase implements OperatorComparationInterface, Operator
         return $join;
     }
 
-    protected function getOn()
+    /**
+     * Gets the ON clause string.
+     *
+     * @throws SpringyException
+     *
+     * @return string
+     */
+    protected function getOn(): string
     {
         if (!$this->conditions->count()) {
             throw new SpringyException('Join condition ON undefined');
@@ -48,6 +67,16 @@ class Join extends CommandBase implements OperatorComparationInterface, Operator
         return ' ON '.$this->conditions;
     }
 
+    /**
+     * Adds a columns comparation to the ON clause.
+     *
+     * @param string $column1
+     * @param string $column2
+     * @param string $operator
+     * @param string $expression
+     *
+     * @return void
+     */
     public function addOnColumns(
         string $column1,
         string $column2,

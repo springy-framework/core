@@ -1,4 +1,14 @@
 <?php
+/**
+ * Object for values data.
+ *
+ * @copyright 2019 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   1.0.0
+ */
+
 
 namespace Springy\Database\Query;
 
@@ -28,16 +38,31 @@ class Value
         $this->isExpression = $isExpression;
     }
 
+    /**
+     * Gets the column name.
+     *
+     * @return string
+     */
     public function getColumn(): string
     {
         return $this->column;
     }
 
+    /**
+     * Gets the value.
+     *
+     * @return mixed
+     */
     public function getValue()
     {
         return $this->value;
     }
 
+    /**
+     * Informs if this value is an expression.
+     *
+     * @return bool
+     */
     public function isExpression(): bool
     {
         return $this->isExpression;
