@@ -9,7 +9,7 @@
  * @version   1.0.0
  */
 
-namespace Springy\Database;
+namespace Springy\Database\Query;
 
 interface OperatorComparationInterface
 {

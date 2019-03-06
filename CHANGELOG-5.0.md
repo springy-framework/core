@@ -19,19 +19,20 @@
 -   Added `Springy\Core\Kernel->httpResponse` method
 -   Added `Springy\Core\Kernel->setCharset` method
 -   Added `Springy\Core\Kernel->setUp` method
--   Added `Springy\Database\Condition` class
--   Added `Springy\Database\Conditions->addSubConditions` class
 -   Added `Springy\Database\Connection->fetchCurrent()` method
--   Added `Springy\Database\DatabaseCommand` class
--   Added `Springy\Database\OperatorComparationInterface` interface
--   Added `Springy\Database\OperatorGroupInterface` interface
--   Added `Springy\Database\Join` class
 -   Added `Springy\Database\Model->addJoin()` method
 -   Added `Springy\Database\Model->clearGroupBy()` method
 -   Added `Springy\Database\Model->setFetchAsObject()` method
 -   Added `Springy\Database\Model->setGroupBy()` method
 -   Added `Springy\Database\Model->setHaving()` method
--   Added `Springy\Database\Select` class
+-   Added `Springy\Database\Query\CommandBase` class
+-   Added `Springy\Database\Query\Condition` class
+-   Added `Springy\Database\Query\Conditions->addSubConditions` class
+-   Added `Springy\Database\Query\Insert` class
+-   Added `Springy\Database\Query\Join` class
+-   Added `Springy\Database\Query\OperatorComparationInterface` interface
+-   Added `Springy\Database\Query\OperatorGroupInterface` interface
+-   Added `Springy\Database\Query\Select` class
 -   Added `Springy\Exceptions\Handler` class
 -   Added `Springy\Exceptions\Http403Error` class
 -   Added `Springy\Exceptions\Http404Error` class
@@ -82,7 +83,7 @@
 -   The `Springy\Core\Debug` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\Core\Kernel` class is no more static and has a `getInstance` static method to get its instance object
 -   The `Springy\DB` class was moved and renamed to `Springy\Database\Connection`
--   The `Springy\DB\Conditions` class was moved and renamed to `Springy\Database\Conditions`
+-   The `Springy\DB\Conditions` class was moved and renamed to `Springy\Database\Query\Conditions`
 -   The `Springy\Files\File` class was moved to `Springy\Utils` namespace
 -   The `Springy\Files\UploadedFile` class was moved to `Springy\HTTP` namespace
 -   The `Springy\Mail` class was moved and renamed to `Springy\Mail\Mailer`
@@ -112,7 +113,7 @@
 -   Method `Springy\DB->serverVersion()` was renamed to `Springy\Database\Connection->getServerVersion()`
 -   Method `Springy\DB->statmentErrorCode()` was renamed to `Springy\Database\Connection->getStatmentErrorCode()`
 -   Method `Springy\DB->statmentErrorInfo()` was renamed to `Springy\Database\Connection->getStatmentErrorInfo()`
--   Method `Springy\DB\Conditions->condition()` was renamed to `Springy\Database\Conditions->add()`
+-   Method `Springy\DB\Conditions->condition()` was renamed to `Springy\Database\Query\Conditions->add()`
 -   Method `Springy\Kernel::addIgnoredError()` moved to `Springy\Exceptions\Handler->addIgnoredError()`
 -   Method `Springy\Kernel::delIgnoredError()` moved to `Springy\Exceptions\Handler->delIgnoredError()`
 -   Method `Springy\Kernel::environment()` was separated in `Springy\Core\Kernel->getEnvironment()` and `Springy\Core\Kernel->setEnvironment()`

@@ -1,10 +1,10 @@
 <?php
 
-namespace Springy\Database;
+namespace Springy\Database\Query;
 
 use Springy\Exceptions\SpringyException;
 
-class DatabaseCommand implements OperatorComparationInterface, OperatorGroupInterface
+class CommandBase implements OperatorComparationInterface, OperatorGroupInterface
 {
     protected $columns = [];
     protected $conditions;
@@ -24,10 +24,6 @@ class DatabaseCommand implements OperatorComparationInterface, OperatorGroupInte
 
     protected function addCol(string $statement, string $alias = null)
     {
-        if ($this->table === null) {
-
-        }
-
         if ($alias !== null) {
             $statement .= ' AS '.$alias;
         }

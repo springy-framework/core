@@ -1,6 +1,6 @@
 <?php
 /**
- * Test case for Springy\Database\Select class.
+ * Test case for Springy\Database\Query\Select class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -9,8 +9,8 @@
  * @version   1.0.0
  */
 use PHPUnit\Framework\TestCase;
-use Springy\Database\Where;
-use Springy\Database\Join;
+use Springy\Database\Query\Where;
+use Springy\Database\Query\Join;
 use Springy\Exceptions\SpringyException;
 
 class JoinTest extends TestCase

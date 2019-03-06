@@ -1,6 +1,6 @@
 <?php
 /**
- * Test case for Springy\Database\Conditions class.
+ * Test case for Springy\Database\Query\Conditions class.
  *
  * @copyright 2016 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -9,8 +9,8 @@
  * @version   2.0.0
  */
 use PHPUnit\Framework\TestCase;
-use Springy\Database\Condition;
-use Springy\Database\Conditions;
+use Springy\Database\Query\Condition;
+use Springy\Database\Query\Conditions;
 
 class ConditionsTest extends TestCase
 {

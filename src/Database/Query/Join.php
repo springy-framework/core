@@ -1,10 +1,19 @@
 <?php
+/**
+ * SQL JOIN clause constructor class.
+ *
+ * @copyright 2019 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   1.0.0
+ */
 
-namespace Springy\Database;
+namespace Springy\Database\Query;
 
 use Springy\Exceptions\SpringyException;
 
-class Join extends DatabaseCommand implements OperatorComparationInterface, OperatorGroupInterface
+class Join extends CommandBase implements OperatorComparationInterface, OperatorGroupInterface
 {
     const INNER = 'INNER JOIN';
     const LEFT_OUTER = 'LEFT OUTER JOIN';

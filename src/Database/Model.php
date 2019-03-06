@@ -13,6 +13,9 @@
 namespace Springy\Database;
 
 use Iterator;
+use Springy\Database\Query\Conditions;
+use Springy\Database\Query\Select;
+use Springy\Database\Query\Where;
 use Springy\Exceptions\SpringyException;
 
 class Model implements Iterator

@@ -10,7 +10,7 @@
  */
 use PHPUnit\Framework\TestCase;
 use Springy\Database\Model;
-use Springy\Database\Where;
+use Springy\Database\Query\Where;
 
 class ModelTest extends TestCase
 {

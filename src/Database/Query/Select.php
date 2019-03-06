@@ -1,6 +1,6 @@
 <?php
 /**
- * SQL SELECT class constructor.
+ * SQL SELECT command constructor class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -9,11 +9,12 @@
  * @version   1.0.0
  */
 
-namespace Springy\Database;
+namespace Springy\Database\Query;
 
+use Springy\Database\Connection;
 use Springy\Exceptions\SpringyException;
 
-class Select extends DatabaseCommand implements OperatorComparationInterface, OperatorGroupInterface
+class Select extends CommandBase implements OperatorComparationInterface, OperatorGroupInterface
 {
     const ORDER_ASC = 'ASC';
     const ORDER_DESC = 'DESC';

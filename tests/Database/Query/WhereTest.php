@@ -1,6 +1,6 @@
 <?php
 /**
- * Test case for Springy\Database\Where class.
+ * Test case for Springy\Database\Query\Where class.
  *
  * @copyright 2016 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -8,7 +8,7 @@
  * @version   1.1.0
  */
 use PHPUnit\Framework\TestCase;
-use Springy\Database\Where;
+use Springy\Database\Query\Where;
 
 class WhereTest extends TestCase
 {

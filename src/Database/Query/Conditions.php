@@ -1,6 +1,6 @@
 <?php
 /**
- * Class to construct database conditions clauses.
+ * Database conditions clauses constructor class.
  *
  * @copyright 2016 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -9,7 +9,7 @@
  * @version   1.0.0
  */
 
-namespace Springy\Database;
+namespace Springy\Database\Query;
 
 use Springy\Exceptions\SpringyException;
 
