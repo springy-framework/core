@@ -22,7 +22,7 @@ class SelectTest extends TestCase
     public function setUp()
     {
         $connection = new Connection('mysql');
-        $this->select = new Select($connection, 'test');
+        $this->select = new Select($connection, 'test_spf');
     }
 
     public function testEmptyColumns()
@@ -33,69 +33,70 @@ class SelectTest extends TestCase
 
     public function testSimpleSelect()
     {
-        $this->select->addColumn('column1');
+        $this->select->addColumn('name');
 
-        $sql = 'SELECT test.column1 FROM test';
+        $sql = 'SELECT test_spf.name FROM test_spf';
         $this->assertEquals($sql, (string) $this->select);
     }
 
     public function testSelectWithOrderBy()
     {
-        $this->select->addColumn('column1');
-        $this->select->addColumn('column2');
-        $this->select->addOrderBy('column1');
-        $this->select->addOrderBy('column2', Select::ORDER_DESC);
+        $this->select->addColumn('id');
+        $this->select->addColumn('name');
+        $this->select->addOrderBy('name');
+        $this->select->addOrderBy('id', Select::ORDER_DESC);
 
-        $sql = 'SELECT test.column1, test.column2 FROM test ORDER BY column1, column2 DESC';
+        $sql = 'SELECT test_spf.id, test_spf.name FROM test_spf ORDER BY name, id DESC';
         $this->assertEquals($sql, (string) $this->select);
 
-        $this->select->setOrderBy(['column2' => Select::ORDER_ASC]);
-        $sql = 'SELECT test.column1, test.column2 FROM test ORDER BY column2';
+        $this->select->setOrderBy(['name' => Select::ORDER_ASC]);
+        $sql = 'SELECT test_spf.id, test_spf.name FROM test_spf ORDER BY name';
         $this->assertEquals($sql, (string) $this->select);
     }
 
     public function testSelectWithOffset()
     {
-        $this->select->addColumn('column1');
+        $this->select->addColumn('name');
         $this->select->setOffset(1).
 
-        $sql = 'SELECT test.column1 FROM test OFFSET 1';
+        $sql = 'SELECT test_spf.name FROM test_spf OFFSET 1';
         $this->assertEquals($sql, (string) $this->select);
     }
 
     public function testSelectWithLimit()
     {
-        $this->select->addColumn('column1');
+        $this->select->addColumn('id');
         $this->select->setLimit(10).
 
-        $sql = 'SELECT test.column1 FROM test LIMIT 10';
+        $sql = 'SELECT test_spf.id FROM test_spf LIMIT 10';
         $this->assertEquals($sql, (string) $this->select);
     }
 
     public function testSelectWithLimitOffset()
     {
-        $this->select->addColumn('column1');
+        $this->select->addColumn('name');
         $this->select->setLimit(10).
         $this->select->setOffset(1).
 
-        $sql = 'SELECT test.column1 FROM test LIMIT 10 OFFSET 1';
+        $sql = 'SELECT test_spf.name FROM test_spf LIMIT 10 OFFSET 1';
         $this->assertEquals($sql, (string) $this->select);
     }
 
     public function testSelectWithAliasForTableName()
     {
-        $this->select->setTable('test', 't');
-        $this->select->addColumn('column1');
+        $this->select->setTable('test_spf', 't');
+        $this->select->addColumn('id');
+        $this->select->addColumn('name');
 
-        $sql = 'SELECT t.column1 FROM test AS t';
+        $sql = 'SELECT t.id, t.name FROM test_spf AS t';
         $this->assertEquals($sql, (string) $this->select);
     }
 
     public function testSelectWithAliasForFieldName()
     {
-        $this->select->addColumn('column1', 'the_col');
+        $this->select->addColumn('name', 'person');
 
-        $sql = 'SELECT test.column1 AS the_col FROM test';
+        $sql = 'SELECT test_spf.name AS person FROM test_spf';
         $this->assertEquals($sql, (string) $this->select);
     }
 
@@ -107,28 +108,28 @@ class SelectTest extends TestCase
         $this->select->addSum('column1', 'total');
         $this->select->addFunction('AVG(column1)', '`average`');
 
-        $sql = 'SELECT COUNT(0) AS qtty, MAX(column1) AS major, MIN(column1) AS minor, SUM(column1) AS total, AVG(column1) AS `average` FROM test';
+        $sql = 'SELECT COUNT(0) AS qtty, MAX(column1) AS major, MIN(column1) AS minor, SUM(column1) AS total, AVG(column1) AS `average` FROM test_spf';
         $this->assertEquals($sql, (string) $this->select);
     }
 
     public function testSelectGroup()
     {
-        $this->select->addColumn('column1');
+        $this->select->addColumn('name');
         $this->select->addSum('0', 'quantity');
-        $this->select->addGroupBy('column1');
+        $this->select->addGroupBy('name');
 
-        $sql = 'SELECT test.column1, SUM(0) AS quantity FROM test GROUP BY column1';
+        $sql = 'SELECT test_spf.name, SUM(0) AS quantity FROM test_spf GROUP BY name';
         $this->assertEquals($sql, (string) $this->select);
     }
 
     public function testSelectGroupAndHaving()
     {
-        $this->select->addColumn('column1');
+        $this->select->addColumn('id');
         $this->select->addSum('0', 'quantity');
-        $this->select->addGroupBy('column1');
+        $this->select->addGroupBy('id');
         $this->select->addHaving('quantity', 1, Where::OP_GREATER);
 
-        $sql = 'SELECT test.column1, SUM(0) AS quantity FROM test GROUP BY column1 HAVING quantity > ?';
+        $sql = 'SELECT test_spf.id, SUM(0) AS quantity FROM test_spf GROUP BY id HAVING quantity > ?';
         $this->assertEquals($sql, (string) $this->select);
         $this->assertEquals([1], $this->select->params());
     }
@@ -138,10 +139,10 @@ class SelectTest extends TestCase
         $this->select->addColumn('id');
 
         $join = new Join('table2');
-        $join->addOnColumns('table2.id', 'test.foreign_id');
+        $join->addOnColumns('table2.id', 'test_spf.id');
         $this->select->addJoin($join);
 
-        $sql = 'SELECT test.id FROM test INNER JOIN table2 ON table2.id = test.foreign_id';
+        $sql = 'SELECT test_spf.id FROM test_spf INNER JOIN table2 ON table2.id = test_spf.id';
         $this->assertEquals($sql, (string) $this->select);
     }
 
@@ -150,26 +151,43 @@ class SelectTest extends TestCase
         $this->select->addColumn('id');
 
         $join = new Join('table2', Join::LEFT_OUTER);
-        $join->addOnColumns('table2.id', 'test.foreign_id');
-        $join->addColumn('col3');
+        $join->addOnColumns('table2.id', 'test_spf.id');
+        $join->addColumn('surname');
         $this->select->addJoin($join);
 
-        $this->select->addColumn('foo');
+        $this->select->addColumn('name');
 
-        $sql = 'SELECT test.id, table2.col3, test.foo FROM test LEFT OUTER JOIN table2 ON table2.id = test.foreign_id';
+        $sql = 'SELECT test_spf.id, table2.surname, test_spf.name FROM test_spf LEFT OUTER JOIN table2 ON table2.id = test_spf.id';
         $this->assertEquals($sql, (string) $this->select);
     }
 
     public function testWithWhere()
     {
-        $this->select->addSum('column1', 'quantity');
+        $this->select->addSum('0', 'quantity');
 
         $where = new Where();
-        $where->add('column1', 3, Where::OP_GREATER);
+        $where->add('id', 3, Where::OP_GREATER);
         $this->select->setWhere($where);
 
-        $sql = 'SELECT SUM(column1) AS quantity FROM test WHERE column1 > ?';
+        $sql = 'SELECT SUM(0) AS quantity FROM test_spf WHERE id > ?';
         $this->assertEquals($sql, (string) $this->select);
         $this->assertEquals([3], $this->select->params());
+    }
+
+    public function testRun()
+    {
+        $this->select->addColumn('name');
+
+        $where = new Where();
+        $where->add('id', 2, Where::OP_GREATER_EQUAL);
+        $where->add('id', 4, Where::OP_LESS_EQUAL);
+        $this->select->setWhere($where);
+
+        $rows = $this->select->run();
+        $this->assertEquals([
+            ['name' => 'Marge'],
+            ['name' => 'Lisa'],
+            ['name' => 'Bart'],
+        ], $rows);
     }
 }

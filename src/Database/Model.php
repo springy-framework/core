@@ -152,6 +152,13 @@ class Model implements Iterator
         $this->set($name, $value);
     }
 
+    /**
+     * Fetches the current row as array or object.
+     *
+     * @param array|bool $row
+     *
+     * @return array|object|bool
+     */
     protected function fetchRow($row)
     {
         if (is_bool($row)) {
@@ -181,11 +188,28 @@ class Model implements Iterator
         return $columns;
     }
 
-    public function addGroupBy(string $col)
+    /**
+     * Adds a statement to the group by clause.
+     *
+     * @param string $statement
+     *
+     * @return void
+     */
+    public function addGroupBy(string $statement)
     {
-        $this->groupBy[] = $col;
+        $this->groupBy[] = $statement;
     }
 
+    /**
+     * Adds a statement to the having clause.
+     *
+     * @param string $statement
+     * @param mixed  $value
+     * @param string $operator
+     * @param string $expression
+     *
+     * @return void
+     */
     public function addHaving(
         string $statement,
         $value = null,
@@ -195,21 +219,43 @@ class Model implements Iterator
         $this->having->add($statement, $value, $operator, $expression);
     }
 
+    /**
+     * Adds a Join object to the list.
+     *
+     * @param Join $join
+     *
+     * @return void
+     */
     public function addJoin(Join $join)
     {
         $this->joins[] = $join;
     }
 
+    /**
+     * Clears the group by clause.
+     *
+     * @return void
+     */
     public function clearGroupBy()
     {
         $this->groupBy = [];
     }
 
+    /**
+     * Clears the having clause.
+     *
+     * @return void
+     */
     public function clearHaving()
     {
         $this->having->clear();
     }
 
+    /**
+     * Clears the join clause.
+     *
+     * @return void
+     */
     public function clearJoin()
     {
         $this->joins = [];
@@ -359,11 +405,25 @@ class Model implements Iterator
         // $this->calculateColumns();
     }
 
+    /**
+     * Turns the fetch mode as object on|off.
+     *
+     * @param bool $asObject
+     *
+     * @return void
+     */
     public function setFetchAsObject(bool $asObject)
     {
         $this->fetchAsObject = $asObject;
     }
 
+    /**
+     * Sets the group by clause list.
+     *
+     * @param array $groupBy
+     *
+     * @return void
+     */
     public function setGroupBy(array $groupBy)
     {
         $this->groupBy = [];
@@ -373,6 +433,13 @@ class Model implements Iterator
         }
     }
 
+    /**
+     * Sets the having clause conditions.
+     *
+     * @param Conditions $having
+     *
+     * @return void
+     */
     public function setHaving(Conditions $having)
     {
         $this->having = $having;

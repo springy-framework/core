@@ -21,7 +21,7 @@ class InsertTest extends TestCase
     public function setUp()
     {
         $connection = new Connection('mysql');
-        $this->insert = new Insert($connection, 'test');
+        $this->insert = new Insert($connection, 'test_spf');
     }
 
     public function testEmptyColumns()
@@ -32,79 +32,101 @@ class InsertTest extends TestCase
 
     public function testSimpleInsert()
     {
-        $this->insert->addValue('name', 'Apu');
+        $this->insert->addValue('name', 'Apuh');
 
-        $sql = 'INSERT INTO test(name) VALUES (?)';
+        $sql = 'INSERT INTO test_spf(name) VALUES (?)';
         $this->assertEquals($sql, (string) $this->insert);
-        $this->assertEquals(['Apu'], $this->insert->params());
+        $this->assertEquals(['Apuh'], $this->insert->params());
     }
 
     public function testPriorityInsert()
     {
-        $this->insert->addValue('name', 'Apu');
+        $this->insert->addValue('name', 'Apuh');
         $this->insert->setPriority(Insert::MYSQL_HIGH_PRIORITY);
 
-        $sql = 'INSERT HIGH_PRIORITY INTO test(name) VALUES (?)';
+        $sql = 'INSERT HIGH_PRIORITY INTO test_spf(name) VALUES (?)';
         $this->assertEquals($sql, (string) $this->insert);
-        $this->assertEquals(['Apu'], $this->insert->params());
+        $this->assertEquals(['Apuh'], $this->insert->params());
     }
 
     public function testInsertIgnore()
     {
-        $this->insert->addValue('name', 'Apu');
+        $this->insert->addValue('name', 'Apuh');
         $this->insert->setIgnoreError(true);
 
-        $sql = 'INSERT IGNORE INTO test(name) VALUES (?)';
+        $sql = 'INSERT IGNORE INTO test_spf(name) VALUES (?)';
         $this->assertEquals($sql, (string) $this->insert);
 
         $this->insert->setPriority(Insert::MYSQL_LOW_PRIORITY);
-        $sql = 'INSERT LOW_PRIORITY IGNORE INTO test(name) VALUES (?)';
+        $sql = 'INSERT LOW_PRIORITY IGNORE INTO test_spf(name) VALUES (?)';
     }
 
     public function testInsertIgnoreSqlite()
     {
         $connection = new Connection('sqlite');
-        $this->insert = new Insert($connection, 'test');
-        $this->insert->addValue('name', 'Apu');
+        $this->insert = new Insert($connection, 'test_spf');
+        $this->insert->addValue('name', 'Apuh');
         $this->insert->setIgnoreError(true);
 
-        $sql = 'INSERT OR IGNORE INTO test(name) VALUES (?)';
+        $sql = 'INSERT OR IGNORE INTO test_spf(name) VALUES (?)';
         $this->assertEquals($sql, (string) $this->insert);
     }
 
     public function testInsertIgnorePostgre()
     {
         $connection = new Connection('postgres');
-        $this->insert = new Insert($connection, 'test');
-        $this->insert->addValue('name', 'Apu');
+        $this->insert = new Insert($connection, 'test_spf');
+        $this->insert->addValue('name', 'Apuh');
         $this->insert->setIgnoreError(true);
 
-        $sql = 'INSERT INTO test(name) VALUES (?) ON CONFLICT DO NOTHING';
+        $sql = 'INSERT INTO test_spf(name) VALUES (?) ON CONFLICT DO NOTHING';
         $this->assertEquals($sql, (string) $this->insert);
     }
 
     public function testComplexInsert()
     {
-        $this->insert->addValue('name', 'Apu');
+        $this->insert->addValue('name', 'Apuh');
         $this->insert->addValue('inserted_at', 'NOW()', true);
 
-        $sql = 'INSERT INTO test(name, inserted_at) VALUES (?, NOW())';
+        $sql = 'INSERT INTO test_spf(name, inserted_at) VALUES (?, NOW())';
         $this->assertEquals($sql, (string) $this->insert);
-        $this->assertEquals(['Apu'], $this->insert->params());
+        $this->assertEquals(['Apuh'], $this->insert->params());
     }
 
     public function testMultiRowInsert()
     {
         $this->insert->addValues([
-            new Value('name', 'Apu'),
+            new Value('name', 'Apuh'),
         ]);
 
         $this->insert->addValues([
             new Value('name', 'Nelson'),
         ]);
 
-        $sql = 'INSERT INTO test(name) VALUES (?), (?)';
+        $sql = 'INSERT INTO test_spf(name) VALUES (?), (?)';
         $this->assertEquals($sql, (string) $this->insert);
-        $this->assertEquals(['Apu', 'Nelson'], $this->insert->params());
+        $this->assertEquals(['Apuh', 'Nelson'], $this->insert->params());
+    }
+
+    public function testRun()
+    {
+        $this->insert->addValues([
+            new Value('name', 'Millhouse'),
+        ]);
+
+        $this->insert->addValues([
+            new Value('name', 'Nad'),
+        ]);
+
+        $this->insert->addValues([
+            new Value('name', 'Lenny'),
+        ]);
+
+        $this->insert->addValues([
+            new Value('name', 'Krusty'),
+        ]);
+
+        $rows = $this->insert->run();
+        $this->assertEquals(4, $rows);
     }
 }

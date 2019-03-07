@@ -47,6 +47,7 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
      */
     public function __construct(Connection $connection, string $table = null, string $alias = null)
     {
+        $this->conditions = new Where();
         $this->connection = $connection;
         $this->having = new Conditions();
         $this->groupBy = [];
@@ -57,8 +58,6 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
         $this->table = $table;
         $this->tableAlias = $alias;
         $this->rows = [];
-
-        parent::__construct();
     }
 
     /**

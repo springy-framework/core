@@ -73,8 +73,12 @@ class TestSpf extends Model
 {
     protected $table = 'test_spf';
     protected $columns = [
-        'id' => [],
-        'name' => [],
+        'id' => [
+            'type' => 'int',
+        ],
+        'name' => [
+            'type' => 'string',
+        ],
     ];
     protected $primaryKey = ['id'];
     protected $dbIdentity = 'mysql';

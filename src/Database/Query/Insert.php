@@ -30,6 +30,12 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
     /** @var array the array if values to insert */
     protected $values;
 
+    /**
+     * Constructor.
+     *
+     * @param Connection $connection
+     * @param string     $table
+     */
     public function __construct(Connection $connection, string $table = null)
     {
         $this->connection = $connection;
@@ -223,6 +229,16 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
 
             $this->addValueObj($value);
         }
+    }
+
+    /**
+     * Runs the INSERT command and returns the quantity of affected rows.
+     *
+     * @return int
+     */
+    public function run(): int
+    {
+        return $this->connection->insert($this->__toString(), $this->parameters);
     }
 
     /**

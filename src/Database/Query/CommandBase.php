@@ -250,6 +250,19 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
      *
      * @return void
      */
+    public function setAlias(string $alias)
+    {
+        $this->tableAlias = $alias;
+    }
+
+    /**
+     * Sets the table name and alias if defined.
+     *
+     * @param string $table
+     * @param string $alias
+     *
+     * @return void
+     */
     public function setTable(string $table, string $alias = null)
     {
         $this->table = $table;
