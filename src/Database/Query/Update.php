@@ -23,17 +23,23 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
     /** @var array the array of parameters filled after cast to string */
     protected $parameters;
     /** @var bool throws error if there is no condition */
-    protected $safeUpdate;
+    protected $safeMode;
     /** @var array the array if values to update */
     protected $values;
 
+    /**
+     * Constructor.
+     *
+     * @param Connection $connection
+     * @param string     $table
+     */
     public function __construct(Connection $connection, string $table = null)
     {
         $this->conditions = new Where();
         $this->connection = $connection;
         $this->joins = [];
         $this->parameters = [];
-        $this->safeUpdate = true;
+        $this->safeMode = true;
         $this->table = $table;
         $this->values = [];
     }
@@ -126,8 +132,8 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
      */
     protected function strWhere(): string
     {
-        if ($this->safeUpdate && !$this->conditions->count()) {
-            throw new SpringyException('Update without conditions is dangerous.');
+        if ($this->safeMode && !$this->conditions->count()) {
+            throw new SpringyException('UPDATE without conditions is dangerous.');
         }
 
         $where = $this->conditions->parse();
@@ -197,15 +203,15 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
     }
 
     /**
-     * Turns the safe update mode on|off
+     * Turns the safe update mode on|off.
      *
      * @param bool $safe
      *
      * @return void
      */
-    public function setSafeUpdate(bool $safe)
+    public function setSafeMode(bool $safe)
     {
-        $this->safeUpdate = $safe;
+        $this->safeMode = $safe;
     }
 
     /**

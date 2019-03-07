@@ -1,6 +1,6 @@
 <?php
 /**
- * Test case for Springy\Database\Query\Select class.
+ * Test case for Springy\Database\Query\Join class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>

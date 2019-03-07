@@ -1,6 +1,6 @@
 <?php
 /**
- * Test case for Springy\Database\Query\Insert class.
+ * Test case for Springy\Database\Query\Update class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -12,7 +12,6 @@ use PHPUnit\Framework\TestCase;
 use Springy\Database\Connection;
 use Springy\Database\Query\Join;
 use Springy\Database\Query\Update;
-use Springy\Database\Query\Value;
 use Springy\Exceptions\SpringyException;
 
 class UpdateTest extends TestCase
@@ -36,7 +35,7 @@ class UpdateTest extends TestCase
     public function testUpdateWithoutSafeMode()
     {
         $this->update->addValue('name', 'Homer Simpson');
-        $this->update->setSafeUpdate(false);
+        $this->update->setSafeMode(false);
 
         $sql = 'UPDATE test_spf SET name = ?';
         $this->assertEquals($sql, (string) $this->update);
