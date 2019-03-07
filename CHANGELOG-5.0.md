@@ -33,6 +33,7 @@
 -   Added `Springy\Database\Query\OperatorComparationInterface` interface
 -   Added `Springy\Database\Query\OperatorGroupInterface` interface
 -   Added `Springy\Database\Query\Select` class
+-   Added `Springy\Database\Query\Value` class
 -   Added `Springy\Exceptions\Handler` class
 -   Added `Springy\Exceptions\Http403Error` class
 -   Added `Springy\Exceptions\Http404Error` class

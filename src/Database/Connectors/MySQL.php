@@ -1,6 +1,6 @@
 <?php
 /**
- * DMBS connector for MySQL servers.
+ * DBMS connector for MySQL servers.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -119,6 +119,13 @@ class MySQL extends Connector implements ConnectorInterface
         $this->socket = $socket;
     }
 
+    /**
+     * Converts SELECT to COUNT rows format.
+     *
+     * @param string $select
+     *
+     * @return string
+     */
     public function foundRowsSelect(string $select): string
     {
         $reg = '/^(SELECT )(.*)$/mi';
@@ -137,6 +144,13 @@ class MySQL extends Connector implements ConnectorInterface
         return 'mysql:'.$this->getHostOrSocket().';dbname='.$this->database;
     }
 
+    /**
+     * Converts SELECT command to its optimized form when limiting rows.
+     *
+     * @param string $select
+     *
+     * @return string
+     */
     public function paginatedSelect(string $select): string
     {
         $reg = '/^(SELECT )(SQL_CALC_FOUND_ROWS ){0}((.*)( LIMIT [\d]+)( OFFSET [\d]+)?.*){1}$/mi';

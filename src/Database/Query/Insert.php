@@ -16,29 +16,57 @@ use Springy\Exceptions\SpringyException;
 
 class Insert extends CommandBase implements OperatorComparationInterface, OperatorGroupInterface
 {
+    const MYSQL_HIGH_PRIORITY = 'HIGH_PRIORITY';
+    const MYSQL_LOW_PRIORITY = 'LOW_PRIORITY';
+
+    /** @var Connection the connection object */
     protected $connection;
+    /** @var bool turns on/off error be ignored */
+    protected $ignoreError;
+    /** @var array the array of parameters filled after cast to string */
     protected $parameters;
+    /** @var string priority modifier */
+    protected $priority;
+    /** @var array the array if values to insert */
     protected $values;
 
     public function __construct(Connection $connection, string $table = null)
     {
         $this->connection = $connection;
+        $this->ignoreError = false;
         $this->parameters = [];
+        $this->priority = '';
         $this->table = $table;
         $this->values = [];
     }
 
+    /**
+     * Converts the object to its string form.
+     *
+     * @return string
+     */
     public function __toString()
     {
         $this->parameters = [];
 
-        $insert = 'INSERT INTO '.$this->getTableName()
+        $insert = $this->fetchIgnoreError(
+            'INSERT '
+            .($this->priority ? $this->priority.' ' : '')
+            .'INTO '.$this->getTableName()
             .'('.$this->strColumns().') VALUES '
-            .$this->strValues();
+            .$this->strValues()
+        );
 
         return $insert;
     }
 
+    /**
+     * Adds a object Value to current values list.
+     *
+     * @param Value $value
+     *
+     * @return void
+     */
     protected function addValueObj(Value $value)
     {
         if (!in_array($value->getColumn(), $this->columns)) {
@@ -59,7 +87,56 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
         $this->values[$key][$value->getColumn()] = $value;
     }
 
-    protected function strColValues(array $values)
+    /**
+     * Gets the connector class name without namespace.
+     *
+     * @return string
+     */
+    protected function getConnectorClass(): string
+    {
+        return str_replace(
+            'Springy\\Database\\Connectors\\', '',
+            get_class($this->connection->getConnector())
+        );
+    }
+
+    /**
+     * Parses INSERT string with ignore error.
+     *
+     * @param string $select
+     *
+     * @return string
+     */
+    protected function fetchIgnoreError(string $select): string
+    {
+        if (!$this->ignoreError) {
+            return $select;
+        }
+
+        $connector = $this->getConnectorClass();
+
+        $regex = [
+            'MySQL'      => '^(INSERT ((HIGH|LOW)_PRIORITY )?)(.+)$',
+            'PostgreSQL' => '^(.+)$',
+            'SQLite'     => '^(INSERT ((HIGH|LOW)_PRIORITY )?)(.+)$',
+        ];
+        $replace = [
+            'MySQL'      => '$1IGNORE $4',
+            'PostgreSQL' => '$1 ON CONFLICT DO NOTHING',
+            'SQLite'     => '$1OR IGNORE $4',
+        ];
+
+        return preg_replace('/'.$regex[$connector].'/', $replace[$connector], $select);
+    }
+
+    /**
+     * Returns the values string.
+     *
+     * @param array $values
+     *
+     * @return string
+     */
+    protected function strColValues(array $values): string
     {
         if (!count($values)) {
             throw new SpringyException('Empty column values set.');
@@ -89,7 +166,14 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
         return rtrim($strValues, ', ').')';
     }
 
-    protected function strValues()
+    /**
+     * Returns the VALUES clause string.
+     *
+     * @throws SpringyException
+     *
+     * @return string
+     */
+    protected function strValues(): string
     {
         if (!count($this->values)) {
             throw new SpringyException('Empty values set.');
@@ -120,6 +204,13 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
         $this->addValueObj(new Value($column, $value, $isExpression));
     }
 
+    /**
+     * Adds a list of values.
+     *
+     * @param array $values
+     *
+     * @return void
+     */
     public function addValues(array $values)
     {
         $this->values[] = [];
@@ -132,5 +223,44 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
 
             $this->addValueObj($value);
         }
+    }
+
+    /**
+     * Turns the ignore error on/off.
+     *
+     * @param bool $ignore
+     *
+     * @return void
+     */
+    public function setIgnoreError(bool $ignore)
+    {
+        $this->ignoreError = $ignore;
+    }
+
+    /**
+     * Sets priority modifier.
+     *
+     * @param string $priority
+     *
+     * @return void
+     */
+    public function setPriority(string $priority)
+    {
+        $priorities = [
+            'MySQL' => [
+                self::MYSQL_HIGH_PRIORITY,
+                self::MYSQL_LOW_PRIORITY,
+            ],
+        ];
+
+        $connector = $this->getConnectorClass();
+
+        if (!isset($priorities[$connector])) {
+            throw new SpringyException('Connector "'.$connector.'" does not support priority.');
+        } elseif (!in_array(strtoupper($priority), $priorities[$connector])) {
+            throw new SpringyException('Unknown priority modifier.');
+        }
+
+        $this->priority = strtoupper($priority);
     }
 }

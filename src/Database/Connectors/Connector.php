@@ -1,6 +1,6 @@
 <?php
 /**
- * DMBS connector basic implementation.
+ * DBMS connector basic implementation.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -211,6 +211,13 @@ class Connector
         return $this->encloseCharOpn.$keyword.$this->encloseCharCls;
     }
 
+    /**
+     * Converts SELECT to COUNT rows format.
+     *
+     * @param string $select
+     *
+     * @return string
+     */
     public function foundRowsSelect(string $select): string
     {
         $reg = '/(SELECT )(.*)( FROM .*)( ORDER BY .+)?( GROUP BY .+( HAVING .*)?)( LIMIT [\d]+)( OFFSET [\d]+.*)?/mi';
@@ -259,6 +266,13 @@ class Connector
         return $this->username;
     }
 
+    /**
+     * Converts SELECT command to its optimized form when limiting rows.
+     *
+     * @param string $select
+     *
+     * @return string
+     */
     public function paginatedSelect(string $select): string
     {
         $reg = '/^(SELECT )(.*)$/mi';

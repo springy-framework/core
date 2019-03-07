@@ -1,6 +1,6 @@
 <?php
 /**
- * DMBS connector for PostgreSQL servers.
+ * DBMS connector for PostgreSQL servers.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -96,6 +96,15 @@ class PostgreSQL extends Connector implements ConnectorInterface
         $this->host = $host;
     }
 
+    /**
+     * Converts SELECT to COUNT rows format.
+     *
+     * No needed for PostgreSQL if counter are in each rows when using OVER() clause.
+     *
+     * @param string $select
+     *
+     * @return string
+     */
     public function foundRowsSelect(string $select): string
     {
         $reg = '/^(SELECT )(.*)$/mi';
@@ -115,6 +124,13 @@ class PostgreSQL extends Connector implements ConnectorInterface
             .';port='.$this->port.';dbname='.$this->database.$this->ssl;
     }
 
+    /**
+     * Converts SELECT command to its optimized form when limiting rows.
+     *
+     * @param string $select
+     *
+     * @return string
+     */
     public function paginatedSelect(string $select): string
     {
         $reg = '/^(SELECT )(.+)( FROM (.*)( LIMIT [\d]+)( OFFSET [\d]+)?.*){1}$/mi';
