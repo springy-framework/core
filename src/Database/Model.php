@@ -14,7 +14,9 @@ namespace Springy\Database;
 
 use Iterator;
 use Springy\Database\Query\Conditions;
+use Springy\Database\Query\Delete;
 use Springy\Database\Query\Select;
+use Springy\Database\Query\Update;
 use Springy\Database\Query\Where;
 use Springy\Exceptions\SpringyException;
 
@@ -39,7 +41,20 @@ class Model implements Iterator
     protected $columns = [];
 
     /**
+     * The name of column used as soft delete control.
+     *
+     * If undefined the model will catch them from columns list
+     * searching for column where property 'sd' => true.
+     *
+     * @var string
+     */
+    protected $deletedColumn;
+
+    /**
      * The primary key columns list.
+     *
+     * If empty the model will catch them from columns list
+     * searching for columns where property 'pk' => true.
      *
      * @var array
      */
@@ -86,6 +101,10 @@ class Model implements Iterator
      */
     protected $fetchAsObject = false;
 
+    /** @var bool turns triggers execution off */
+    protected $bypassTriggers;
+    /** @var array the current row key */
+    protected $currentKey;
     /** @var int the number of rows found by last select */
     protected $foundRows;
     /** @var array the group by elements */
@@ -108,6 +127,7 @@ class Model implements Iterator
      */
     public function __construct($filter = null, string $dbIdentity = null)
     {
+        $this->bypassTriggers = false;
         $this->dbIdentity = $dbIdentity ?? $this->dbIdentity;
         $this->foundRows = 0;
         $this->groupBy = [];
@@ -115,6 +135,9 @@ class Model implements Iterator
         $this->joins = [];
         $this->loaded = false;
         $this->rows = [];
+
+        $this->detectPK();
+        $this->detectSD();
 
         if ($filter === null) {
             return;
@@ -153,6 +176,131 @@ class Model implements Iterator
     }
 
     /**
+     * Builds the SQL object to delete rows with given condition.
+     *
+     * @param Where $where
+     *
+     * @return Delete|Update
+     */
+    protected function buildDelete(Where $where)
+    {
+        if ($this->deletedColumn) {
+            $delete = new Update(new Connection($this->dbIdentity), $this->table);
+            $delete->addValue($this->deletedColumn, 1);
+            $delete->setWhere($where);
+
+            return $delete;
+        }
+
+        $delete = new Delete(new Connection($this->dbIdentity), $this->table);
+        $delete->setWhere($where);
+
+        return $delete;
+    }
+
+    /**
+     * Builds the condition by given data.
+     *
+     * @param Where|int|string|array|null $where
+     *
+     * @throws SpringyException
+     *
+     * @return Where
+     */
+    protected function buildWhere($where = null): Where
+    {
+        $this->currentKey = [];
+
+        if ($where instanceof Where) {
+            return $where;
+        } elseif ((is_int($where) || is_string($where)) && count($this->primaryKey) === 1) {
+            $this->currentKey[] = $where;
+            $where = new Where();
+            $where->add($this->primaryKey[0], $this->currentKey[0]);
+        } elseif (is_array($where) && count($this->primaryKey) === count($where)) {
+            $this->currentKey = $where;
+            $where = new Where();
+            foreach ($this->primaryKey as $key => $value) {
+                $where->add($value, $this->currentKey[$key]);
+            }
+        }
+
+        if ($where instanceof Where) {
+            return $where;
+        }
+
+        throw new SpringyException('Invalid condition.');
+    }
+
+    /**
+     * Builds a Where object from primary key of the current row.
+     *
+     * @return Where
+     */
+    protected function buildWhereFromRow(): Where
+    {
+        if (!$this->hasPK()) {
+            throw new SpringyException('Current row has no primary key.');
+        }
+
+        $row = current($this->rows);
+        $where = new Where();
+
+        foreach ($this->primaryKey as $column) {
+            $where->add($column, $row[$column]);
+        }
+
+        return $where;
+    }
+
+    protected function checkTrigger(string $triggerName): bool
+    {
+        if ($this->bypassTriggers || !is_callable([$this, $triggerName])) {
+            return true;
+        }
+
+        return call_user_func([$this, $triggerName]);
+    }
+
+    /**
+     * Detects the primary key columns if not defined.
+     *
+     * @return void
+     */
+    protected function detectPK()
+    {
+        if (count($this->primaryKey)) {
+            return;
+        }
+
+        foreach ($this->columns as $name => $properties) {
+            if ($properties['pk'] ?? false) {
+                $this->primaryKey[] = $name;
+            }
+        }
+    }
+
+    /**
+     * Detects the soft deleted column if not defined.
+     *
+     * @return void
+     */
+    protected function detectSD()
+    {
+        if (is_string($this->deletedColumn)) {
+            return;
+        }
+
+        foreach ($this->columns as $name => $properties) {
+            if ($properties['sd'] ?? false) {
+                $this->deletedColumn = $name;
+
+                return;
+            }
+        }
+    }
+
+    /**
      * Fetches the current row as array or object.
      *
      * @param array|bool $row
@@ -186,6 +334,60 @@ class Model implements Iterator
         }
 
         return $columns;
+    }
+
+    /**
+     * Checks whether the primary key is set in the current row.
+     *
+     * @return bool
+     */
+    protected function hasPK(): bool
+    {
+        if (!$this->valid() || !count($this->primaryKey)) {
+            return false;
+        }
+
+        $row = current($this->rows);
+
+        foreach ($this->primaryKey as $column) {
+            if (!isset($row[$column])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function hasTriggers(array $triggers)
+    {
+        foreach ($triggers as $trigger) {
+            if (!is_callable([$this, $trigger])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function isCurrent(bool $current): bool
+    {
+        if ($current) {
+            return true;
+        }
+
+        if (!count($this->currentKey) || !$this->valid() || !$this->hasPK()) {
+            return false;
+        }
+
+        $row = current($this->rows);
+
+        foreach ($this->primaryKey as $index => $column) {
+            if ($row[$column] != $this->currentKey[$index]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -261,6 +463,38 @@ class Model implements Iterator
         $this->joins = [];
     }
 
+    public function delete($where = null): int
+    {
+        $current = false;
+
+        if ($where === null) {
+            $where = $this->buildWhereFromRow();
+            $current = true;
+        }
+
+        $filter = $this->buildWhere($where);
+        $current = $this->isCurrent($current);
+
+        $triggers = ['triggerBeforeDelete', 'triggerAfterDelete'];
+
+        if (!$current) {
+            // delete others
+            return 0;
+        }
+
+        $delete = $this->buildDelete($filter);
+
+        if (!$this->checkTrigger($triggers[0])) {
+            return 0;
+        }
+
+        $result = $delete->run();
+
+        $this->checkTrigger($triggers[1]);
+
+        return $result;
+    }
+
     /**
      * Returns the number of records found by the last select.
      *
@@ -294,6 +528,16 @@ class Model implements Iterator
     }
 
     /**
+     * Returns an array with the primary key columns.
+     *
+     * @return array
+     */
+    public function getPKColumns(): array
+    {
+        return $this->primaryKey;
+    }
+
+    /**
      * Returns whether the desired record has been loaded.
      *
      * @return bool
@@ -312,21 +556,9 @@ class Model implements Iterator
      */
     public function load($where)
     {
-        if ((is_int($where) || is_string($where)) && count($this->primaryKey) === 1) {
-            $key = $where;
-            $where = new Where();
-            $where->add($this->primaryKey[0], $key);
-        } elseif (is_array($where) && count($this->primaryKey) === count($where)) {
-            $keys = $where;
-            $where = new Where();
-            foreach ($this->primaryKey as $key => $value) {
-                $where->add($value, $keys[$key]);
-            }
-        } elseif (!($where instanceof Where)) {
-            throw new SpringyException('Invalid load condition.');
-        }
+        $filter = $this->buildWhere($where);
 
-        $this->select($where);
+        $this->select($filter);
         $this->loaded = ($this->foundRows === 1);
 
         return $this->loaded;
@@ -373,8 +605,7 @@ class Model implements Iterator
             return;
         }
 
-        $connection = new Connection($this->dbIdentity);
-        $select = new Select($connection, $this->table);
+        $select = new Select(new Connection($this->dbIdentity), $this->table);
         $select->setWhere($where);
         $select->setLimit($limit);
         $select->setOffset($offset);

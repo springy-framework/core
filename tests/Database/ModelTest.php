@@ -19,6 +19,7 @@ class ModelTest extends TestCase
         $model = new TestSpf();
 
         $this->assertInstanceOf(Model::class, $model);
+        $this->assertEquals(['id'], $model->getPKColumns());
     }
 
     public function testSimpleLoad()
@@ -67,6 +68,13 @@ class ModelTest extends TestCase
 
         $this->assertEquals(1, $obj->id);
     }
+
+    public function testDelete()
+    {
+        $model = new TestSpf(5);
+
+        $this->assertEquals(1, $model->delete());
+    }
 }
 
 class TestSpf extends Model
@@ -74,12 +82,12 @@ class TestSpf extends Model
     protected $table = 'test_spf';
     protected $columns = [
         'id' => [
+            'pk' => true,
             'type' => 'int',
         ],
         'name' => [
             'type' => 'string',
         ],
     ];
-    protected $primaryKey = ['id'];
     protected $dbIdentity = 'mysql';
 }
