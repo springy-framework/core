@@ -26,11 +26,16 @@ class ConnectionTest extends TestCase
             .'PRIMARY KEY (`id`))';
 
         $connection->run($sql);
-        $connection->run('TRUNCATE TABLE test_spf');
-        $connection->run('INSERT INTO test_spf(`name`) VALUES (\'Homer\'), (\'Marge\'), (\'Lisa\'), (\'Bart\'), (\'Maggie\'), (\'Santa\'\'s Helper\')');
-        $result = $connection->select('SELECT `id`, `name` FROM test_spf WHERE `id` BETWEEN ? AND ? ORDER BY `id`', [2, 5]);
-        $this->assertCount(4, $result);
+        $connection->run('TRUNCATE TABLE `test_spf`');
 
+        $result = $connection->insert(
+            'INSERT INTO `test_spf`(`name`) VALUES (?), (?), (?), (?), (?), (?), (?)',
+            ['Homer', 'Marge', 'Lisa', 'Bart', 'Meggy', 'Santa\'\'s Helper', 'Cat']
+        );
+        $this->assertEquals(7, $result);
+
+        $result = $connection->select('SELECT `id`, `name` FROM `test_spf` WHERE `id` BETWEEN ? AND ? ORDER BY `id`', [2, 5]);
+        $this->assertCount(4, $result);
         $this->assertEquals(4, $connection->affectedRows());
 
         $row = $connection->fetchFirst();
@@ -46,10 +51,16 @@ class ConnectionTest extends TestCase
         $this->assertEquals(2, $row['id'] ?? null);
 
         $row = $connection->fetchLast();
-        $this->assertEquals('Maggie', $row['name'] ?? null);
+        $this->assertEquals('Meggy', $row['name'] ?? null);
 
         $row = $connection->fetchCurrent();
         $this->assertEquals(5, $row['id'] ?? null);
+
+        $result = $connection->update('UPDATE `test_spf` SET `name` = ? WHERE `id` = ?', ['Grampa', 6]);
+        $this->assertEquals(1, $result);
+
+        $result = $connection->delete('DELETE FROM `test_spf` WHERE `id` = ?', [7]);
+        $this->assertEquals(1, $result);
     }
 
     public function testMySqlConnectionWithFileRoundRobin()

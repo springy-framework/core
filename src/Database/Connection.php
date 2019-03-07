@@ -399,21 +399,51 @@ class Connection
     }
 
     /**
-     * Runs a select query.
+     * Runs an delete query and returns the quantity of rows affected.
+     *
+     * @param string $query
+     * @param array  $params
+     *
+     * @return int
+     */
+    public function delete(string $query, array $params = []): int
+    {
+        $this->run($query, $params);
+
+        return $this->affectedRows();
+    }
+
+    /**
+     * Runs a insert query and returns the quantity of rows inserted.
+     *
+     * @param string $query
+     * @param array  $params
+     *
+     * @return int
+     */
+    public function insert(string $query, array $params = []): int
+    {
+        $this->run($query, $params);
+
+        return $this->affectedRows();
+    }
+
+    /**
+     * Runs a select query and returns the array of found rows.
      *
      * @param string $query
      * @param array  $params
      * @param int    $fetchStyle
      * @param int    $cacheLifeTime
      *
-     * @return array|bool
+     * @return array
      */
     public function select(
         string $query,
         array $params = [],
         int $fetchStyle = null,
         int $cacheLifeTime = 0
-    ) {
+    ): array {
         $this->cacheLifeTime = $cacheLifeTime;
         $this->run($query, $params);
         $this->fetchStyle = $fetchStyle ?? $this->fetchStyle;
@@ -421,6 +451,21 @@ class Connection
         $this->cacheLifeTime = 0;
 
         return $this->statement;
+    }
+
+    /**
+     * Runs an update query and returns the quantity of rows affected.
+     *
+     * @param string $query
+     * @param array  $params
+     *
+     * @return int
+     */
+    public function update(string $query, array $params = []): int
+    {
+        $this->run($query, $params);
+
+        return $this->affectedRows();
     }
 
     /**
