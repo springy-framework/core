@@ -19,7 +19,12 @@
 -   Added `Springy\Core\Kernel->httpResponse` method
 -   Added `Springy\Core\Kernel->setCharset` method
 -   Added `Springy\Core\Kernel->setUp` method
+-   Added `Springy\Database\Connection->delete()` method
 -   Added `Springy\Database\Connection->fetchCurrent()` method
+-   Added `Springy\Database\Connection->insert()` method
+-   Added `Springy\Database\Connection->run()` method
+-   Added `Springy\Database\Connection->select()` method
+-   Added `Springy\Database\Connection->update()` method
 -   Added `Springy\Database\Model->addJoin()` method
 -   Added `Springy\Database\Model->clearGroupBy()` method
 -   Added `Springy\Database\Model->setFetchAsObject()` method
@@ -33,6 +38,7 @@
 -   Added `Springy\Database\Query\OperatorComparationInterface` interface
 -   Added `Springy\Database\Query\OperatorGroupInterface` interface
 -   Added `Springy\Database\Query\Select` class
+-   Added `Springy\Database\Query\Update` class
 -   Added `Springy\Database\Query\Value` class
 -   Added `Springy\Exceptions\Handler` class
 -   Added `Springy\Exceptions\Http403Error` class
@@ -107,7 +113,6 @@
 -   Method `Springy\DB::connected()` is no more static and was renamed to `Springy\Database\Connection->isConnected()`
 -   Method `Springy\DB->errorCode()` was renamed to `Springy\Database\Connection->getErrorCode()`
 -   Method `Springy\DB->errorInfo()` was renamed to `Springy\Database\Connection->getErrorInfo()`
--   Method `Springy\DB->execute()` was renamed to `Springy\Database\Connection->run()`
 -   Method `Springy\DB->fetchNext()` was renamed to `Springy\Database\Connection->fetch()`
 -   Method `Springy\DB->driverName()` was renamed to `Springy\Database\Connection->getDriverName()`
 -   Method `Springy\DB->lastQuery()` was renamed to `Springy\Database\Connection->getLastQuery()`
@@ -188,6 +193,7 @@
 -   Removed `Springy\DB::makeDbDateTime()` method
 -   Removed `Springy\DB::rollBackAll()` method
 -   Removed `Springy\DB::transactionAllRollBack()` method
+-   Removed `Springy\DB->execute()` method. See new methods `run()`, `select()`, `insert()`, `delete()` and `update()` in `Springy\Database\Connection` class.
 -   Removed `Springy\DB->get_all()` method
 -   Removed `Springy\DB->num_rows()` method
 -   Removed `Springy\DB\Conditions->filter()` method
