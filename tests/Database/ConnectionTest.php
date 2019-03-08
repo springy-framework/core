@@ -23,13 +23,15 @@ class ConnectionTest extends TestCase
         $sql = 'CREATE TABLE IF NOT EXISTS `test_spf` ('
             .'`id` INT NOT NULL AUTO_INCREMENT, '
             .'`name` VARCHAR(20) NULL, '
+            .'`created` DATETIME NOT NULL, '
+            .'`deleted` TINYINT(1) NOT NULL DEFAULT \'0\', '
             .'PRIMARY KEY (`id`))';
 
         $connection->run($sql);
         $connection->run('TRUNCATE TABLE `test_spf`');
 
         $result = $connection->insert(
-            'INSERT INTO `test_spf`(`name`) VALUES (?), (?), (?), (?), (?), (?), (?)',
+            'INSERT INTO `test_spf`(`name`,`created`) VALUES (?, NOW()), (?, NOW()), (?, NOW()), (?, NOW()), (?, NOW()), (?, NOW()), (?, NOW())',
             ['Homer', 'Marge', 'Lisa', 'Bart', 'Meggy', 'Santa\'\'s Helper', 'Cat']
         );
         $this->assertEquals(7, $result);

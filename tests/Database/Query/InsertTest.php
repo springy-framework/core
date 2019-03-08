@@ -112,18 +112,22 @@ class InsertTest extends TestCase
     {
         $this->insert->addValues([
             new Value('name', 'Millhouse'),
+            new Value('created', 'NOW()', true),
         ]);
 
         $this->insert->addValues([
             new Value('name', 'Nad'),
+            new Value('created', 'NOW()', true),
         ]);
 
         $this->insert->addValues([
             new Value('name', 'Lenny'),
+            new Value('created', 'NOW()', true),
         ]);
 
         $this->insert->addValues([
             new Value('name', 'Krusty'),
+            new Value('created', 'NOW()', true),
         ]);
 
         $rows = $this->insert->run();

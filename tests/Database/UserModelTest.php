@@ -1,6 +1,9 @@
 <?php
 /**
- * Test case for Springy\Database\Connection class.
+ * Test case for Springy\Database\Model class.
+ *
+ * This test was named UserModelTest to be executed after all other
+ * Database tests.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -12,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Springy\Database\Model;
 use Springy\Database\Query\Where;
 
-class ModelTest extends TestCase
+class UserModelTest extends TestCase
 {
     public function testSimpleCreate()
     {
@@ -24,16 +27,13 @@ class ModelTest extends TestCase
 
     public function testSimpleLoad()
     {
-        $model = new TestSpf(1);
+        $model = new TestSpf(11);
 
         $this->assertTrue($model->isLoaded());
-        $this->assertEquals('Homer', $model->get('name'));
-        $this->assertEquals(1, $model->id);
-        $this->assertEquals(['id', 'name'], $model->key());
-        $this->assertEquals([
-            'id' => 1,
-            'name' => 'Homer',
-        ], $model->get());
+        $this->assertEquals('Krusty', $model->get('name'));
+        $this->assertEquals(11, $model->id);
+        $this->assertEquals(['id', 'name', 'created', 'deleted'], $model->key());
+        $this->assertCount(4, $model->get());
     }
 
     public function testModelNavigation()
@@ -62,18 +62,67 @@ class ModelTest extends TestCase
 
     public function testFetchAsObject()
     {
-        $model = new TestSpf(1);
+        $model = new TestSpf(11);
         $model->setFetchAsObject(true);
         $obj = $model->get();
 
-        $this->assertEquals(1, $obj->id);
+        $this->assertEquals('Krusty', $obj->name);
     }
 
-    public function testDelete()
+    public function testSetValue()
     {
-        $model = new TestSpf(5);
+        $model = new TestSpf(11);
+        $model->name = 'Clow';
+
+        $this->assertEquals('Clow Foo', $model->name);
+    }
+
+    public function testInsert()
+    {
+        $model = new TestSpf();
+        $model->name = 'Moe';
+
+        $this->assertEquals(null, $model->id);
+        $this->assertEquals('Moe', $model->name);
+        $this->assertEquals(1, $model->save());
+        $this->assertEquals(12, $model->id);
+    }
+
+    public function testUpdate()
+    {
+        $model = new TestSpf(12);
+        $model->name = 'Barney';
+
+        $this->assertEquals(1, $model->save());
+        $this->assertEquals('Barney Foo', $model->name);
+    }
+
+    public function testDeleteCurrent()
+    {
+        $model = new TestSpf(11);
 
         $this->assertEquals(1, $model->delete());
+
+        $model->load(5);
+        $this->assertTrue($model->isLoaded());
+        $this->assertEquals('Meggy', $model->name);
+        $this->assertEquals(0, $model->delete());
+    }
+
+    public function testDeleteByPK()
+    {
+        $model = new TestSpf();
+
+        $this->assertEquals(1, $model->delete(8));
+    }
+
+    public function testDeleteByWhere()
+    {
+        $model = new TestSpf();
+        $where = new Where();
+        $where->add('name', ['Lisa', 'Bart', 'Meggy'], Where::OP_IN);
+
+        $this->assertEquals(2, $model->delete($where));
     }
 }
 
@@ -83,11 +132,28 @@ class TestSpf extends Model
     protected $columns = [
         'id' => [
             'pk' => true,
-            'type' => 'int',
+            'readonly' => true,
         ],
         'name' => [
             'type' => 'string',
+            'hook' => 'myHook',
         ],
+        'created' => [
+            'ad' => true,
+        ],
+        'deleted' => [
+            'sd' => true,
+        ]
     ];
     protected $dbIdentity = 'mysql';
+
+    protected function myHook($value)
+    {
+        return $value.($this->newRecord ? '' : ' Foo');
+    }
+
+    protected function triggerBeforeDelete()
+    {
+        return ($this->name !== 'Meggy');
+    }
 }

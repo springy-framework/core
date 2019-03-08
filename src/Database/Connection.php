@@ -652,6 +652,18 @@ class Connection
     }
 
     /**
+     * Returns the value of the auto increment columns in last INSERT.
+     *
+     * @param string $name
+     *
+     * @return int
+     */
+    public function getLastInsertedId(string $name = null)
+    {
+        return $this->getPdo()->lastInsertId($name);
+    }
+
+    /**
      * Returns the last executed query.
      *
      * @return string
@@ -689,17 +701,5 @@ class Connection
     public function getStatmentErrorInfo(): array
     {
         return $this->lastErrorInfo ?? ['', '', ''];
-    }
-
-    /**
-     * Returns the value of the auto increment columns in last INSERT.
-     *
-     * @param string $name
-     *
-     * @return int
-     */
-    public function lastInsertedId(string $name = null)
-    {
-        return $this->getPdo()->lastInsertId($name);
     }
 }

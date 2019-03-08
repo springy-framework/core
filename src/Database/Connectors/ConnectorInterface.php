@@ -14,6 +14,13 @@ namespace Springy\Database\Connectors;
 interface ConnectorInterface
 {
     /**
+     * Returns the name of function to get current date and time from DBMS.
+     *
+     * @return string
+     */
+    public function getCurrDate(): string;
+
+    /**
      * Gets the DSN string.
      *
      * @return string

@@ -40,6 +40,7 @@
 -   Added `Springy\Database\Query\Select` class
 -   Added `Springy\Database\Query\Update` class
 -   Added `Springy\Database\Query\Value` class
+-   Added `Springy\Database\RowsIterator` class
 -   Added `Springy\Exceptions\Handler` class
 -   Added `Springy\Exceptions\Http403Error` class
 -   Added `Springy\Exceptions\Http404Error` class
@@ -116,6 +117,7 @@
 -   Method `Springy\DB->fetchNext()` was renamed to `Springy\Database\Connection->fetch()`
 -   Method `Springy\DB->driverName()` was renamed to `Springy\Database\Connection->getDriverName()`
 -   Method `Springy\DB->lastQuery()` was renamed to `Springy\Database\Connection->getLastQuery()`
+-   Method `Springy\DB->lastInsertedId()` was renamed to `Springy\Database\Connection->getLastInsertedId()`
 -   Method `Springy\DB->serverVersion()` was renamed to `Springy\Database\Connection->getServerVersion()`
 -   Method `Springy\DB->statmentErrorCode()` was renamed to `Springy\Database\Connection->getStatmentErrorCode()`
 -   Method `Springy\DB->statmentErrorInfo()` was renamed to `Springy\Database\Connection->getStatmentErrorInfo()`
@@ -133,7 +135,7 @@
 -   Method `Springy\Mail->setTemplate()` renamed to `Springy\Mail\Mailer->setTemplateId()`
 -   Method `Springy\Mail->subject()` renamed to `Springy\Mail\Mailer->setSubject()`
 -   Method `Springy\Mail->to()` renamed to `Springy\Mail\Mailer->addTo()`
--   Method `Springy\Model->all()` renamed to `Springy\Database\Model->rows()`
+-   Method `Springy\Model->all()` renamed to `Springy\Database\Model->getRows()`
 -   Method `Springy\Model->query()` renamed to `Springy\Database\Model->select()`
 -   Method `Springy\Model->rows()` renamed to `Springy\Database\Model->rowsCount()`
 -   Method `Springy\Security\AclManager->isPermitted` renamed to `Springy\Security\AclManager->hasPermission()`
@@ -309,6 +311,23 @@ The dbms.php file in configuration directories is used by Springy\DBMS\Connectio
 -   `'address'` : address of the Memcached server for 'memcached' driver.
 -   `'port'` : TCP port of the Memcached server for 'memcached' driver.
 -   `'key'` : round robin item key in the Memcached server for 'memcached' driver.
+
+### RowsIterator Columns Array
+
+#### The Property Array Structure
+
+-   'pk' : `bool` - defines the column as a primary key
+-   'computed' : `string` - if its value is a callable function name defines the column as computed
+-   'hook' : `string` - defines a callable hook function to process column value when setting data to it
+-   'readonly' : `bool` - defines the column as read only
+-   'ad' : `bool` - defines the column as the added date controller
+-   'sd' : `bool` - defines the column as a soft delete controller int(0|1)
+
+All computed columns are read only.
+
+Can have only one collumn with added date controller attribute. If more than one column has this attribute, only the first will be defined.
+
+Can have only one soft delete controller column. Then only the first column with this attribute will be considered.
 
 ### Validation Rules Array
 

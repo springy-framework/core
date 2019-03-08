@@ -24,6 +24,16 @@ class SQLite extends Connector implements ConnectorInterface
     protected $retrySleep = 0;
 
     /**
+     * Returns the name of function to get current date and time from DBMS.
+     *
+     * @return string
+     */
+    public function getCurrDate(): string
+    {
+        return 'datetime(\'now\')';
+    }
+
+    /**
      * Gets the DSN string.
      *
      * @return string

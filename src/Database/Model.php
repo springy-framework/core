@@ -12,15 +12,16 @@
 
 namespace Springy\Database;
 
-use Iterator;
+use DateTime;
 use Springy\Database\Query\Conditions;
 use Springy\Database\Query\Delete;
 use Springy\Database\Query\Select;
 use Springy\Database\Query\Update;
 use Springy\Database\Query\Where;
 use Springy\Exceptions\SpringyException;
+use Springy\Database\Query\Insert;
 
-class Model implements Iterator
+class Model extends RowsIterator
 {
     /**
      * The table name.
@@ -30,35 +31,6 @@ class Model implements Iterator
      * @var string
      */
     protected $table;
-
-    /**
-     * The columns structure.
-     *
-     * Must be defined in the heir class.
-     *
-     * @var array
-     */
-    protected $columns = [];
-
-    /**
-     * The name of column used as soft delete control.
-     *
-     * If undefined the model will catch them from columns list
-     * searching for column where property 'sd' => true.
-     *
-     * @var string
-     */
-    protected $deletedColumn;
-
-    /**
-     * The primary key columns list.
-     *
-     * If empty the model will catch them from columns list
-     * searching for columns where property 'pk' => true.
-     *
-     * @var array
-     */
-    protected $primaryKey = [];
 
     /**
      * Protects against great load data set.
@@ -81,32 +53,6 @@ class Model implements Iterator
      */
     protected $defaultLimit;
 
-    /**
-     * Determines what get method does when desired column does not exists.
-     *
-     * If true, a exception will be throwed.
-     * If false, a null value will be returned.
-     *
-     * @var bool
-     */
-    protected $errorIfColNotExists = false;
-
-    /**
-     * Determines the return mode of the fetch methods.
-     *
-     * If true, the rows are returned as object.
-     * If false, the rows are returned as array.
-     *
-     * @var bool
-     */
-    protected $fetchAsObject = false;
-
-    /** @var bool turns triggers execution off */
-    protected $bypassTriggers;
-    /** @var array the current row key */
-    protected $currentKey;
-    /** @var int the number of rows found by last select */
-    protected $foundRows;
     /** @var array the group by elements */
     protected $groupBy;
     /** @var array the having filter elements */
@@ -117,8 +63,14 @@ class Model implements Iterator
     protected $loaded;
     /** @var array the list of columns to the select query */
     protected $selectColumns = [];
-    /** @var array group by columns */
-    protected $rows;
+
+    // Trigger names
+    const TG_AFT_DEL = 'triggerAfterDelete';
+    const TG_AFT_INS = 'triggerAfterInsert';
+    const TG_AFT_UPD = 'triggerAfterUpdate';
+    const TG_BEF_DEL = 'triggerBeforeDelete';
+    const TG_BEF_INS = 'triggerBeforeInsert';
+    const TG_BEF_UPD = 'triggerBeforeUpdate';
 
     /**
      * Constructor.
@@ -127,52 +79,19 @@ class Model implements Iterator
      */
     public function __construct($filter = null, string $dbIdentity = null)
     {
-        $this->bypassTriggers = false;
+        parent::__construct();
+
         $this->dbIdentity = $dbIdentity ?? $this->dbIdentity;
-        $this->foundRows = 0;
         $this->groupBy = [];
         $this->having = new Conditions();
         $this->joins = [];
         $this->loaded = false;
-        $this->rows = [];
-
-        $this->detectPK();
-        $this->detectSD();
 
         if ($filter === null) {
             return;
         }
 
         $this->load($filter);
-    }
-
-    /**
-     * Magic method to get value from columns as if they were properties.
-     *
-     * This method will use the get() method.
-     *
-     * @param string $name the name of the column.
-     *
-     * @return mixed
-     */
-    public function __get(string $name)
-    {
-        return $this->get($name);
-    }
-
-    /**
-     * Magic method to set value in columns as if they were properties..
-     *
-     * This method will use the set() method.
-     *
-     * @param string $name  the column name.
-     * @param mixed  $value the value.
-     *
-     * @return void
-     */
-    public function __set(string $name, $value)
-    {
-        $this->set($name, $value);
     }
 
     /**
@@ -199,6 +118,114 @@ class Model implements Iterator
     }
 
     /**
+     * Calls a user trigger if exists and returns its result.
+     *
+     * @param string $triggerName
+     *
+     * @return bool
+     */
+    protected function checkTrigger(string $triggerName): bool
+    {
+        if ($this->bypassTriggers || !is_callable([$this, $triggerName])) {
+            return true;
+        }
+
+        return call_user_func([$this, $triggerName]) ?? true;
+    }
+
+    /**
+     * Deletes one or many rows by one single command or navagating through the rows.
+     *
+     * @param Where $where
+     *
+     * @return int
+     */
+    protected function deleteRows(Where $where): int
+    {
+        $triggers = [static::TG_BEF_DEL, static::TG_AFT_DEL];
+
+        // Execute a single SQL command if has no triggers
+        if ($this->bypassTriggers || !$this->hasAnyTrigger($triggers)) {
+            $delete = $this->buildDelete($where);
+
+            return $delete->run();
+        }
+
+        // Navigate through found rows and deletes it
+        $couter = 0;
+        $model = new static();
+        $model->select($where);
+        while ($model->valid()) {
+            $couter += $model->delete();
+            $model->next();
+        }
+
+        return $couter;
+    }
+
+    /**
+     * Returns the SELECT statement command object.
+     *
+     * @param Where   $where
+     * @param array   $orderby
+     * @param integer $offset
+     * @param integer $limit
+     *
+     * @return Select
+     */
+    protected function getSelect(Where $where, array $orderby, int $offset, int $limit): Select
+    {
+        $select = new Select(new Connection($this->dbIdentity), $this->table);
+
+        foreach ($this->getSelectColumns() as $column) {
+            $select->addColumn($column);
+        }
+
+        foreach ($this->joins as $join) {
+            $select->addJoin($join);
+        }
+
+        $select->setWhere($where);
+
+        foreach ($this->groupBy as $col) {
+            $select->addGroupBy($col);
+        }
+
+        $select->setHaving($this->having);
+
+        foreach ($orderby as $key => $value) {
+            $select->addOrderBy($key, $value);
+        }
+
+        $select->setLimit($limit);
+        $select->setOffset($offset);
+
+        return $select;
+    }
+
+    protected function getSelectColumns(): array
+    {
+        if (count($this->selectColumns)) {
+            return $this->selectColumns;
+        }
+
+        $columns = [];
+        foreach ($this->columns as $name => $data) {
+            if ($data['computed'] ?? false) {
+                continue;
+            }
+
+            $columns[] = $name;
+        }
+
+        if (!count($columns)) {
+            dd($this);
+        }
+
+        return $columns;
+    }
+
+    /**
      * Builds the condition by given data.
      *
      * @param Where|int|string|array|null $where
@@ -207,7 +234,7 @@ class Model implements Iterator
      *
      * @return Where
      */
-    protected function buildWhere($where = null): Where
+    protected function getWhere($where = null): Where
     {
         $this->currentKey = [];
 
@@ -237,7 +264,7 @@ class Model implements Iterator
      *
      * @return Where
      */
-    protected function buildWhereFromRow(): Where
+    protected function getWhereFromRow(): Where
     {
         if (!$this->hasPK()) {
             throw new SpringyException('Current row has no primary key.');
@@ -253,141 +280,111 @@ class Model implements Iterator
         return $where;
     }
 
-    protected function checkTrigger(string $triggerName): bool
-    {
-        if ($this->bypassTriggers || !is_callable([$this, $triggerName])) {
-            return true;
-        }
-
-        return call_user_func([$this, $triggerName]);
-    }
-
     /**
-     * Detects the primary key columns if not defined.
+     * Checks whether a triggers of the list exists.
      *
-     * @return void
-     */
-    protected function detectPK()
-    {
-        if (count($this->primaryKey)) {
-            return;
-        }
-
-        foreach ($this->columns as $name => $properties) {
-            if ($properties['pk'] ?? false) {
-                $this->primaryKey[] = $name;
-            }
-        }
-    }
-
-    /**
-     * Detects the soft deleted column if not defined.
-     *
-     * @return void
-     */
-    protected function detectSD()
-    {
-        if (is_string($this->deletedColumn)) {
-            return;
-        }
-
-        foreach ($this->columns as $name => $properties) {
-            if ($properties['sd'] ?? false) {
-                $this->deletedColumn = $name;
-
-                return;
-            }
-        }
-    }
-
-    /**
-     * Fetches the current row as array or object.
-     *
-     * @param array|bool $row
-     *
-     * @return array|object|bool
-     */
-    protected function fetchRow($row)
-    {
-        if (is_bool($row)) {
-            return $row;
-        } elseif ($this->fetchAsObject) {
-            return (object) $row;
-        }
-
-        return $row;
-    }
-
-    protected function getSelectColumns(): array
-    {
-        if (count($this->selectColumns)) {
-            return $this->selectColumns;
-        }
-
-        $columns = [];
-        foreach ($this->columns as $name => $data) {
-            if ($data['computed'] ?? false) {
-                continue;
-            }
-
-            $columns[] = $name;
-        }
-
-        return $columns;
-    }
-
-    /**
-     * Checks whether the primary key is set in the current row.
+     * @param array $triggers
      *
      * @return bool
      */
-    protected function hasPK(): bool
-    {
-        if (!$this->valid() || !count($this->primaryKey)) {
-            return false;
-        }
-
-        $row = current($this->rows);
-
-        foreach ($this->primaryKey as $column) {
-            if (!isset($row[$column])) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    protected function hasTriggers(array $triggers)
+    protected function hasAnyTrigger(array $triggers): bool
     {
         foreach ($triggers as $trigger) {
-            if (!is_callable([$this, $trigger])) {
-                return false;
+            if (is_callable([$this, $trigger])) {
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
-    protected function isCurrent(bool $current): bool
+    protected function insertRow(): int
     {
-        if ($current) {
-            return true;
+        if (!$this->checkTrigger(static::TG_BEF_INS)) {
+            return 0;
         }
 
-        if (!count($this->currentKey) || !$this->valid() || !$this->hasPK()) {
-            return false;
-        }
+        $connection = new Connection($this->dbIdentity);
+        $insert = new Insert($connection, $this->table);
 
-        $row = current($this->rows);
+        $this->setCmdValues($insert);
 
-        foreach ($this->primaryKey as $index => $column) {
-            if ($row[$column] != $this->currentKey[$index]) {
-                return false;
+        $res = $insert->run();
+
+        if ($res === 1) {
+            $lid = $connection->getLastInsertedId();
+
+            if ($lid && count($this->primaryKey) === 1) {
+                $this->load($lid);
+            } elseif ($this->hasPK()) {
+                $this->load($this->getPK());
             }
+
+            $this->checkTrigger(static::TG_AFT_INS);
         }
 
-        return true;
+        return $res;
+    }
+
+    protected function setCmdColVal($command, string $column)
+    {
+        $key = key($this->rows);
+        $row = $this->rows[$key];
+        $changed = $this->changed[$key][$column] ?? false;
+
+        if (isset($row[$column]) && ($this->newRecord || $changed)) {
+            $command->addValue($column, $row[$column]);
+        } elseif ($this->newRecord && $column == $this->addedDateColumn) {
+            $date = new DateTime();
+            $command->addValue($column, $date->format('Y-m-d H:i:s.u'));
+        } elseif ($this->newRecord && $column == $this->deletedColumn) {
+            $command->addValue($column, 0);
+        }
+    }
+
+    protected function setCmdValues($command)
+    {
+        foreach ($this->columns as $column => $properties) {
+            if ($properties['computed'] ?? false) {
+                continue;
+            }
+
+            $this->setCmdColVal($command, $column);
+        }
+    }
+
+    protected function updateRow(): int
+    {
+        if (!$this->checkTrigger(static::TG_BEF_UPD)) {
+            return 0;
+        }
+
+        $connection = new Connection($this->dbIdentity);
+        $update = new Update($connection, $this->table);
+
+        $pkVal = $this->getPK();
+        foreach ($this->primaryKey as $index => $column) {
+            $update->addCondition($column, $pkVal[$index]);
+        }
+
+        $this->setCmdValues($update);
+
+        $res = $update->run();
+
+        if ($res === 1) {
+            $clone = new static($pkVal);
+            if (!$clone->isLoaded()) {
+                return 0;
+            }
+
+            $key = key($this->rows);
+            $this->rows[$key] = $clone->get();
+            unset($this->changed[$key]);
+
+            $this->checkTrigger(static::TG_AFT_UPD);
+        }
+
+        return $res;
     }
 
     /**
@@ -463,78 +460,42 @@ class Model implements Iterator
         $this->joins = [];
     }
 
+    /**
+     * Delete and return affected rows.
+     *
+     * Deletes the current row or by given key.
+     *
+     * @param int|string|Where|null $where
+     *
+     * @return int
+     */
     public function delete($where = null): int
     {
         $current = false;
 
         if ($where === null) {
-            $where = $this->buildWhereFromRow();
+            $where = $this->getWhereFromRow();
             $current = true;
         }
 
-        $filter = $this->buildWhere($where);
+        $filter = $this->getWhere($where);
         $current = $this->isCurrent($current);
 
-        $triggers = ['triggerBeforeDelete', 'triggerAfterDelete'];
-
         if (!$current) {
-            // delete others
-            return 0;
+            return $this->deleteRows($filter);
         }
 
         $delete = $this->buildDelete($filter);
 
-        if (!$this->checkTrigger($triggers[0])) {
+        if (!$this->checkTrigger(static::TG_BEF_DEL)) {
             return 0;
         }
 
         $result = $delete->run();
 
-        $this->checkTrigger($triggers[1]);
+        $this->checkTrigger(static::TG_AFT_DEL);
 
         return $result;
-    }
-
-    /**
-     * Returns the number of records found by the last select.
-     *
-     * @return int
-     */
-    public function foundRows(): int
-    {
-        return $this->foundRows;
-    }
-
-    /**
-     * Gets a column or a row from the resultset.
-     *
-     * @param string $column the name of the desired column or null to all columns of the current record.
-     *
-     * @return mixed
-     */
-    public function get(string $column = null)
-    {
-        if ($column === null) {
-            return $this->current();
-        }
-
-        $columns = current($this->rows);
-
-        if (!isset($columns[$column]) && $this->errorIfColNotExists) {
-            throw new SpringyException('Column "'.$column.'" does not exists.');
-        }
-
-        return $columns[$column] ?? null;
-    }
-
-    /**
-     * Returns an array with the primary key columns.
-     *
-     * @return array
-     */
-    public function getPKColumns(): array
-    {
-        return $this->primaryKey;
     }
 
     /**
@@ -554,9 +515,9 @@ class Model implements Iterator
      *
      * @return bool True if one and only one row was found or false in other case.
      */
-    public function load($where)
+    public function load($where): bool
     {
-        $filter = $this->buildWhere($where);
+        $filter = $this->getWhere($where);
 
         $this->select($filter);
         $this->loaded = ($this->foundRows === 1);
@@ -564,24 +525,17 @@ class Model implements Iterator
         return $this->loaded;
     }
 
-    /**
-     * Returns all rows.
-     *
-     * @return array
-     */
-    public function rows(): array
+    public function save(): int
     {
-        return $this->rows;
-    }
+        // to do: validations
 
-    /**
-     * Returns the number of rows.
-     *
-     * @return int
-     */
-    public function rowsCount(): int
-    {
-        return count($this->rows);
+        if ($this->newRecord) {
+            return $this->insertRow();
+        } elseif (!$this->hasPK()) {
+            return 0;
+        }
+
+        return $this->updateRow();
     }
 
     /**
@@ -596,7 +550,9 @@ class Model implements Iterator
      */
     public function select(Where $where = null, array $orderby = null, int $offset = 0, int $limit = null)
     {
+        $this->changed = [];
         $this->loaded = false;
+        $this->newRecord = false;
         $this->rows = [];
 
         $limit = $limit ?? $this->defaultLimit ?? 0;
@@ -605,27 +561,11 @@ class Model implements Iterator
             return;
         }
 
-        $select = new Select(new Connection($this->dbIdentity), $this->table);
-        $select->setWhere($where);
-        $select->setLimit($limit);
-        $select->setOffset($offset);
-        $select->setHaving($this->having);
-
-        foreach ($this->getSelectColumns() as $column) {
-            $select->addColumn($column);
+        if ($this->deletedColumn && !$where->get($this->deletedColumn)) {
+            $where->add($this->deletedColumn, 0);
         }
 
-        foreach ($this->joins as $join) {
-            $select->addJoin($join);
-        }
-
-        foreach ($this->groupBy as $col) {
-            $select->addGroupBy($col);
-        }
-
-        foreach ($orderby ?? [] as $key => $value) {
-            $select->addOrderBy($key, $value);
-        }
+        $select = $this->getSelect($where, $orderby ?? [], $offset, $limit);
 
         $this->rows = $select->run(true);
         $this->foundRows = $select->foundRows();
@@ -674,79 +614,5 @@ class Model implements Iterator
     public function setHaving(Conditions $having)
     {
         $this->having = $having;
-    }
-
-    /**
-     * Gets the current record.
-     *
-     * @return array|object|bool
-     */
-    public function current()
-    {
-        return $this->fetchRow(current($this->rows));
-    }
-
-    /**
-     * Moves the pointer to the last record.
-     *
-     * @return void
-     */
-    public function end()
-    {
-        end($this->rows);
-    }
-
-    /**
-     * Moves the pointer to the next record.
-     *
-     * @return void
-     */
-    public function next()
-    {
-        next($this->rows);
-    }
-
-    /**
-     * Moves the pointer to the previous record.
-     *
-     * @return void
-     */
-    public function prev()
-    {
-        prev($this->rows);
-    }
-
-    /**
-     * Rewinds rows cursor to first position.
-     *
-     * @return void
-     */
-    public function rewind()
-    {
-        reset($this->rows);
-    }
-
-    /**
-     * Gets the names of the columns.
-     *
-     * @return array|bool
-     */
-    public function key(): array
-    {
-        if (!count($this->rows)) {
-            return [];
-        }
-
-        return array_keys($this->rows[0]);
-    }
-
-    /**
-     * Checks whether the current record exists.
-     *
-     * @return bool
-     */
-    public function valid(): bool
-    {
-        return $this->current() !== false;
     }
 }
