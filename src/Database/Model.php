@@ -15,11 +15,11 @@ namespace Springy\Database;
 use DateTime;
 use Springy\Database\Query\Conditions;
 use Springy\Database\Query\Delete;
+use Springy\Database\Query\Insert;
 use Springy\Database\Query\Select;
 use Springy\Database\Query\Update;
 use Springy\Database\Query\Where;
 use Springy\Exceptions\SpringyException;
-use Springy\Database\Query\Insert;
 
 class Model extends RowsIterator
 {
@@ -166,10 +166,10 @@ class Model extends RowsIterator
     /**
      * Returns the SELECT statement command object.
      *
-     * @param Where   $where
-     * @param array   $orderby
-     * @param integer $offset
-     * @param integer $limit
+     * @param Where $where
+     * @param array $orderby
+     * @param int   $offset
+     * @param int   $limit
      *
      * @return Select
      */

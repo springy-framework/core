@@ -13,7 +13,6 @@
 namespace Springy\Database;
 
 use Iterator;
-use Springy\Database\Query\Conditions;
 use Springy\Exceptions\SpringyException;
 use Springy\Utils\MessageContainer;
 use Springy\Validation\Validator;

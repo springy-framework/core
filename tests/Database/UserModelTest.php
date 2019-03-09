@@ -153,14 +153,14 @@ class TestSpf extends Model
             'validation' => [
                 'required',
                 'minlength:3',
-            ]
+            ],
         ],
         'created' => [
             'ad' => true,
         ],
         'deleted' => [
             'sd' => true,
-        ]
+        ],
     ];
     protected $dbIdentity = 'mysql';
 
@@ -171,6 +171,6 @@ class TestSpf extends Model
 
     protected function triggerBeforeDelete()
     {
-        return ($this->name !== 'Meggy');
+        return $this->name !== 'Meggy';
     }
 }
