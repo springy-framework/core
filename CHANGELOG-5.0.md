@@ -114,7 +114,12 @@
 -   Method `Springy\DB::connected()` is no more static and was renamed to `Springy\Database\Connection->isConnected()`
 -   Method `Springy\DB->errorCode()` was renamed to `Springy\Database\Connection->getErrorCode()`
 -   Method `Springy\DB->errorInfo()` was renamed to `Springy\Database\Connection->getErrorInfo()`
+-   Method `Springy\DB->fetchAll()` was renamed to `Springy\Database\Connection->getAll()`
+-   Method `Springy\DB->fetchCurrent()` was renamed to `Springy\Database\Connection->getCurrent()`
+-   Method `Springy\DB->fetchFirst()` was renamed to `Springy\Database\Connection->getFirst()`
+-   Method `Springy\DB->fetchLast()` was renamed to `Springy\Database\Connection->getLast()`
 -   Method `Springy\DB->fetchNext()` was renamed to `Springy\Database\Connection->fetch()`
+-   Method `Springy\DB->fetchPrev()` was renamed to `Springy\Database\Connection->getPrev()`
 -   Method `Springy\DB->driverName()` was renamed to `Springy\Database\Connection->getDriverName()`
 -   Method `Springy\DB->lastQuery()` was renamed to `Springy\Database\Connection->getLastQuery()`
 -   Method `Springy\DB->lastInsertedId()` was renamed to `Springy\Database\Connection->getLastInsertedId()`

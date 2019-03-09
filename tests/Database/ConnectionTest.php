@@ -40,22 +40,22 @@ class ConnectionTest extends TestCase
         $this->assertCount(4, $result);
         $this->assertEquals(4, $connection->affectedRows());
 
-        $row = $connection->fetchFirst();
+        $row = $connection->getFirst();
         $this->assertEquals('Marge', $row['name'] ?? null);
 
-        $row = $connection->fetchNext();
+        $row = $connection->getNext();
         $this->assertEquals('Lisa', $row['name'] ?? null);
 
-        $row = $connection->fetchPrev();
+        $row = $connection->getPrev();
         $this->assertEquals('Marge', $row['name'] ?? null);
 
         $row = $connection->fetch();
         $this->assertEquals(2, $row['id'] ?? null);
 
-        $row = $connection->fetchLast();
+        $row = $connection->getLast();
         $this->assertEquals('Meggy', $row['name'] ?? null);
 
-        $row = $connection->fetchCurrent();
+        $row = $connection->getCurrent();
         $this->assertEquals(5, $row['id'] ?? null);
 
         $result = $connection->update('UPDATE `test_spf` SET `name` = ? WHERE `id` = ?', ['Grampa', 6]);

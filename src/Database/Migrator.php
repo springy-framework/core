@@ -361,7 +361,7 @@ class Migrator
             $this->systemAbort('Can not read control table ('.$this->statmentErrorCode().' : '.$this->statmentErrorInfo()[2].')');
         }
 
-        $revisions = $this->fetchAll();
+        $revisions = $this->getAll();
         if (empty($revisions)) {
             $this->output('There is no revisions to be rolled back.', self::MSG_WARNING);
             $this->systemAbort();
@@ -396,7 +396,7 @@ class Migrator
                 $this->systemAbort('Can not read control table ('.$this->statmentErrorCode().' : '.$this->statmentErrorInfo()[2].')');
             }
 
-            $files = $this->fetchAll();
+            $files = $this->getAll();
 
             $error = false;
             foreach ($files as $file) {

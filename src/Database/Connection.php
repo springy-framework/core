@@ -236,7 +236,7 @@ class Connection
             $mmc = new Memcached();
             $mmc->addServer($this->cache['host'], $this->cache['port']);
 
-            $rows = $this->fetchAll();
+            $rows = $this->getAll();
 
             $mmc->set('dbCache_'.$cacheKey, $rows, $this->cacheLifeTime);
 
@@ -447,7 +447,7 @@ class Connection
         $this->cacheLifeTime = $cacheLifeTime;
         $this->run($query, $params);
         $this->fetchStyle = $fetchStyle ?? $this->fetchStyle;
-        $this->statement = $this->fetchAll();
+        $this->statement = $this->getAll();
         $this->cacheLifeTime = 0;
 
         return $this->statement;
@@ -492,7 +492,7 @@ class Connection
     public function fetch()
     {
         if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll();
+            $this->getAll();
         }
 
         $current = current($this->statement);
@@ -506,7 +506,7 @@ class Connection
      *
      * @return array|bool
      */
-    public function fetchAll()
+    public function getAll()
     {
         if ($this->statement instanceof PDOStatement) {
             $rows = $this->statement->fetchAll($this->fetchStyle);
@@ -515,78 +515,6 @@ class Connection
         }
 
         return $this->statement;
-    }
-
-    /**
-     * Returns the current row of the resultset and moves the cursor to next record.
-     *
-     * @return array|bool
-     */
-    public function fetchCurrent()
-    {
-        if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll();
-        }
-
-        return current($this->statement);
-    }
-
-    /**
-     * Resets the cursor to the first row of the statement and returns it.
-     *
-     * @return array|bool
-     */
-    public function fetchFirst()
-    {
-        if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll();
-        }
-
-        return reset($this->statement);
-    }
-
-    /**
-     * Moves the cursor to the last row of the statement and returns it.
-     *
-     * @return array|bool
-     */
-    public function fetchLast()
-    {
-        if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll();
-        }
-
-        return end($this->statement);
-    }
-
-    /**
-     * Returns the next row of the statement.
-     *
-     * Be careful when using this method because it moves the cursos before fetch the record.
-     *
-     * @return array|bool
-     */
-    public function fetchNext()
-    {
-        if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll();
-        }
-
-        return next($this->statement);
-    }
-
-    /**
-     * Moves the cursor the previous row of the statement and returns it.
-     *
-     * @return array|bool
-     */
-    public function fetchPrev()
-    {
-        if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll();
-        }
-
-        return prev($this->statement);
     }
 
     /**
@@ -599,7 +527,7 @@ class Connection
     public function getColumn($var)
     {
         if ($this->statement instanceof PDOStatement) {
-            $this->fetchAll();
+            $this->getAll();
         }
 
         $current = current($this->statement);
@@ -619,6 +547,20 @@ class Connection
         }
 
         return self::$conectionIds[$this->identity];
+    }
+
+    /**
+     * Returns the current row of the resultset and moves the cursor to next record.
+     *
+     * @return array|bool
+     */
+    public function getCurrent()
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->getAll();
+        }
+
+        return current($this->statement);
     }
 
     /**
@@ -652,6 +594,34 @@ class Connection
     }
 
     /**
+     * Resets the cursor to the first row of the statement and returns it.
+     *
+     * @return array|bool
+     */
+    public function getFirst()
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->getAll();
+        }
+
+        return reset($this->statement);
+    }
+
+    /**
+     * Moves the cursor to the last row of the statement and returns it.
+     *
+     * @return array|bool
+     */
+    public function getLast()
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->getAll();
+        }
+
+        return end($this->statement);
+    }
+
+    /**
      * Returns the value of the auto increment columns in last INSERT.
      *
      * @param string $name
@@ -671,6 +641,36 @@ class Connection
     public function getLastQuery(): string
     {
         return $this->lastQuery ?? '';
+    }
+
+    /**
+     * Returns the next row of the statement.
+     *
+     * Be careful when using this method because it moves the cursos before fetch the record.
+     *
+     * @return array|bool
+     */
+    public function getNext()
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->getAll();
+        }
+
+        return next($this->statement);
+    }
+
+    /**
+     * Moves the cursor the previous row of the statement and returns it.
+     *
+     * @return array|bool
+     */
+    public function getPrev()
+    {
+        if ($this->statement instanceof PDOStatement) {
+            $this->getAll();
+        }
+
+        return prev($this->statement);
     }
 
     /**
