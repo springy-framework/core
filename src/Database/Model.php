@@ -15,6 +15,7 @@ namespace Springy\Database;
 use DateTime;
 use Springy\Database\Query\Conditions;
 use Springy\Database\Query\Delete;
+use Springy\Database\Query\Embed;
 use Springy\Database\Query\Insert;
 use Springy\Database\Query\Select;
 use Springy\Database\Query\Update;
@@ -53,6 +54,8 @@ class Model extends RowsIterator
      */
     protected $defaultLimit;
 
+    /** @var array the list of objects to embed */
+    protected $embeds;
     /** @var array the group by elements */
     protected $groupBy;
     /** @var array the having filter elements */
@@ -81,6 +84,7 @@ class Model extends RowsIterator
     {
         parent::__construct();
 
+        $this->embeds = [];
         $this->dbIdentity = $dbIdentity ?? $this->dbIdentity;
         $this->groupBy = [];
         $this->having = new Conditions();
@@ -358,6 +362,45 @@ class Model extends RowsIterator
         }
     }
 
+    /**
+     * Embeds data in rows.
+     *
+     * @return void
+     */
+    protected function setEmbeddings()
+    {
+        if (!count($this->embeds)) {
+            return;
+        }
+
+        foreach ($this->embeds as $embed) {
+            $attr = $embed->getEmbedName();
+            $refc = $embed->getRefColumn();
+
+            $keys = [];
+            foreach ($this->rows as $index => $row) {
+                if (!$embed->isEligible($row)) {
+                    continue;
+                }
+
+                if (!in_array($row[$refc], $keys)) {
+                    $keys[] = $row[$refc];
+                }
+            }
+
+            if (!count($keys)) {
+                continue;
+            }
+
+            $embed->setFilter($keys);
+            $embed->select();
+
+            foreach ($this->rows as $index => $row) {
+                $this->rows[$index][$attr] = $embed->getResult($row);
+            }
+        }
+    }
+
     protected function updateRow(): int
     {
         if (!$this->checkTrigger(static::TG_BEF_UPD)) {
@@ -402,6 +445,18 @@ class Model extends RowsIterator
     public function addGroupBy(string $statement)
     {
         $this->groupBy[] = $statement;
+    }
+
+    /**
+     * Adds a Embed object.
+     *
+     * @param Embed $embed
+     *
+     * @return void
+     */
+    public function addEmbed(Embed $embed)
+    {
+        $this->embeds[] = $embed;
     }
 
     /**
@@ -582,8 +637,9 @@ class Model extends RowsIterator
         $this->foundRows = $select->foundRows();
 
         $this->computeRows();
+        $this->setEmbeddings();
 
-        // To do: embedded objects
+        return $this->rows;
     }
 
     /**

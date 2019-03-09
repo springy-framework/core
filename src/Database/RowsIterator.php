@@ -93,6 +93,7 @@ class RowsIterator implements Iterator
     protected $bypassTriggers;
     /** @var array the changed rows and columns */
     protected $changed;
+    /** @var array the list of computed columns */
     protected $computedCols;
     /** @var array the current row key */
     protected $currentKey;
@@ -435,6 +436,16 @@ class RowsIterator implements Iterator
         }
 
         return $columns[$column] ?? null;
+    }
+
+    /**
+     * Returns all data in a given column.
+     *
+     * @return array
+     */
+    public function getAllColumn(string $column)
+    {
+        return array_column($this->rows, $column);
     }
 
     /**

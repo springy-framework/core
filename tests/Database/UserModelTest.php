@@ -13,6 +13,7 @@
  */
 use PHPUnit\Framework\TestCase;
 use Springy\Database\Model;
+use Springy\Database\Query\Embed;
 use Springy\Database\Query\Where;
 
 class UserModelTest extends TestCase
@@ -160,6 +161,30 @@ class UserModelTest extends TestCase
 
         $this->assertEquals(2, $model->delete($where));
     }
+
+    public function testEmbed()
+    {
+        $model = new TestSpf();
+        $mdEmb = new EmbedModel();
+        $embed = new Embed('tstEmbed', $mdEmb, 'id', 'id');
+        $model->addEmbed($embed);
+
+        $rows = $model->select(new Where());
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = $row['tstEmbed']['surname'] ?? null ;
+        }
+
+        $this->assertEquals([
+            'Foo',
+            'Foo',
+            'Foo',
+            'Bar',
+            'Bar',
+            'Bar',
+        ], $result);
+    }
 }
 
 class TestSpf extends Model
@@ -189,6 +214,7 @@ class TestSpf extends Model
         ],
     ];
     protected $dbIdentity = 'mysql';
+    protected $abortOnEmptyFilter = false;
 
     protected function myHook($value)
     {
@@ -203,4 +229,23 @@ class TestSpf extends Model
     {
         return $this->name !== 'Meggy';
     }
+}
+
+class EmbedModel extends Model
+{
+    protected $table = 'hahaha';
+    protected $columns = [
+        'id' => [
+            'pk' => true,
+            'readonly' => true,
+        ],
+        'surname' => [
+            'type' => 'string',
+            'validation' => [
+                'required',
+                'minlength:3',
+            ],
+        ],
+    ];
+    protected $dbIdentity = 'mysql';
 }
