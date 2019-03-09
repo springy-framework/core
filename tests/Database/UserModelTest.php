@@ -233,7 +233,7 @@ class TestSpf extends Model
 
 class EmbedModel extends Model
 {
-    protected $table = 'hahaha';
+    protected $table = 'test_embed';
     protected $columns = [
         'id' => [
             'pk' => true,
