@@ -44,7 +44,7 @@ class Rule
     public function __construct(string $field, string $rule, array $params = [], string $message = null)
     {
         $this->charset = config_get('main.charset');
-        $this->errMsgTpl = $message ?? 'The value @value for field @field is invalid. Please enter a valid value.';
+        $this->errMsgTpl = $message ?? 'The value "@value" for field "@field" is invalid. Please enter a valid value.';
         $this->error = '';
         $this->field = $field;
         $this->params = $params;

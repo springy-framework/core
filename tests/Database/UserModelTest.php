@@ -77,11 +77,24 @@ class UserModelTest extends TestCase
         $this->assertEquals('Clow Foo', $model->name);
     }
 
+    public function testValidate()
+    {
+        $model = new TestSpf(9);
+        $model->name = '';
+
+        $this->assertFalse($model->validate());
+
+        $errors = $model->getValidationErrors();
+
+        $this->assertArrayHasKey('name', $errors->getMessages());
+    }
+
     public function testInsert()
     {
         $model = new TestSpf();
         $model->name = 'Moe';
 
+        $this->assertTrue($model->validate());
         $this->assertEquals(null, $model->id);
         $this->assertEquals('Moe', $model->name);
         $this->assertEquals(1, $model->save());
@@ -137,6 +150,10 @@ class TestSpf extends Model
         'name' => [
             'type' => 'string',
             'hook' => 'myHook',
+            'validation' => [
+                'required',
+                'minlength:3',
+            ]
         ],
         'created' => [
             'ad' => true,
@@ -149,7 +166,7 @@ class TestSpf extends Model
 
     protected function myHook($value)
     {
-        return $value.($this->newRecord ? '' : ' Foo');
+        return $value === '' ? '' : $value.($this->newRecord ? '' : ' Foo');
     }
 
     protected function triggerBeforeDelete()

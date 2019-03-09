@@ -108,9 +108,9 @@
 -   Method `Springy\Core\Copyright->printCopyright()` renamed to `Springy\Core\Copyright->content()`
 -   Method `Springy\Core\Debug::print_rc()` is no more static and was renamed to `Springy\Core\Copyright->highligh()`
 -   Method `Springy\Core\Debug::printOut()` is no more static and was renamed to `Springy\Core\Copyright->inject()`
--   Method `Springy\Database\Model->end()` only moves the cursor pointer and does not returns value any more
--   Method `Springy\Database\Model->next()` only moves the cursor pointer and does not returns value any more
--   Method `Springy\Database\Model->prev()` only moves the cursor pointer and does not returns value any more
+-   Method `Springy\Database\RowsIterator->end()` only moves the cursor pointer and does not returns value any more
+-   Method `Springy\Database\RowsIterator->next()` only moves the cursor pointer and does not returns value any more
+-   Method `Springy\Database\RowsIterator->prev()` only moves the cursor pointer and does not returns value any more
 -   Method `Springy\DB::connected()` is no more static and was renamed to `Springy\Database\Connection->isConnected()`
 -   Method `Springy\DB->errorCode()` was renamed to `Springy\Database\Connection->getErrorCode()`
 -   Method `Springy\DB->errorInfo()` was renamed to `Springy\Database\Connection->getErrorInfo()`
@@ -135,9 +135,10 @@
 -   Method `Springy\Mail->setTemplate()` renamed to `Springy\Mail\Mailer->setTemplateId()`
 -   Method `Springy\Mail->subject()` renamed to `Springy\Mail\Mailer->setSubject()`
 -   Method `Springy\Mail->to()` renamed to `Springy\Mail\Mailer->addTo()`
--   Method `Springy\Model->all()` renamed to `Springy\Database\Model->getRows()`
+-   Method `Springy\Model->all()` renamed to `Springy\Database\RowsIterator->getRows()`
 -   Method `Springy\Model->query()` renamed to `Springy\Database\Model->select()`
--   Method `Springy\Model->rows()` renamed to `Springy\Database\Model->rowsCount()`
+-   Method `Springy\Model->rows()` renamed to `Springy\Database\RowsIterator->rowsCount()`
+-   Method `Springy\Model->validationErrors()` renamed to `Springy\Database\RowsIterator->getValidationErrors()`
 -   Method `Springy\Security\AclManager->isPermitted` renamed to `Springy\Security\AclManager->hasPermission()`
 -   Method `Springy\Security\Strings::validateEmailAddress` moved and renamed to `Springy\Utils\StringUtils->isValidEmailAddress()`
 -   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `Springy\Security\AclUserInterface->hasPermissionFor()`
@@ -173,6 +174,7 @@
 -   Template variable `PROJECT_CODE_NAME` renamed to `APP_CODE_NAME`
 -   Template variable `SYSTEM_NAME` renamed to `APP_NAME`
 -   Template variable `SYSTEM_VERSION` renamed to `APP_VERSION`
+-   The trigger function was removed from `Springy\Database\Model` but will be called if exists in heir class
 -   The structure of array os rules for `Springy\Validation\Validator` class was changed to receive the custom error messages
 
 ### Removed
@@ -225,6 +227,7 @@
 -   Removed `Springy\Model->groupBy()` method
 -   Removed `Springy\Model->having()` method
 -   Removed `Springy\Model->reset()` method
+-   Removed `Springy\Model->validationErrorMessages()` method
 -   Removed `Springy\Session::getAll()` method
 -   Removed `Springy\Security\AclManager->getCurrentAction()` method
 -   Removed `Springy\Security\AclManager->getCurrentController()` method
@@ -322,6 +325,7 @@ The dbms.php file in configuration directories is used by Springy\DBMS\Connectio
 -   'readonly' : `bool` - defines the column as read only
 -   'ad' : `bool` - defines the column as the added date controller
 -   'sd' : `bool` - defines the column as a soft delete controller int(0|1)
+-   'validation' : `array` - an array of validation rules and error messages
 
 All computed columns are read only.
 
@@ -336,6 +340,7 @@ The array of validation rules used by the class `Springy\Validation\Validator` m
 Each rule set can be a string of rules concatenated by pipe "|" or an array of validation rules.
 
 Each validation rule can be a string in the format "rule_name:param1,param2,paramN:custom error message" or an array with the following indexes:
+
 -   'params' => an array of parameters or a string with parameters separated by comma ","
 -   'message' => the string for the custom message. See messages tag section.
 

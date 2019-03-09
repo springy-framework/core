@@ -15,6 +15,8 @@ namespace Springy\Database;
 use Iterator;
 use Springy\Database\Query\Conditions;
 use Springy\Exceptions\SpringyException;
+use Springy\Utils\MessageContainer;
+use Springy\Validation\Validator;
 
 class RowsIterator implements Iterator
 {
@@ -58,10 +60,10 @@ class RowsIterator implements Iterator
     protected $fetchAsObject = false;
 
     /**
-     * The name of column used as soft delete control.
+     * The name of column used as date when row was created.
      *
      * If undefined the model will catch them from columns list
-     * searching for column where property 'sd' => true.
+     * searching for column where property 'ad' => true.
      *
      * @var string
      */
@@ -100,6 +102,8 @@ class RowsIterator implements Iterator
     protected $newRecord;
     /** @var array group by columns */
     protected $rows;
+    /** @var MessageContainer the last validation errors */
+    protected $validationErrors;
 
     /**
      * Constructor.
@@ -165,6 +169,11 @@ class RowsIterator implements Iterator
         return $row;
     }
 
+    /**
+     * Gets an array with primary key values.
+     *
+     * @return array
+     */
     protected function getPK(): array
     {
         $pkVal = [];
@@ -179,6 +188,28 @@ class RowsIterator implements Iterator
         }
 
         return $pkVal;
+    }
+
+    /**
+     * Gets the validation rules array from columns structure.
+     *
+     * @return array
+     */
+    protected function getValidationRules(): array
+    {
+        $rules = [];
+
+        foreach ($this->columns as $column => $properties) {
+            $validation = $properties['validation'] ?? null;
+
+            if (!$validation) {
+                continue;
+            }
+
+            $rules[$column] = $validation;
+        }
+
+        return $rules;
     }
 
     /**
@@ -376,6 +407,16 @@ class RowsIterator implements Iterator
     }
 
     /**
+     * Returns the last validation error messages container.
+     *
+     * @return MessageContainer
+     */
+    public function getValidationErrors(): MessageContainer
+    {
+        return $this->validationErrors ?? new MessageContainer();
+    }
+
+    /**
      * Returns the number of rows.
      *
      * @return int
@@ -525,5 +566,28 @@ class RowsIterator implements Iterator
     public function valid(): bool
     {
         return $this->current() !== false;
+    }
+
+    /**
+     * Performs the validation of the data in the object.
+     *
+     * @return bool
+     */
+    public function validate(): bool
+    {
+        if (!$this->valid()) {
+            return false;
+        }
+
+        $validation = new Validator(
+            $this->current(),
+            $this->getValidationRules()
+        );
+
+        $result = $validation->validate();
+
+        $this->validationErrors = $validation->getErrors();
+
+        return $result;
     }
 }

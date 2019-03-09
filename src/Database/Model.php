@@ -527,7 +527,13 @@ class Model extends RowsIterator
 
     public function save(): int
     {
-        // to do: validations
+        if (!$this->valid() || !isset($this->changed[key($this->rows)])) {
+            return 0;
+        }
+
+        if (!$this->validate()) {
+            return 0;
+        }
 
         if ($this->newRecord) {
             return $this->insertRow();
@@ -570,10 +576,7 @@ class Model extends RowsIterator
         $this->rows = $select->run(true);
         $this->foundRows = $select->foundRows();
 
-        // $this->_queryEmbbed($embbed);
-
-        // Set the values of the calculated columns
-        // $this->calculateColumns();
+        // To do: computed columns and embedded objects
     }
 
     /**
