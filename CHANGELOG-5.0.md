@@ -231,10 +231,12 @@
 -   Removed `Springy\Mail->body()` method. See new methods `Springy\Mail\Mailer->setBody()` and `Springy\Mail\Mailer->setAlternativeBody()`
 -   Removed `Springy\Mail->setHeader()` method
 -   Removed `Springy\Model->calculateColumns()` method
+-   Removed `Springy\Model->clearChangedColumns()` method
 -   Removed `Springy\Model->groupBy()` method
 -   Removed `Springy\Model->having()` method
 -   Removed `Springy\Model->reset()` method
 -   Removed `Springy\Model->validationErrorMessages()` method
+-   Removed `Springy\Model->validationRules()` method but if exists in heir class will be called to get the array of rules
 -   Removed `Springy\Session::getAll()` method
 -   Removed `Springy\Security\AclManager->getCurrentAction()` method
 -   Removed `Springy\Security\AclManager->getCurrentController()` method

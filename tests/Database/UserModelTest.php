@@ -37,6 +37,18 @@ class UserModelTest extends TestCase
         $this->assertCount(5, $model->get());
     }
 
+    public function testSetColumns()
+    {
+        $model = new TestSpf();
+        $model->setColumns(['id', 'name']);
+        $model->load(11);
+
+        $this->assertTrue($model->isLoaded());
+        $this->assertEquals('Krusty', $model->get('name'));
+        $this->assertEquals(11, $model->id);
+        $this->assertEquals(['id', 'name', 'person'], $model->key());
+    }
+
     public function testModelNavigation()
     {
         $model = new TestSpf();

@@ -203,6 +203,11 @@ class Model extends RowsIterator
         return $select;
     }
 
+    /**
+     * Returns the array of columns to the select.
+     *
+     * @return array
+     */
     protected function getSelectColumns(): array
     {
         if (count($this->selectColumns)) {
@@ -219,7 +224,7 @@ class Model extends RowsIterator
         }
 
         if (!count($columns)) {
-            dd($this);
+            throw new SpringyException('No columns defined');
         }
 
         return $columns;
@@ -579,6 +584,30 @@ class Model extends RowsIterator
         $this->computeRows();
 
         // To do: embedded objects
+    }
+
+    /**
+     * Sets the columns list for select.
+     *
+     * @param array $columns
+     *
+     * @return void
+     */
+    public function setColumns(array $columns)
+    {
+        $this->selectColumns = [];
+
+        foreach ($columns as $name) {
+            $column = $this->columns[$name] ?? null;
+
+            if ($column === null) {
+                throw new SpringyException('Column "'.$name.'" does not defined in model.');
+            } elseif ($column['computed'] ?? false) {
+                throw new SpringyException('Column "'.$name.'" is computed.');
+            }
+
+            $this->selectColumns[] = $name;
+        }
     }
 
     /**

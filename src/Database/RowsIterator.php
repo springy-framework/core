@@ -236,6 +236,10 @@ class RowsIterator implements Iterator
             $rules[$column] = $validation;
         }
 
+        if (is_callable([$this, 'validationRules'])) {
+            $rules = call_user_func([$this, 'validationRules'], $rules);
+        }
+
         return $rules;
     }
 
