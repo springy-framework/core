@@ -136,6 +136,7 @@
 -   Method `Springy\Mail->subject()` renamed to `Springy\Mail\Mailer->setSubject()`
 -   Method `Springy\Mail->to()` renamed to `Springy\Mail\Mailer->addTo()`
 -   Method `Springy\Model->all()` renamed to `Springy\Database\RowsIterator->getRows()`
+-   Method `Springy\Model->calculeteColumnsRow()` renamed to `Springy\Database\RowsIterator->computeCols()`
 -   Method `Springy\Model->query()` renamed to `Springy\Database\Model->select()`
 -   Method `Springy\Model->rows()` renamed to `Springy\Database\RowsIterator->rowsCount()`
 -   Method `Springy\Model->validationErrors()` renamed to `Springy\Database\RowsIterator->getValidationErrors()`
@@ -224,6 +225,7 @@
 -   Removed `Springy\Kernel::registerTemplateFunction()` method
 -   Removed `Springy\Mail->body()` method. See new methods `Springy\Mail\Mailer->setBody()` and `Springy\Mail\Mailer->setAlternativeBody()`
 -   Removed `Springy\Mail->setHeader()` method
+-   Removed `Springy\Model->calculateColumns()` method
 -   Removed `Springy\Model->groupBy()` method
 -   Removed `Springy\Model->having()` method
 -   Removed `Springy\Model->reset()` method

@@ -32,8 +32,9 @@ class UserModelTest extends TestCase
         $this->assertTrue($model->isLoaded());
         $this->assertEquals('Krusty', $model->get('name'));
         $this->assertEquals(11, $model->id);
-        $this->assertEquals(['id', 'name', 'created', 'deleted'], $model->key());
-        $this->assertCount(4, $model->get());
+        $this->assertEquals(['id', 'name', 'created', 'deleted', 'person'], $model->key());
+        $this->assertEquals('Person Krusty', $model->person);
+        $this->assertCount(5, $model->get());
     }
 
     public function testModelNavigation()
@@ -46,12 +47,15 @@ class UserModelTest extends TestCase
 
         $this->assertTrue($model->valid());
         $this->assertEquals('Marge', $model->get('name'));
+        $this->assertEquals('Person Marge', $model->person);
 
         $model->end();
         $this->assertEquals('Bart', $model->get('name'));
+        $this->assertEquals('Person Bart', $model->person);
 
         $model->prev();
         $this->assertEquals('Lisa', $model->get('name'));
+        $this->assertEquals('Person Lisa', $model->person);
 
         $model->rewind();
         $this->assertEquals('Marge', $model->get('name'));
@@ -108,15 +112,22 @@ class UserModelTest extends TestCase
 
         $this->assertEquals(1, $model->save());
         $this->assertEquals('Barney Foo', $model->name);
+        $this->assertEquals('Person Barney Foo', $model->person);
     }
 
     public function testDeleteCurrent()
     {
         $model = new TestSpf(11);
 
+        $this->assertTrue($model->isLoaded());
+        $this->assertEquals('Krusty', $model->name);
         $this->assertEquals(1, $model->delete());
+    }
 
-        $model->load(5);
+    public function testFailDeleteByTrigger()
+    {
+        $model = new TestSpf(5);
+
         $this->assertTrue($model->isLoaded());
         $this->assertEquals('Meggy', $model->name);
         $this->assertEquals(0, $model->delete());
@@ -161,12 +172,19 @@ class TestSpf extends Model
         'deleted' => [
             'sd' => true,
         ],
+        'person' => [
+            'computed' => 'person',
+        ],
     ];
     protected $dbIdentity = 'mysql';
 
     protected function myHook($value)
     {
         return $value === '' ? '' : $value.($this->newRecord ? '' : ' Foo');
+    }
+
+    protected function person($row) {
+        return 'Person '.$row['name'];
     }
 
     protected function triggerBeforeDelete()

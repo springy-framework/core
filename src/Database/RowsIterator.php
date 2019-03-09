@@ -93,6 +93,7 @@ class RowsIterator implements Iterator
     protected $bypassTriggers;
     /** @var array the changed rows and columns */
     protected $changed;
+    protected $computedCols;
     /** @var array the current row key */
     protected $currentKey;
     /** @var int the number of rows found by last select */
@@ -116,6 +117,7 @@ class RowsIterator implements Iterator
         $this->rows = [];
 
         $this->setColsPK();
+        $this->setComputedCols();
         $this->setInsertDateCol();
         $this->setDeletedCol();
         $this->setWritableCols();
@@ -148,6 +150,32 @@ class RowsIterator implements Iterator
     public function __set(string $name, $value)
     {
         $this->set($name, $value);
+    }
+
+    /**
+     * Fills calculated columns of the current row.
+     *
+     * @return void
+     */
+    protected function computeCols()
+    {
+        if (!count($this->computedCols) || !$this->valid()) {
+            return;
+        }
+
+        $key = key($this->rows);
+
+        foreach ($this->computedCols as $column) {
+            $callable = $this->columns[$column]['computed'] ?? '*';
+
+            if (!is_callable([$this, $callable])) {
+                $this->rows[$key][$column] = null;
+
+                continue;
+            }
+
+            $this->rows[$key][$column] = call_user_func([$this, $callable], $this->rows[$key]);
+        }
     }
 
     /**
@@ -309,6 +337,26 @@ class RowsIterator implements Iterator
                 $this->deletedColumn = $name;
 
                 return;
+            }
+        }
+    }
+
+    /**
+     * Build the array of computed columns list.
+     *
+     * @return void
+     */
+    protected function setComputedCols()
+    {
+        if (is_array($this->computedCols)) {
+            return;
+        }
+
+        $this->computedCols = [];
+
+        foreach ($this->columns as $name => $properties) {
+            if ($properties['computed'] ?? false) {
+                $this->computedCols[] = $name;
             }
         }
     }
@@ -491,6 +539,28 @@ class RowsIterator implements Iterator
 
             $this->setRow($row);
         }
+    }
+
+    /**
+     * Sets the values of the computed columns for all rows.
+     *
+     * @return void
+     */
+    public function computeRows()
+    {
+        if (!count($this->computedCols)) {
+            return;
+        }
+
+        reset($this->rows);
+
+        while (current($this->rows)) {
+            $this->computeCols();
+
+            next($this->rows);
+        }
+
+        reset($this->rows);
     }
 
     /**

@@ -576,7 +576,9 @@ class Model extends RowsIterator
         $this->rows = $select->run(true);
         $this->foundRows = $select->foundRows();
 
-        // To do: computed columns and embedded objects
+        $this->computeRows();
+
+        // To do: embedded objects
     }
 
     /**
