@@ -35,7 +35,9 @@
         </properties>
     </rule>
 
-    <rule ref="rulesets/design.xml" />
+    <rule ref="rulesets/design.xml">
+        <exclude name="CouplingBetweenObjects" />
+    </rule>
 
     <rule ref="rulesets/naming.xml">
         <exclude name="ShortMethodName" />
