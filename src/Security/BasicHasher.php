@@ -25,9 +25,12 @@ class BasicHasher implements HasherInterface
      *
      * @return string
      */
-    public function make(string $stringToHash, int $times): string
+    public function make(string $stringToHash, int $times = 0): string
     {
         $md5 = md5(strtolower(self::SALT.$stringToHash));
+
+        // Not used
+        $times = null;
 
         return base64_encode($md5 ^ md5($stringToHash));
     }
@@ -40,9 +43,12 @@ class BasicHasher implements HasherInterface
      *
      * @return bool
      */
-    public function needsRehash(string $hash, int $times): bool
+    public function needsRehash(string $hash, int $times = 0): bool
     {
-        return false;
+        // Not used
+        $times = null;
+
+        return $hash === '';
     }
 
     /**

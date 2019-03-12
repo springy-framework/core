@@ -8,6 +8,8 @@
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
  * @version   3.0.0
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 
 namespace Springy\Core;
