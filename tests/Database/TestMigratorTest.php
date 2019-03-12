@@ -43,7 +43,7 @@ class TestMigratorTest extends TestCase
 
     public function testRollback()
     {
-        $migrator = new Migrator('mysql');
+        $migrator = new Migrator();
 
         $this->assertEquals(4, $migrator->getAppliedRevisionsCount());
         $this->assertEquals(0, $migrator->getNotAppliedRevisions());

@@ -39,6 +39,7 @@ return [
             'username' => 'test',
             'password' => '123',
             'database' => 'test',
+            'schema'   => 'public',
         ],
         'sqlite' => [
             'driver' => 'sqlite',

@@ -14,7 +14,6 @@ namespace Springy\Database\Migration;
 use Closure;
 use DateTime;
 use Springy\Database\Connection;
-use Springy\Exceptions\SpringyException;
 use Symfony\Component\Yaml\Yaml;
 
 class MigrationScript

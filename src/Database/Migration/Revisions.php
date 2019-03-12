@@ -225,4 +225,3 @@ class Revisions implements Iterator
         return current($this->revs) !== false;
     }
 }
-

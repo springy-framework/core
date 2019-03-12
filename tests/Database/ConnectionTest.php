@@ -86,6 +86,28 @@ class ConnectionTest extends TestCase
         $connection = new Connection('postgres');
         $this->assertTrue($connection->isConnected());
         $this->assertEquals('"test"', $connection->enclose('test'));
+
+        $sql = 'CREATE TABLE IF NOT EXISTS public.test_spf ('
+            .'"id" integer NOT NULL DEFAULT nextval(\'test_spf_id_seq\'::regclass),'
+            .'"name" character varying(20) NOT NULL,'
+            .'"created" timestamp without time zone NOT NULL,'
+            .'"deleted" SMALLINT NOT NULL DEFAULT \'0\'::smallint,'
+            .'CONSTRAINT test_spf_pkey PRIMARY KEY ("id")'
+            .') WITH (OIDS=FALSE);';
+
+        $connection->run($sql);
+        $connection->run('TRUNCATE TABLE test_spf');
+        $connection->run('ALTER SEQUENCE test_spf_id_seq RESTART WITH 1');
+
+        $result = $connection->insert(
+            'INSERT INTO test_spf("name","created") VALUES '
+            .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
+            .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
+            .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
+            .'(?, CURRENT_TIMESTAMP)',
+            ['Homer', 'Marge', 'Lisa', 'Bart', 'Meggy', 'Santa\'\'s Helper', 'Cat']
+        );
+        $this->assertEquals(7, $result);
     }
 
     public function testConnectionSQLite()
