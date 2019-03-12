@@ -503,7 +503,6 @@ class RowsIterator implements Iterator
         if (!isset($this->columns[$column])) {
             throw new SpringyException('Column "'.$column.'" does not exists.');
         } elseif (!in_array($column, $this->writableColumns)) {
-            dd($this->writableColumns);
             throw new SpringyException('Column "'.$column.'" is not writable.');
         }
 

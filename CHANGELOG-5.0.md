@@ -124,8 +124,8 @@
 -   Method `Springy\DB->lastQuery()` was renamed to `Springy\Database\Connection->getLastQuery()`
 -   Method `Springy\DB->lastInsertedId()` was renamed to `Springy\Database\Connection->getLastInsertedId()`
 -   Method `Springy\DB->serverVersion()` was renamed to `Springy\Database\Connection->getServerVersion()`
--   Method `Springy\DB->statmentErrorCode()` was renamed to `Springy\Database\Connection->getStatmentErrorCode()`
--   Method `Springy\DB->statmentErrorInfo()` was renamed to `Springy\Database\Connection->getStatmentErrorInfo()`
+-   Method `Springy\DB->statmentErrorCode()` was renamed to `Springy\Database\Connection->getErrorCode()`
+-   Method `Springy\DB->statmentErrorInfo()` was renamed to `Springy\Database\Connection->getErrorInfo()`
 -   Method `Springy\DB\Conditions->condition()` was renamed to `Springy\Database\Query\Conditions->add()`
 -   Method `Springy\Kernel::addIgnoredError()` moved to `Springy\Exceptions\Handler->addIgnoredError()`
 -   Method `Springy\Kernel::delIgnoredError()` moved to `Springy\Exceptions\Handler->delIgnoredError()`
@@ -144,6 +144,7 @@
 -   Method `Springy\Model->calculeteColumnsRow()` renamed to `Springy\Database\RowsIterator->computeCols()`
 -   Method `Springy\Model->query()` renamed to `Springy\Database\Model->select()`
 -   Method `Springy\Model->rows()` renamed to `Springy\Database\RowsIterator->rowsCount()`
+-   Method `Springy\Model->setEmbeddedObj()` renamed to `Springy\Database\RowsIterator->addEmbed()`
 -   Method `Springy\Model->validationErrors()` renamed to `Springy\Database\RowsIterator->getValidationErrors()`
 -   Method `Springy\Security\AclManager->isPermitted` renamed to `Springy\Security\AclManager->hasPermission()`
 -   Method `Springy\Security\Strings::validateEmailAddress` moved and renamed to `Springy\Utils\StringUtils->isValidEmailAddress()`
@@ -358,3 +359,27 @@ Each validation rule can be a string in the format "rule_name:param1,param2,para
 -   '@field' : the name of the field
 -   '@rule' : the name of the rule
 -   '@value' : the value of the field
+
+### The Migration System
+
+#### YAML Migrations Script
+
+Can contains to sections `migration` and `rollback`.
+
+If `rollback` sections is empty or missing, there is no rollback to the migration.
+
+If there is no `migration` section or is empty, will be ignored.
+
+Both sections can be a script SQL or a list of scripts.
+
+#### SQL Migration Scripts
+
+All SQL files will be imported on migrate only and no rollback scripts.
+
+#### PHP Migration Scripts
+
+Must by in namespace `App\Migrations\Rev#` where # is the version number and contains a method called `migrate()`.
+
+If there is no method called `rollback()` no rollback can be applied to the migration.
+
+Both methods `migrate()` and `rollback()` will receives a `Springy\Database\Connection` object as parameter.

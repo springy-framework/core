@@ -9,6 +9,7 @@ return [
             'username' => 'travis',
             'password' => '',
             'database' => 'test',
+            'migration_dir' => __DIR__.'/../migration/mysql',
         ],
         'mysql_file' => [
             'driver' => 'mysql',

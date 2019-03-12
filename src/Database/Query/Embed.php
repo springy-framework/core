@@ -45,7 +45,7 @@ class Embed
      * @param object|string $model
      * @param string        $foreignKey
      * @param string        $refColumn
-     * @param integer       $resultType
+     * @param int           $resultType
      */
     public function __construct(
         string $embedName,
@@ -66,34 +66,6 @@ class Embed
     }
 
     /**
-     * Returns the comparison between values.
-     *
-     * @param mixed  $left
-     * @param mixed  $right
-     * @param string $operator
-     *
-     * @return bool
-     */
-    protected function getComparison($left, $right, $operator): bool
-    {
-        switch ($operator) {
-            case '=':
-                return $left == $right;
-            case '>':
-                return $left > $right;
-            case '<':
-                return $left < $right;
-            case '!=':
-                return $left != $right;
-            case 'in':
-            case 'IN':
-                return is_array($right) && in_array($left, $right);
-        }
-
-        return false;
-    }
-
-    /**
      * Returns the Where object to internal select.
      *
      * @return Where
@@ -111,6 +83,34 @@ class Embed
         $where->add($this->foreignKey, $this->filter, Where::OP_IN);
 
         return $where;
+    }
+
+    /**
+     * Returns the comparison between values.
+     *
+     * @param mixed  $left
+     * @param mixed  $right
+     * @param string $operator
+     *
+     * @return bool
+     */
+    protected function matches($left, $right, $operator): bool
+    {
+        switch ($operator) {
+            case '=':
+                return $left == $right;
+            case '>':
+                return $left > $right;
+            case '<':
+                return $left < $right;
+            case '!=':
+                return $left != $right;
+            case 'in':
+            case 'IN':
+                return is_array($right) && in_array($left, $right);
+        }
+
+        return false;
     }
 
     /**
@@ -217,7 +217,7 @@ class Embed
                 $right = $row[$right];
             }
 
-            $results[] = $this->getComparison($left, $right, $condition[1]);
+            $results[] = $this->matches($left, $right, $condition[1]);
         }
 
         $results = array_unique($results);

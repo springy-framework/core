@@ -1,0 +1,12 @@
+migrate:
+  - CREATE TABLE IF NOT EXISTS `test_embed` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `surname` VARCHAR(20) NULL,
+    PRIMARY KEY (`id`));
+  - TRUNCATE TABLE `test_embed`;
+  - INSERT INTO `test_embed`(`surname`)
+    VALUES ('Foo'), ('Foo'), ('Foo'), ('Foo'), ('Foo'), ('Foo'),
+    ('Bar'), ('Bar'), ('Bar'), ('Bar'), ('Bar'), ('Bar');
+
+rollback:
+  DROP TABLE IF EXISTS `test_embed`;

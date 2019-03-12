@@ -173,7 +173,7 @@ class UserModelTest extends TestCase
 
         $result = [];
         foreach ($rows as $row) {
-            $result[] = $row['tstEmbed']['surname'] ?? null ;
+            $result[] = $row['tstEmbed']['surname'] ?? null;
         }
 
         $this->assertEquals([
@@ -221,7 +221,8 @@ class TestSpf extends Model
         return $value === '' ? '' : $value.($this->newRecord ? '' : ' Foo');
     }
 
-    protected function person($row) {
+    protected function person($row)
+    {
         return 'Person '.$row['name'];
     }
 

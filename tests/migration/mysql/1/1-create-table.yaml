@@ -1,0 +1,8 @@
+migrate:
+  CREATE TABLE IF NOT EXISTS `foo` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `description` VARCHAR(50) NULL,
+    PRIMARY KEY (`id`));
+
+rollback:
+  DROP TABLE IF EXISTS `foo`;

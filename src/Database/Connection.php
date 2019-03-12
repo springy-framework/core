@@ -139,17 +139,7 @@ class Connection
             return;
         }
 
-        $this->statement = $this->getPdo()->prepare($this->lastQuery, [
-            PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY,
-        ]);
-
-        if ($this->statement === false) {
-            $this->lastErrorCode = $this->getPdo()->errorCode();
-            $this->lastErrorInfo = $this->getPdo()->errorInfo();
-
-            throw new SpringyException('Can\'t prepare query.', $this->lastErrorCode);
-        }
-
+        $this->prepare();
         $this->bindParameters();
         $this->statement->closeCursor();
 
@@ -216,6 +206,37 @@ class Connection
             }
         } catch (Exception $e) {
             $this->statement = null;
+        }
+    }
+
+    /**
+     * Prepares the statement.
+     *
+     * @return void
+     */
+    protected function prepare()
+    {
+        try {
+            $this->statement = $this->getPdo()->prepare($this->lastQuery, [
+                PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY,
+            ]);
+        } catch (Throwable $err) {
+            do {
+                if ($this->isLostConnection($err)) {
+                    $this->connect();
+
+                    $this->statement = $this->getPdo()->prepare($this->lastQuery, [
+                        PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY,
+                    ]);
+                }
+            } while (false);
+        }
+
+        if ($this->statement === null || $this->statement === false) {
+            $this->lastErrorCode = $this->getPdo()->errorCode();
+            $this->lastErrorInfo = $this->getPdo()->errorInfo();
+
+            throw new SpringyException('Can\'t prepare query. ['.$this->lastErrorCode.']');
         }
     }
 
@@ -580,7 +601,7 @@ class Connection
      */
     public function getErrorCode(): string
     {
-        return $this->getPdo()->errorCode() ?? '';
+        return $this->lastErrorCode ?? '';
     }
 
     /**
@@ -590,7 +611,7 @@ class Connection
      */
     public function getErrorInfo(): array
     {
-        return $this->getPdo()->errorInfo() ?? ['', '', ''];
+        return $this->lastErrorInfo ?? ['', '', ''];
     }
 
     /**
@@ -681,25 +702,5 @@ class Connection
     public function getServerVersion()
     {
         return $this->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION);
-    }
-
-    /**
-     * Returns the error code occurred on last query executed.
-     *
-     * @return string
-     */
-    public function getStatmentErrorCode(): string
-    {
-        return $this->lastErrorCode ?? '';
-    }
-
-    /**
-     * Returns the error information occurred on last query executed.
-     *
-     * @return array
-     */
-    public function getStatmentErrorInfo(): array
-    {
-        return $this->lastErrorInfo ?? ['', '', ''];
     }
 }

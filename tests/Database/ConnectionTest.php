@@ -20,6 +20,10 @@ class ConnectionTest extends TestCase
         $this->assertEquals('`test`', $connection->enclose('test'));
         $this->assertEquals('*', $connection->enclose('*'));
 
+        $sql = 'DROP TABLE IF EXISTS `_migration_control`';
+
+        $connection->run($sql);
+
         $sql = 'CREATE TABLE IF NOT EXISTS `test_spf` ('
             .'`id` INT NOT NULL AUTO_INCREMENT, '
             .'`name` VARCHAR(20) NULL, '
@@ -63,20 +67,6 @@ class ConnectionTest extends TestCase
 
         $result = $connection->delete('DELETE FROM `test_spf` WHERE `id` = ?', [7]);
         $this->assertEquals(1, $result);
-
-        // Other table for embed test
-
-        $sql = 'CREATE TABLE IF NOT EXISTS `test_embed` ('
-            .'`id` INT NOT NULL AUTO_INCREMENT, '
-            .'`surname` VARCHAR(20) NULL, '
-            .'PRIMARY KEY (`id`))';
-
-        $connection->run($sql);
-        $connection->run('TRUNCATE TABLE `test_embed`');
-        $result = $connection->insert(
-            'INSERT INTO `test_embed`(`surname`) VALUES (?), (?), (?), (?), (?), (?), (?), (?), (?), (?), (?), (?)',
-            ['Foo', 'Foo', 'Foo', 'Foo', 'Foo', 'Foo', 'Bar', 'Bar', 'Bar', 'Bar', 'Bar', 'Bar']
-        );
     }
 
     public function testMySqlConnectionWithFileRoundRobin()

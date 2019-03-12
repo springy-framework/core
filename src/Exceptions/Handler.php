@@ -55,6 +55,8 @@ class Handler
     /**
      * Displays the application error page.
      *
+     * @SuppressWarnings(PHPMD.ExitExpression)
+     *
      * @return void
      */
     protected function displayError()
@@ -76,12 +78,16 @@ class Handler
             .' on ['.$this->exception->getLine().'] '
             .$this->exception->getFile();
 
+        debug($body);
+
         if (is_file($path)) {
             $body = file_get_contents($path);
         }
 
         $response->body($body);
         $response->send($config->get('application.debug'));
+
+        exit(1);
     }
 
     /**
