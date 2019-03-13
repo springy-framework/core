@@ -97,7 +97,7 @@ class ConnectionTest extends TestCase
 
         $connection->run($sql);
         $connection->run('TRUNCATE TABLE test_spf');
-        $connection->run('ALTER SEQUENCE test_spf_id_seq RESTART WITH 1');
+        $connection->run('ALTER SEQUENCE IF EXISTS test_spf_id_seq RESTART WITH 1');
 
         $result = $connection->insert(
             'INSERT INTO test_spf("name","created") VALUES '
