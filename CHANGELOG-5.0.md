@@ -4,6 +4,8 @@
 
 ### Added
 
+-   Added `Springy\Console\Controller` class
+-   Added `Springy\Console\Kernel` class
 -   Added `Springy\Core\Configuration->configHost` method
 -   Added `Springy\Core\Configuration->configPath` method
 -   Added `Springy\Core\Configuration->getEnvironment` method
@@ -46,12 +48,13 @@
 -   Added `Springy\Exceptions\Http404Error` class
 -   Added `Springy\Exceptions\HttpError` class
 -   Added `Springy\Exceptions\SpringyException` class
+-   Added `Springy\HTTP\Controller` class
 -   Added `Springy\HTTP\Cookie::getInstance` method
+-   Added `Springy\HTTP\Kernel` class
 -   Added `Springy\HTTP\Request` class
 -   Added `Springy\HTTP\Response` class
 -   Added `Springy\HTTP\Session::getInstance` method
 -   Added `Springy\HTTP\Session->configure` method
--   Added `Springy\HTTP\WebController` class
 -   Added `Springy\HTTP\URI::getInstance` method
 -   Added `Springy\Mail\Mailer->setAlternativeBody()` method
 -   Added `Springy\Mail\Mailer->setBody()` method
@@ -81,7 +84,7 @@
 ### Changed
 
 -   Added parameters type declaration and return type declaration for several methods
--   Due to deprecation of `Springy\Controller` class the web controllers must extends new class `Springy\Core\WebController`
+-   Due to deprecation of `Springy\Controller` class the web controllers must extends new class `Springy\HTTP\Controller`
 -   Environment alias configuration `'cmd.shell'` renamed to `'cli'`
 -   The `Springy\Configuration` class was moved to `Springy\Core` namespace
 -   The `Springy\Controller` class was moved to `Springy\HTTP\WebController` and does not extends `Springy\Security\AclManager` anymore

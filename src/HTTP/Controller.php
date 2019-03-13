@@ -18,7 +18,7 @@ use Springy\Exceptions\Http403Error;
 use Springy\Exceptions\SpringyException;
 use Springy\Security\AclManager;
 
-class WebController implements ControllerInterface
+class Controller implements ControllerInterface
 {
     /** @var AclManager the ACL manager object */
     protected $aclManager;

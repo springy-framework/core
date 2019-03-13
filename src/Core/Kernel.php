@@ -8,17 +8,13 @@
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
  * @version   3.0.0
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 
 namespace Springy\Core;
 
 use Springy\Exceptions\Handler;
-use Springy\Exceptions\Http404Error;
 use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Request;
-use Springy\HTTP\Response;
 use Springy\HTTP\URI;
 use Springy\Security\AuthDriver;
 use Springy\Security\Authentication;
@@ -49,7 +45,7 @@ class Kernel
     const PATH_SYSTEM = self::PATH_APPLICATION;
     const PATH_CLASS = self::PATH_CLASSES;
 
-    /** @var self Kernel globally instance */
+    /** @var static Kernel globally instance */
     protected static $instance;
 
     /** @var float application started time */
@@ -73,14 +69,14 @@ class Kernel
      */
     public function __construct($appConf = null)
     {
-        if (self::$instance !== null) {
+        if (static::$instance !== null) {
             return;
         }
 
-        self::$envType = (php_sapi_name() === 'cli') ? self::ENV_TYPE_CLI : self::ENV_TYPE_WEB;
+        static::$envType = (php_sapi_name() === 'cli') ? self::ENV_TYPE_CLI : self::ENV_TYPE_WEB;
         self::$configuration = new Configuration();
         self::$errorHandler = new Handler();
-        self::$instance = $this;
+        static::$instance = $this;
 
         if ($appConf !== null) {
             $this->setUp($appConf);
@@ -92,134 +88,21 @@ class Kernel
      */
     public function __destruct()
     {
-        if (self::$hook === null || !is_callable([self::$hook, 'shutdown'])) {
+        if (static::$hook === null || !is_callable([static::$hook, 'shutdown'])) {
             return;
         }
 
-        self::$hook->shutdown();
+        static::$hook->shutdown();
     }
 
     /**
-     * Calls the controller endpoint.
-     *
-     * @param array $arguments
+     * Tries to discover a controller.
      *
      * @return bool
      */
-    protected function callEndpoint(array $arguments): bool
+    protected function discoverController(): bool
     {
-        if (!self::$controller->_hasPermission()) {
-            self::$controller->_forbidden();
-
-            return true;
-        }
-
-        // Checks if has no arguments of first argument is not an endpoint
-        if (!$endpoint = $this->getEndpoint($arguments)) {
-            // Injects index as first argument
-            array_unshift($arguments, 'index');
-            // Checks if index is an endpoint
-            $endpoint = $this->getEndpoint($arguments);
-        }
-
-        // Returns false if has no callable endpoint
-        if (!$endpoint) {
-            return false;
-        }
-
-        // Removes the fist argument
-        array_shift($arguments);
-
-        // Call the endpoint method and passes the rest of arguments
-        self::$controller->$endpoint($arguments);
-
-        return true;
-    }
-
-    /**
-     * Tries to discover a command line controller.
-     *
-     * @return void
-     */
-    protected function discoverCliController()
-    {
-        if (self::$envType === self::ENV_TYPE_WEB) {
-            return false;
-        }
-
-        $segment = $this->findController('App\\Controllers\\Cli\\', []);
-        if ($segment < 0) {
-            return false;
-        }
-
-        return $this->callEndpoint([]);
-    }
-
-    /**
-     * Tries to discover an internal magic endpoint.
-     *
-     * @return bool
-     */
-    protected function discoverMagic(): bool
-    {
-        if (!Request::getInstance()->isGet()) {
-            return false;
-        }
-
-        $segments = URI::getInstance()->getSegments();
-
-        if (empty(($segments)) || $segments[0] !== 'springy') {
-            return false;
-        }
-
-        $response = Response::getInstance();
-
-        if (count($segments) == 2 && $segments[1] == 'about') {
-            $response->body(Copyright::getInstance()->content());
-
-            return true;
-        }
-
         return false;
-    }
-
-    /**
-     * Tries to discover a web controller from the URI segments.
-     *
-     * @return bool
-     */
-    protected function discoverWebController(): bool
-    {
-        if (self::$envType === self::ENV_TYPE_CLI) {
-            return false;
-        }
-
-        $uri = URI::getInstance();
-
-        if (Request::getInstance()->isHead() && $uri->host() == '') {
-            $response = Response::getInstance();
-            $response->header()->pragma('no-cache');
-            $response->header()->expires('0');
-            $response->header()->cacheControl('must-revalidate, post-check=0, pre-check=0');
-            $response->header()->cacheControl('private', false);
-
-            return true;
-        }
-
-        // Updates the configuration host
-        self::$configuration->configHost($uri->host());
-
-        $segments = $uri->getSegments();
-        $segment = $this->findController('App\\Controllers\\Web\\', $segments);
-        if ($segment < 0) {
-            return false;
-        }
-
-        // Extracts extra segments as arguments
-        $arguments = array_slice($segments, $segment);
-        array_splice($segments, $segment);
-
-        return $this->callEndpoint($arguments);
     }
 
     /**
@@ -258,24 +141,6 @@ class Kernel
     }
 
     /**
-     * Gets the controller endpoint name.
-     *
-     * @param array $arguments
-     *
-     * @return string|bool
-     */
-    protected function getEndpoint(array $arguments)
-    {
-        // Gets first segment of arguments as endpoint method, if has
-        $endpoint = array_shift($arguments);
-        if ($endpoint && is_callable([self::$controller, $endpoint])) {
-            return $endpoint;
-        }
-
-        return false;
-    }
-
-    /**
      * Tryes to load a full qualified name controller class.
      *
      * @param string $baseNS
@@ -295,7 +160,7 @@ class Kernel
         $this->loadHookController($baseNS, $arguments);
 
         // Creates the controller
-        self::$controller = new $name($arguments);
+        static::$controller = new $name($arguments);
 
         return true;
     }
@@ -317,9 +182,9 @@ class Kernel
             return;
         }
 
-        self::$hook = new $name($baseNS, $arguments);
-        if (is_callable([self::$hook, 'startup'])) {
-            self::$hook->startup();
+        static::$hook = new $name($baseNS, $arguments);
+        if (is_callable([static::$hook, 'startup'])) {
+            static::$hook->startup();
         }
     }
 
@@ -366,55 +231,16 @@ class Kernel
         return implode('', $normalized);
     }
 
+    /**
+     * Throws an error.
+     *
+     * @throws SpringyException
+     *
+     * @return void
+     */
     protected function notFound()
     {
-        if (self::$envType == self::ENV_TYPE_WEB) {
-            throw new Http404Error();
-        }
-    }
-
-    /**
-     * Sets up authentication driver event handler.
-     *
-     * @return void
-     */
-    protected function setupAuthDrv()
-    {
-        $driver = self::$configuration->get('application.authentication.driver');
-
-        if ($driver === null) {
-            app()->bind('user.auth.driver', function ($data) {
-                $hasher = $data['user.auth.hasher'];
-                $identity = $data['user.auth.identity'];
-
-                return new AuthDriver($hasher, $identity);
-            });
-        } elseif ($driver instanceof Closure || is_object($driver)) {
-            app()->bind('user.auth.driver', $driver);
-        }
-    }
-
-    /**
-     * Instantiates authentication object event handler.
-     *
-     * @param string $element
-     * @param mixed  $default
-     *
-     * @return void
-     */
-    protected function setupAuthEvt(string $element, $default = null)
-    {
-        $option = self::$configuration->get('application.authentication.'.$element, $default);
-
-        if ($option === null) {
-            return;
-        } elseif ($option instanceof Closure || is_object($option)) {
-            app()->bind('user.auth.'.$element, $option);
-        } elseif (is_string($option)) {
-            app()->bind('user.auth.'.$element, function () use ($option) {
-                return new $option();
-            });
-        }
+        throw new SpringyException('No controller found.');
     }
 
     /**
@@ -429,7 +255,7 @@ class Kernel
 
     public function controller()
     {
-        return self::$controller;
+        return static::$controller;
     }
 
     /**
@@ -529,17 +355,17 @@ class Kernel
     {
         // Can be executed once
         if (self::$startime !== null) {
-            return self::$instance;
+            return static::$instance;
         }
 
         // Overwrites the application started time if defined
         self::$startime = $startime ?? microtime(true);
 
-        if (!$this->discoverCliController() && !$this->discoverWebController() && !$this->discoverMagic()) {
+        if (!$this->discoverController()) {
             $this->notFound();
         }
 
-        return self::$instance;
+        return static::$instance;
     }
 
     /**
@@ -550,22 +376,6 @@ class Kernel
     public function runTime(): float
     {
         return microtime(true) - self::$startime;
-    }
-
-    /**
-     * Sends the application output.
-     *
-     * @return void
-     */
-    public function send()
-    {
-        if (self::$envType === self::ENV_TYPE_WEB) {
-            Response::getInstance()->send(
-                self::$configuration->get('application.debug')
-            );
-
-            return;
-        }
     }
 
     /**
@@ -651,33 +461,24 @@ class Kernel
             $conf['ENVIRONMENT_VARIABLE'] ?? 'ENVIRONMENT'
         );
 
-        if (is_array(self::$configuration->get('application.authentication'))) {
-            $this->setupAuthEvt('hasher', 'Springy\Security\BCryptHasher');
-            $this->setupAuthEvt('identity');
-            $this->setupAuthDrv();
-            app()->instance('user.auth.manager', function ($data) {
-                return new Authentication($data['user.auth.driver']);
-            });
-        }
-
         // Define the application paths
         // $this->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);
         // self::path(self::PATH_APPLICATION, $conf['APP_PATH'] ?? realpath($conf['ROOT_PATH'].'/../app'));
 
-        return self::$instance;
+        return static::$instance;
     }
 
     /**
      * Returns current instance.
      *
-     * @return self
+     * @return static
      */
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
-            new self();
+        if (static::$instance === null) {
+            new static();
         }
 
-        return self::$instance;
+        return static::$instance;
     }
 }
