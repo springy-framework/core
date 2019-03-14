@@ -1,18 +1,33 @@
 <?php
 /**
- * Database migration manager.
+ * Database migration console command.
  *
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   1.0.0
+ * @version   2.0.0
  */
 
 namespace Springy\Database;
 
-class Migrator
+use Springy\Console\Controller;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Springy\Database\Migration\Migrator;
+
+class Migrator extends Controller
 {
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Database migrator command';
+    /** @var string database configurarion name */
+    protected $database;
+    protected $revTarget;
+
     const VERSION = '1.0.0';
     const MSG_INFORMATION = 0;
     const MSG_WARNING = 1;
@@ -37,61 +52,141 @@ class Migrator
     private $controlTable = '';
     private $mustByApplied = [];
 
+    protected function checkOptions()
+    {
+
+    }
+
+    protected function configure()
+    {
+        parent::configure();
+        $this->addArgument('instruction', InputArgument::OPTIONAL, 'The migrate instruction');
+
+        $this->addOption('revision', 'r', InputOption::VALUE_OPTIONAL, 'The target revision');
+        $this->addOption('database', 'd', InputOption::VALUE_OPTIONAL, 'Database name');
+
+        $this->addUsage('%command.full_name% <instruction> [<options>]');
+    }
+
+    protected function index()
+    {
+        $instruction = $this->input->getArgument('instruction');
+        if ($instruction === null) {
+            $this->printHelp();
+
+            return 1;
+        }
+
+        $this->database = $this->input->getParameterOption('database', null);
+        $this->revTarget = $this->input->getParameterOption('revision', null);
+
+        switch ($instruction) {
+            case 'migrate':
+                return $this->doMigrate();
+            case 'rollback':
+                return $this->doRollback();
+            case 'status':
+                return $this->doStatus();
+        }
+
+        $this->printHelp();
+
+        return 1;
+    }
+
+    protected function printHelp()
+    {
+        $this->setHelp([
+            $this->getAppNameVersion(),
+            '',
+            sprintf('<info>%s</info>', $this->description),
+            '',
+            'Usage:',
+            '  %command.full_name% migrate|rollback|status [<options>]',
+            '',
+            'Instructions:',
+            '  migrate   Install database migrations',
+            '  rollback  Rollback database migrations',
+            '  status    Show database migration status',
+            '',
+            'Options:',
+            '  -r --revision=<N>       Target revisions version',
+            '  -d --database=<dbname>  Database name',
+        ]);
+
+        $this->output->writeln($this->getProcessedHelp());
+    }
+
+    protected function doMigrate()
+    {
+        $migrator = new Migrator($this->database);
+    }
+
+    protected function doRollback()
+    {
+        $migrator = new Migrator($this->database);
+    }
+
+    protected function doStatus()
+    {
+        $migrator = new Migrator($this->database);
+    }
+
     /**
      * Constructor.
      */
-    public function __construct()
-    {
-        $this->revPath = Kernel::path(Kernel::PATH_MIGRATION).DS;
-        $this->connection = new Connection();
-    }
+    // public function __construct()
+    // {
+    //     $this->revPath = Kernel::path(Kernel::PATH_MIGRATION).DS;
+    //     $this->connection = new Connection();
+    // }
 
     /**
      * Runs the migrator.
      */
-    public function run()
-    {
-        ob_end_flush();
+    // public function run()
+    // {
+    //     ob_end_flush();
 
-        $this->output('', self::MSG_INFORMATION);
-        $this->output(self::CS_INFORMATION.'Springy'.self::CS_RESET.' v'.Kernel::VERSION, self::MSG_INFORMATION);
-        $this->output('A micro framework for smart developers.', self::MSG_INFORMATION);
-        $this->output('', self::MSG_INFORMATION);
-        $this->output('Database Migration Tool v'.self::VERSION, self::MSG_INFORMATION);
-        $this->output('--------------------------------', self::MSG_INFORMATION);
-        $this->output('', self::MSG_INFORMATION);
-        $this->output('Application: '.Kernel::systemName().' v'.Kernel::systemVersion(), self::MSG_INFORMATION);
-        $this->output('', self::MSG_INFORMATION);
+    //     $this->output('', self::MSG_INFORMATION);
+    //     $this->output(self::CS_INFORMATION.'Springy'.self::CS_RESET.' v'.Kernel::VERSION, self::MSG_INFORMATION);
+    //     $this->output('A micro framework for smart developers.', self::MSG_INFORMATION);
+    //     $this->output('', self::MSG_INFORMATION);
+    //     $this->output('Database Migration Tool v'.self::VERSION, self::MSG_INFORMATION);
+    //     $this->output('--------------------------------', self::MSG_INFORMATION);
+    //     $this->output('', self::MSG_INFORMATION);
+    //     $this->output('Application: '.Kernel::systemName().' v'.Kernel::systemVersion(), self::MSG_INFORMATION);
+    //     $this->output('', self::MSG_INFORMATION);
 
-        // Checks the configuration
-        $this->controlTable = Configuration::get('db', '_migration.table_name') ?: '_database_version_control';
+    //     // Checks the configuration
+    //     $this->controlTable = Configuration::get('db', '_migration.table_name') ?: '_database_version_control';
 
-        // Checks existence of the control table
-        $this->checkControlTable();
-        $this->getArguments();
-        $this->checkCurrentRevision();
+    //     // Checks existence of the control table
+    //     $this->checkControlTable();
+    //     $this->getArguments();
+    //     $this->checkCurrentRevision();
 
-        switch ($this->command) {
-            case 'status':
-                $this->showCurrentStatus();
-                break;
-            case 'migrate':
-                $this->migrate();
-                break;
-            case 'rollback':
-                $this->revert();
-                break;
-            case 'help':
-                $this->showHelp();
-                break;
-            default:
-                $this->output('Invalid command!', self::MSG_WARNING);
-        }
+    //     switch ($this->command) {
+    //         case 'status':
+    //             $this->showCurrentStatus();
+    //             break;
+    //         case 'migrate':
+    //             $this->migrate();
+    //             break;
+    //         case 'rollback':
+    //             $this->revert();
+    //             break;
+    //         case 'help':
+    //             $this->showHelp();
+    //             break;
+    //         default:
+    //             $this->output('Invalid command!', self::MSG_WARNING);
+    //     }
 
-        $this->output('');
-        $this->output('Done!');
-        exit(0);
-    }
+    //     $this->output('');
+    //     $this->output('Done!');
+    //     exit(0);
+    // }
 
     /**
      * Checks the existence of the control table.
