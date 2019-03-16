@@ -87,19 +87,16 @@ class ConnectionTest extends TestCase
         $this->assertTrue($connection->isConnected());
         $this->assertEquals('"test"', $connection->enclose('test'));
 
-        $sql = 'CREATE TABLE IF NOT EXISTS test_spf ('
-            .'"id" integer NOT NULL DEFAULT nextval(\'test_spf_id_seq\'::regclass),'
+        $connection->run(
+            'CREATE TABLE IF NOT EXISTS test_spf ('
+            .'"id" SERIAL PRIMARY KEY,'
             .'"name" character varying(20) NOT NULL,'
             .'"created" timestamp without time zone NOT NULL,'
             .'"deleted" SMALLINT NOT NULL DEFAULT \'0\'::smallint,'
             .'CONSTRAINT test_spf_pkey PRIMARY KEY ("id")'
-            .') WITH (OIDS=FALSE);';
-
-        $connection->run($sql);
+            .') WITH (OIDS=FALSE);'
+        );
         $this->assertEquals('', $connection->getError());
-
-        $connection->run('TRUNCATE TABLE test_spf');
-        $connection->run('ALTER SEQUENCE IF EXISTS test_spf_id_seq RESTART WITH 1');
 
         $result = $connection->insert(
             'INSERT INTO test_spf("name","created") VALUES '
@@ -110,6 +107,9 @@ class ConnectionTest extends TestCase
             ['Homer', 'Marge', 'Lisa', 'Bart', 'Meggy', 'Santa\'\'s Helper', 'Cat']
         );
         $this->assertEquals(7, $result);
+
+        $connection->run('DROP TABLE IF EXISTS test_spf');
+        $this->assertEquals('', $connection->getError());
     }
 
     public function testConnectionSQLite()
