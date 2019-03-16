@@ -87,7 +87,7 @@ class ConnectionTest extends TestCase
         $this->assertTrue($connection->isConnected());
         $this->assertEquals('"test"', $connection->enclose('test'));
 
-        $sql = 'CREATE TABLE IF NOT EXISTS public.test_spf ('
+        $sql = 'CREATE TABLE IF NOT EXISTS test_spf ('
             .'"id" integer NOT NULL DEFAULT nextval(\'test_spf_id_seq\'::regclass),'
             .'"name" character varying(20) NOT NULL,'
             .'"created" timestamp without time zone NOT NULL,'
@@ -96,11 +96,11 @@ class ConnectionTest extends TestCase
             .') WITH (OIDS=FALSE);';
 
         $connection->run($sql);
-        $connection->run('TRUNCATE TABLE public.test_spf');
-        $connection->run('ALTER SEQUENCE IF EXISTS public.test_spf_id_seq RESTART WITH 1');
+        $connection->run('TRUNCATE TABLE test_spf');
+        $connection->run('ALTER SEQUENCE IF EXISTS test_spf_id_seq RESTART WITH 1');
 
         $result = $connection->insert(
-            'INSERT INTO public.test_spf("name","created") VALUES '
+            'INSERT INTO test_spf("name","created") VALUES '
             .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
             .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
             .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
