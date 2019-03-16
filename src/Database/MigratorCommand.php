@@ -40,8 +40,8 @@ class MigratorCommand extends Controller
         parent::configure();
         $this->addArgument('instruction', InputArgument::OPTIONAL, 'The migrate instruction.');
 
-        $this->addOption('revision', 'r', InputOption::VALUE_OPTIONAL, 'The target revision.');
         $this->addOption('database', 'd', InputOption::VALUE_OPTIONAL, 'Database name.');
+        $this->addOption('revision', 'r', InputOption::VALUE_OPTIONAL, 'The target revision.');
 
         $this->addUsage('%command.full_name% <instruction> [<options>]');
     }

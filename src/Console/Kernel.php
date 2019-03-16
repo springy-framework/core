@@ -49,7 +49,7 @@ class Kernel extends MainKernel
         //     return $this->discoverInternals($command);
         // }
 
-        $segment = $this->findController('App\\Controllers\\Console\\', [$command ?? '']);
+        $segment = $this->findController('App\\Console\\', [$command ?? '']);
         if ($segment < 0 && !$this->discoverInternals($command)) {
             return false;
         }
@@ -98,24 +98,6 @@ class Kernel extends MainKernel
         );
     }
 
-    protected function getGeneralHelp()
-    {
-        return [
-            'Usage:',
-            '  %command.full_name% <command> [<options>]',
-            '',
-            'Instructions:',
-            '  help',
-            '  migrate   Install database migrations',
-            '  rollback  Rollback database migrations',
-            '  status    Show database migration status',
-            '',
-            'Options:',
-            '  -r --revision=<REVISION>  Target revisions version',
-            '  -d --database=<DATABASE>  Database name',
-        ];
-    }
-
     /**
      * Checks whether the -V|--version option was received.
      *
@@ -147,9 +129,9 @@ class Kernel extends MainKernel
             '',
             '<error>Command not found.</error>',
             '',
+            'Try:',
+            '  '.$_SERVER['PHP_SELF'].' --help',
         ]);
-
-        $this->output->writeln($this->getGeneralHelp());
     }
 
     /**
