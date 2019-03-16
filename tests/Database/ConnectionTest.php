@@ -107,6 +107,7 @@ class ConnectionTest extends TestCase
             .'(?, CURRENT_TIMESTAMP)',
             ['Homer', 'Marge', 'Lisa', 'Bart', 'Meggy', 'Santa\'\'s Helper', 'Cat']
         );
+        $this->assertEquals('', $connection->getError());
         $this->assertEquals(7, $result);
     }
 
