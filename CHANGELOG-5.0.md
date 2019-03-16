@@ -80,6 +80,9 @@
 -   Added property `$defaultLimit` into `Springy\Database\Model` class
 -   Added property `$errorIfColNotExists` into `Springy\Database\Model` class
 -   Added property `$fetchAsObject` into `Springy\Database\Model` class
+-   Added `app_name()` helper function
+-   Added `app_version()` helper function
+-   Added `env()` helper function
 
 ### Changed
 
@@ -115,8 +118,7 @@
 -   Method `Springy\Database\RowsIterator->next()` only moves the cursor pointer and does not returns value any more
 -   Method `Springy\Database\RowsIterator->prev()` only moves the cursor pointer and does not returns value any more
 -   Method `Springy\DB::connected()` is no more static and was renamed to `Springy\Database\Connection->isConnected()`
--   Method `Springy\DB->errorCode()` was renamed to `Springy\Database\Connection->getErrorCode()`
--   Method `Springy\DB->errorInfo()` was renamed to `Springy\Database\Connection->getErrorInfo()`
+-   Method `Springy\DB->errorInfo()` was renamed to `Springy\Database\Connection->getError()`
 -   Method `Springy\DB->fetchAll()` was renamed to `Springy\Database\Connection->getAll()`
 -   Method `Springy\DB->fetchCurrent()` was renamed to `Springy\Database\Connection->getCurrent()`
 -   Method `Springy\DB->fetchFirst()` was renamed to `Springy\Database\Connection->getFirst()`
@@ -127,8 +129,7 @@
 -   Method `Springy\DB->lastQuery()` was renamed to `Springy\Database\Connection->getLastQuery()`
 -   Method `Springy\DB->lastInsertedId()` was renamed to `Springy\Database\Connection->getLastInsertedId()`
 -   Method `Springy\DB->serverVersion()` was renamed to `Springy\Database\Connection->getServerVersion()`
--   Method `Springy\DB->statmentErrorCode()` was renamed to `Springy\Database\Connection->getErrorCode()`
--   Method `Springy\DB->statmentErrorInfo()` was renamed to `Springy\Database\Connection->getErrorInfo()`
+-   Method `Springy\DB->statmentErrorInfo()` was renamed to `Springy\Database\Connection->getError()`
 -   Method `Springy\DB\Conditions->condition()` was renamed to `Springy\Database\Query\Conditions->add()`
 -   Method `Springy\Kernel::addIgnoredError()` moved to `Springy\Exceptions\Handler->addIgnoredError()`
 -   Method `Springy\Kernel::delIgnoredError()` moved to `Springy\Exceptions\Handler->delIgnoredError()`
@@ -210,6 +211,8 @@
 -   Removed `Springy\DB->execute()` method. See new methods `run()`, `select()`, `insert()`, `delete()` and `update()` in `Springy\Database\Connection` class.
 -   Removed `Springy\DB->get_all()` method
 -   Removed `Springy\DB->num_rows()` method
+-   Removed `Springy\DB->errorCode()` method
+-   Removed `Springy\DB->statmentErrorCode()` method
 -   Removed `Springy\DB\Conditions->filter()` method
 -   Removed `Springy\DBDelete` class
 -   Removed `Springy\DBExpression` class

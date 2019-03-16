@@ -68,7 +68,8 @@ class Controller extends Command implements ControllerInterface
         parent::__construct($this->name);
 
         $this->setDescription($this->description);
-        $this->addArgument('command', InputArgument::REQUIRED, 'The command to execute');
+
+        // Global options
         $this->addOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.');
         $this->addOption('quiet', 'q', InputOption::VALUE_NONE, 'Do not output any message.');
         $this->addOption('verbose', 'v|vv|vvv', InputOption::VALUE_OPTIONAL, 'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug.');
@@ -101,6 +102,16 @@ class Controller extends Command implements ControllerInterface
     }
 
     /**
+     * Default command configuration.
+     *
+     * @return void
+     */
+    protected function configure()
+    {
+        $this->addArgument('command', InputArgument::REQUIRED, 'The command to execute');
+    }
+
+    /**
      * Execute the console command.
      *
      * @param InputInterface  $input
@@ -113,6 +124,11 @@ class Controller extends Command implements ControllerInterface
         return call_user_func([$this, 'index'], $input, $output);
     }
 
+    /**
+     * Configures the IO interface.
+     *
+     * @return void
+     */
     protected function configIO()
     {
         putenv('LINES='.$this->terminal->getHeight());
@@ -139,6 +155,31 @@ class Controller extends Command implements ControllerInterface
         if ($this->input->hasParameterOption(['-n', '--no-interaction'], true)) {
             $this->input->setInteractive(false);
         }
+    }
+
+    /**
+     * Gets the application name with version.
+     *
+     * @return string
+     */
+    protected function getAppNameVersion(): string
+    {
+        return sprintf('%s <info>%s</info>', app_name(), app_version());
+    }
+
+    /**
+     * Prints out application title and version and command description or name.
+     *
+     * @return void
+     */
+    protected function printTitle()
+    {
+        $this->output->writeln([
+            $this->getAppNameVersion(),
+            '',
+            $this->description ? $this->description : $this->name,
+            '',
+        ]);
     }
 
     /**

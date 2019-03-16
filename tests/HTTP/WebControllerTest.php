@@ -1,6 +1,6 @@
 <?php
 /**
- * Test case for Springy\HTTP\WebController class.
+ * Test case for Springy\HTTP\Controller class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -9,10 +9,10 @@
  * @version   1.0.0
  */
 use PHPUnit\Framework\TestCase;
-use Springy\Core\Kernel;
 use Springy\Exceptions\Http403Error;
+use Springy\HTTP\Controller;
+use Springy\HTTP\Kernel;
 use Springy\HTTP\Session;
-use Springy\HTTP\WebController;
 use Springy\Security\AuthDriver;
 use Springy\Security\Authentication;
 use Springy\Security\BasicHasher;
@@ -28,7 +28,7 @@ class WebControllerTest extends TestCase
 
     public function setUp()
     {
-        $kernel = Kernel::getInstance();
+        $kernel = new Kernel();
         $config = $kernel->configuration();
 
         $config->set('application.authentication.hasher', 'Springy\Security\BasicHasher');
@@ -44,21 +44,7 @@ class WebControllerTest extends TestCase
 
         Session::getInstance()->configure($kernel->configuration());
 
-        // // Starts authentication driver
-        // $app = app();
-        // $app->bind('user.auth.identity', function () {
-        //     return new TstUser();
-        // });
-        // $app->bind('user.auth.driver', function ($c) {
-        //     $hasher = new BasicHasher();
-        //     $user = $c['user.auth.identity'];
-
-        //     return new AuthDriver($hasher, $user);
-        // });
-        // $app->instance('user.auth.manager', function ($c) {
-        //     return new Authentication($c['user.auth.driver']);
-        // });
-
+        $kernel->setAuthDriver();
         // Login the user
         $driver = app('user.auth.driver');
         $user = $driver->getIdentityById('0001');
@@ -82,7 +68,7 @@ class WebControllerTest extends TestCase
     }
 }
 
-class TstController extends WebController
+class TstController extends Controller
 {
     protected $authNeeded = true;
 }

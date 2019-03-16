@@ -32,10 +32,8 @@ class Connection
     protected $fetchStyle;
     /** @var string current identity connection */
     protected $identity;
-    /** @var mixed last query execution error code */
-    protected $lastErrorCode;
-    /** @var mixed last query execution error information */
-    protected $lastErrorInfo;
+    /** @var string last query execution error */
+    protected $lastError;
     /** @var array last query execution prepare statements */
     protected $lastValues;
     /** @var PDOStatement|array the SQL statement */
@@ -129,20 +127,11 @@ class Connection
      * Executes the query.
      *
      * @throws PDOException
-     * @throws SpringyException
      *
      * @return void
      */
     protected function executeQuery()
     {
-        if ($this->statement !== null) {
-            return;
-        }
-
-        $this->prepare();
-        $this->bindParameters();
-        $this->statement->closeCursor();
-
         try {
             $this->statement->execute();
         } catch (Throwable $err) {
@@ -150,19 +139,23 @@ class Connection
                 if ($this->isLostConnection($err)) {
                     $this->connect();
 
-                    $this->statement->execute();
+                    if (!$this->isConnected()) {
+                        return;
+                    }
 
-                    break;
+                    try {
+                        $this->statement->execute();
+
+                        break;
+                    } catch (Throwable $err) {
+                    }
                 }
 
-                $this->lastErrorCode = $this->statement->errorCode();
-                $this->lastErrorInfo = $this->statement->errorInfo();
-
-                throw $err;
+                $this->lastError = $err->getMessage();
             } while (false);
         }
 
-        if ($this->cacheLifeTime) {
+        if ($this->cacheLifeTime && $this->lastError === null) {
             $this->saveCache();
         }
     }
@@ -212,6 +205,9 @@ class Connection
     /**
      * Prepares the statement.
      *
+     * @throws PDOException
+     * @throws SpringyException
+     *
      * @return void
      */
     protected function prepare()
@@ -220,24 +216,30 @@ class Connection
             $this->statement = $this->getPdo()->prepare($this->lastQuery, [
                 PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY,
             ]);
-        } catch (Throwable $err) {
-            do {
-                if ($this->isLostConnection($err)) {
-                    $this->connect();
 
+            return true;
+        } catch (Throwable $err) {
+            if ($this->isLostConnection($err)) {
+                $this->connect();
+
+                if (!$this->isConnected()) {
+                    return false;
+                }
+
+                try {
                     $this->statement = $this->getPdo()->prepare($this->lastQuery, [
                         PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY,
                     ]);
+
+                    return true;
+                } catch (Throwable $err) {
                 }
-            } while (false);
+            }
+
+            $this->lastError = $err->getMessage();
         }
 
-        if ($this->statement === null || $this->statement === false) {
-            $this->lastErrorCode = $this->getPdo()->errorCode();
-            $this->lastErrorInfo = $this->getPdo()->errorInfo();
-
-            throw new SpringyException('Can\'t prepare query. ['.$this->lastErrorCode.']');
-        }
+        return false;
     }
 
     /**
@@ -405,8 +407,7 @@ class Connection
      */
     public function run(string $query, array $params = [])
     {
-        $this->lastErrorCode = null;
-        $this->lastErrorInfo = null;
+        $this->lastError = null;
         $this->statement = null;
 
         $this->setLastQuery($query);
@@ -416,6 +417,13 @@ class Connection
         $query = null;
 
         $this->loadCache();
+
+        if ($this->statement !== null || !$this->prepare()) {
+            return;
+        }
+
+        $this->bindParameters();
+        $this->statement->closeCursor();
         $this->executeQuery();
     }
 
@@ -595,23 +603,13 @@ class Connection
     }
 
     /**
-     * Returns the last error code occurred on the PDO object.
+     * Returns the last error occurred.
      *
      * @return string
      */
-    public function getErrorCode(): string
+    public function getError(): string
     {
-        return $this->lastErrorCode ?? '';
-    }
-
-    /**
-     * Returns the array with last error occurred on the PDO object.
-     *
-     * @return array
-     */
-    public function getErrorInfo(): array
-    {
-        return $this->lastErrorInfo ?? ['', '', ''];
+        return $this->lastError ?? '';
     }
 
     /**

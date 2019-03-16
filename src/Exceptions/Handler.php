@@ -12,6 +12,7 @@
 namespace Springy\Exceptions;
 
 use Exception;
+use PDOException;
 use Springy\Core\Kernel;
 use Springy\HTTP\Response;
 
@@ -88,6 +89,41 @@ class Handler
         $response->send($config->get('application.debug'));
 
         exit(1);
+    }
+
+    /**
+     * Returns the error name.
+     *
+     * @param int $errNo
+     *
+     * @return string
+     */
+    protected function getErrorName($errNo): string
+    {
+        $errorNames = [
+            E_ERROR             => 'Error',
+            E_WARNING           => 'Warning',
+            E_PARSE             => 'Parse Error',
+            E_NOTICE            => 'Notice',
+            E_CORE_ERROR        => 'Core Error',
+            E_CORE_WARNING      => 'Core Warning',
+            E_COMPILE_ERROR     => 'Compile Error',
+            E_COMPILE_WARNING   => 'Compile Warning',
+            E_USER_ERROR        => 'User Error',
+            E_USER_WARNING      => 'User Warning',
+            E_USER_NOTICE       => 'User Notice',
+            E_STRICT            => 'Fatal Error',
+            1044                => 'Access Denied to Database',
+            E_DEPRECATED        => 'Deprecated',
+            E_USER_DEPRECATED   => 'Deprecated',
+            E_RECOVERABLE_ERROR => 'Fatal Error',
+        ];
+
+        return $errorNames[$errNo] ?? (
+            $this->exception instanceof PDOException
+            ? 'Database error ('.$errNo.')'
+            : 'Unknown Error ('.$errNo.')'
+        );
     }
 
     /**
@@ -205,37 +241,6 @@ class Handler
     }
 
     /**
-     * Returns the error name.
-     *
-     * @param int $errNo
-     *
-     * @return string
-     */
-    protected function getErrorName(int $errNo): string
-    {
-        $errorNames = [
-            E_ERROR             => 'Error',
-            E_WARNING           => 'Warning',
-            E_PARSE             => 'Parse Error',
-            E_NOTICE            => 'Notice',
-            E_CORE_ERROR        => 'Core Error',
-            E_CORE_WARNING      => 'Core Warning',
-            E_COMPILE_ERROR     => 'Compile Error',
-            E_COMPILE_WARNING   => 'Compile Warning',
-            E_USER_ERROR        => 'User Error',
-            E_USER_WARNING      => 'User Warning',
-            E_USER_NOTICE       => 'User Notice',
-            E_STRICT            => 'Fatal Error',
-            1044                => 'Access Denied to Database',
-            E_DEPRECATED        => 'Deprecated',
-            E_USER_DEPRECATED   => 'Deprecated',
-            E_RECOVERABLE_ERROR => 'Fatal Error',
-        ];
-
-        return $errorNames[$errNo] ?? 'Unknown Error ('.$errNo.')';
-    }
-
-    /**
      * Returns the list of ignored error codes.
      *
      * @return array
@@ -243,6 +248,22 @@ class Handler
     public function getIgnoredErrors(): array
     {
         return $this->ignoredErrors;
+    }
+
+    /**
+     * Checks whether the error class or code is ignored by the handler.
+     *
+     * @param object|int|string $error
+     *
+     * @return bool
+     */
+    public function isIgnored($error): bool
+    {
+        if (is_object($error)) {
+            return in_array(get_class($error), $this->ignoredErrors);
+        }
+
+        return in_array($error, $this->ignoredErrors);
     }
 
     /**
@@ -264,10 +285,8 @@ class Handler
     public function trigger()
     {
         if ($this->handlerType === null
-            || in_array(
-                $this->exception->getCode(),
-                $this->ignoredErrors
-            )) {
+            || $this->isIgnored($this->exception->getCode())
+            || $this->isIgnored($this->exception)) {
             return;
         }
 

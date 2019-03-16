@@ -11,6 +11,9 @@
 
 namespace Springy\Database\Migration;
 
+use Closure;
+use PDOException;
+use Springy\Core\Kernel;
 use Springy\Database\Connection;
 use Springy\Exceptions\SpringyException;
 use Throwable;
@@ -23,6 +26,8 @@ class Migrator
     protected $connection;
     /** @var string the name of migration control table */
     protected $controlTable;
+    /** @var string last occurred error */
+    protected $error;
     /** @var array the list of not applied yet revistion script */
     protected $notApplied;
     /** @var Revisions the revisions object */
@@ -41,6 +46,8 @@ class Migrator
         if ($path === null) {
             throw new SpringyException('Migration path configuration missing for "'.$identity.'"');
         }
+
+        Kernel::getInstance()->errorHandler()->addIgnoredError(PDOException::class);
 
         $this->applied = [];
         $this->notApplied = [];
@@ -109,8 +116,50 @@ class Migrator
         try {
             $this->connection->run($command);
         } catch (Throwable $th) {
-            throw new SpringyException('Can not create control table ('.$this->connection->getErrorCode().')');
+            throw new SpringyException('Can not create control table ('.$this->connection->getError().')');
         }
+    }
+
+    public function countRevisionsUntil($version): int
+    {
+        $revisions = $this->revisions->getNotApplied();
+
+        // Count revisions to apply
+        $toApply = 0;
+        foreach ($revisions as $key) {
+            $migration = $this->revisions->get($key);
+
+            if ($version !== null && $migration->getVersion() > $version) {
+                break;
+            }
+
+            $toApply += 1;
+        }
+
+        return $toApply;
+    }
+
+    public function countRollbackUntil($version): int
+    {
+        $revisions = $this->revisions->getApplied();
+
+        if ($version === null) {
+            $version = 0;
+        }
+
+        // Count revisions to undo
+        $toUndo = 0;
+        foreach ($revisions as $key) {
+            $migration = $this->revisions->get($key);
+
+            if ($migration->getVersion() < $version) {
+                break;
+            }
+
+            $toUndo += 1;
+        }
+
+        return $toUndo;
     }
 
     /**
@@ -124,11 +173,21 @@ class Migrator
     }
 
     /**
+     * Gets the error message.
+     *
+     * @return void
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    /**
      * Returns the quantity of not applied revisions.
      *
      * @return int
      */
-    public function getNotAppliedRevisions(): int
+    public function getNotAppliedRevisionsCount(): int
     {
         return count($this->revisions->getNotApplied());
     }
@@ -140,22 +199,35 @@ class Migrator
      *
      * @return int
      */
-    public function migrate($version = null): int
+    public function migrate($version = null, Closure $callback = null): int
     {
         $revisions = $this->revisions->getNotApplied();
-        $counter = 0;
 
+        // Count revisions to apply
+        $toApply = $this->countRevisionsUntil($version);
+        if ($toApply === 0) {
+            return 0;
+        }
+
+        // Apply revisions
+        $counter = 0;
         foreach ($revisions as $key) {
             $migration = $this->revisions->get($key);
 
             if ($version !== null && $migration->getVersion() > $version) {
                 break;
             } elseif (!$migration->migrate($this->connection, $this->controlTable)) {
+                $this->error = $migration->getError().' at '.$migration->getIdentity().' revision file';
+
                 break;
             }
 
-            $this->revisions->setApplied($key);
             $counter += 1;
+            $this->revisions->setApplied($key);
+
+            if ($callback instanceof Closure) {
+                call_user_func($callback, $counter);
+            }
         }
 
         return $counter;
@@ -168,27 +240,39 @@ class Migrator
      *
      * @return int
      */
-    public function rollback($version = null): int
+    public function rollback($version = null, Closure $callback = null): int
     {
         $revisions = $this->revisions->getApplied();
+
+        // Count revisions to apply
+        $toUndo = $this->countRollbackUntil($version);
+        if ($toUndo === 0) {
+            return 0;
+        }
 
         if ($version === null) {
             $version = 0;
         }
 
+        // Rolls back revisions
         $counter = 0;
-
         foreach ($revisions as $key) {
             $migration = $this->revisions->get($key);
 
             if ($migration->getVersion() < $version) {
                 break;
             } elseif (!$migration->rollback($this->connection, $this->controlTable)) {
+                $this->error = $migration->getError().' at '.$migration->getIdentity().' revision file';
+
                 break;
             }
 
-            $this->revisions->setNotApplied($key);
             $counter += 1;
+            $this->revisions->setNotApplied($key);
+
+            if ($callback instanceof Closure) {
+                call_user_func($callback, $counter);
+            }
         }
 
         return $counter;

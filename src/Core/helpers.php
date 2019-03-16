@@ -40,6 +40,26 @@ function app($service = null)
 }
 
 /**
+ * Returns the application name.
+ *
+ * @return string
+ */
+function app_name(): string
+{
+    return Springy\Core\Kernel::getInstance()->getApplicationName();
+}
+
+/**
+ * Returns the application version.
+ *
+ * @return string
+ */
+function app_version(): string
+{
+    return Springy\Core\Kernel::getInstance()->getApplicationVersion();
+}
+
+/**
  * Gets an application configuration var.
  *
  * @param string $key

@@ -31,11 +31,11 @@ class TestMigratorTest extends TestCase
         $migrator = new Migrator('mysql');
 
         $this->assertEquals(0, $migrator->getAppliedRevisionsCount());
-        $this->assertEquals(4, $migrator->getNotAppliedRevisions());
+        $this->assertEquals(4, $migrator->getNotAppliedRevisionsCount());
 
         $this->assertEquals(3, $migrator->migrate('1'));
         $this->assertEquals(3, $migrator->getAppliedRevisionsCount());
-        $this->assertEquals(1, $migrator->getNotAppliedRevisions());
+        $this->assertEquals(1, $migrator->getNotAppliedRevisionsCount());
 
         $this->assertEquals(1, $migrator->migrate());
         $this->assertEquals(0, $migrator->migrate());
@@ -46,11 +46,11 @@ class TestMigratorTest extends TestCase
         $migrator = new Migrator();
 
         $this->assertEquals(4, $migrator->getAppliedRevisionsCount());
-        $this->assertEquals(0, $migrator->getNotAppliedRevisions());
+        $this->assertEquals(0, $migrator->getNotAppliedRevisionsCount());
 
         $this->assertEquals(1, $migrator->rollback('2'));
         $this->assertEquals(3, $migrator->getAppliedRevisionsCount());
-        $this->assertEquals(1, $migrator->getNotAppliedRevisions());
+        $this->assertEquals(1, $migrator->getNotAppliedRevisionsCount());
 
         $this->assertEquals(3, $migrator->rollback());
         $this->assertEquals(0, $migrator->rollback());

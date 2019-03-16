@@ -17,7 +17,6 @@ use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Request;
 use Springy\HTTP\URI;
 use Springy\Security\AuthDriver;
-use Springy\Security\Authentication;
 
 class Kernel
 {
@@ -251,11 +250,6 @@ class Kernel
     public function configuration(): Configuration
     {
         return self::$configuration;
-    }
-
-    public function controller()
-    {
-        return static::$controller;
     }
 
     /**

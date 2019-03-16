@@ -137,16 +137,26 @@ class MigrationScript
         try {
             $connection->run($sql);
 
-            if (!$connection->getErrorCode()) {
+            if (!$connection->getError()) {
                 return true;
             }
 
-            $this->error = $connection->getErrorCode();
+            $this->error = $connection->getError();
         } catch (Throwable $err) {
             $this->error = '['.$err->getCode().'] '.$err->getMessage();
         }
 
         return false;
+    }
+
+    /**
+     * Gets the error message.
+     *
+     * @return void
+     */
+    public function getError()
+    {
+        return $this->error;
     }
 
     /**

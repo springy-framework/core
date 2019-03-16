@@ -12,6 +12,7 @@
 namespace Springy\Console;
 
 use Springy\Core\Kernel as MainKernel;
+use Springy\Database\MigratorCommand;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -38,7 +39,7 @@ class Kernel extends MainKernel
         $input = new ArgvInput();
         $this->output = new ConsoleOutput();
 
-        if ($this->isVersionArg($input, $this->output)) {
+        if ($this->isVersionArg($input)) {
             return true;
         }
 
@@ -48,13 +49,35 @@ class Kernel extends MainKernel
         }
 
         $segment = $this->findController('App\\Controllers\\Console\\', [$command]);
-        if ($segment < 0) {
+        if ($segment < 0 && !$this->discoverInternals($command)) {
             return false;
         }
 
         $this->exitStatus = static::$controller->run($input, $this->output);
 
         return true;
+    }
+
+    /**
+     * Checks for internal commands.
+     *
+     * @param string $command
+     *
+     * @return bool
+     */
+    protected function discoverInternals(string $command = null): bool
+    {
+        if ($command === null) {
+            return false;
+        }
+
+        switch ($command) {
+            case 'migrator':
+                static::$controller = new MigratorCommand([$command]);
+                return true;
+        }
+
+        return false;
     }
 
     /**
@@ -86,10 +109,10 @@ class Kernel extends MainKernel
      *
      * @return bool
      */
-    protected function isVersionArg(InputInterface $input, OutputInterface $output): bool
+    protected function isVersionArg(InputInterface $input): bool
     {
         if (true === $input->hasParameterOption(['--version', '-V'], true)) {
-            $output->writeln($this->getAppNameVersion());
+            $this->output->writeln($this->getAppNameVersion());
 
             return true;
         }

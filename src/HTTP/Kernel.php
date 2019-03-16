@@ -13,6 +13,7 @@ namespace Springy\HTTP;
 
 use Springy\Core\Kernel as MainKernel;
 use Springy\Exceptions\Http404Error;
+use Springy\Security\Authentication;
 
 class Kernel extends MainKernel
 {
@@ -66,14 +67,7 @@ class Kernel extends MainKernel
 
         $uri = URI::getInstance();
 
-        if (is_array(self::$configuration->get('application.authentication'))) {
-            $this->setupAuthEvt('hasher', 'Springy\Security\BCryptHasher');
-            $this->setupAuthEvt('identity');
-            $this->setupAuthDrv();
-            app()->instance('user.auth.manager', function ($data) {
-                return new Authentication($data['user.auth.driver']);
-            });
-        }
+        $this->setAuthDriver();
 
         if (Request::getInstance()->isHead() && $uri->host() == '') {
             $response = Response::getInstance();
@@ -199,6 +193,23 @@ class Kernel extends MainKernel
         } elseif (is_string($option)) {
             app()->bind('user.auth.'.$element, function () use ($option) {
                 return new $option();
+            });
+        }
+    }
+
+    /**
+     * Starts the authentication driver instance.
+     *
+     * @return void
+     */
+    public function setAuthDriver()
+    {
+        if (is_array(self::$configuration->get('application.authentication'))) {
+            $this->setupAuthEvt('hasher', 'Springy\Security\BCryptHasher');
+            $this->setupAuthEvt('identity');
+            $this->setupAuthDrv();
+            app()->instance('user.auth.manager', function ($data) {
+                return new Authentication($data['user.auth.driver']);
             });
         }
     }
