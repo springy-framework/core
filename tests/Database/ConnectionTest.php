@@ -96,6 +96,8 @@ class ConnectionTest extends TestCase
             .') WITH (OIDS=FALSE);';
 
         $connection->run($sql);
+        $this->assertEquals('', $connection->getError());
+
         $connection->run('TRUNCATE TABLE test_spf');
         $connection->run('ALTER SEQUENCE IF EXISTS test_spf_id_seq RESTART WITH 1');
 
@@ -107,7 +109,6 @@ class ConnectionTest extends TestCase
             .'(?, CURRENT_TIMESTAMP)',
             ['Homer', 'Marge', 'Lisa', 'Bart', 'Meggy', 'Santa\'\'s Helper', 'Cat']
         );
-        $this->assertEquals('', $connection->getError());
         $this->assertEquals(7, $result);
     }
 
