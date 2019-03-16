@@ -16,7 +16,6 @@ use Springy\Exceptions\Handler;
 use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Request;
 use Springy\HTTP\URI;
-use Springy\Security\AuthDriver;
 
 class Kernel
 {

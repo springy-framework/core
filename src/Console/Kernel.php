@@ -70,9 +70,11 @@ class Kernel extends MainKernel
         switch ($command) {
             case 'help':
                 static::$controller = new HelpCommand([$command]);
+
                 return true;
             case 'migrator':
                 static::$controller = new MigratorCommand([$command]);
+
                 return true;
         }
 

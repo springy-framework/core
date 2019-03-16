@@ -12,9 +12,9 @@
 namespace Springy\Console;
 
 use Springy\Database\Migration\Migrator;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Helper\ProgressBar;
 
 class MigratorCommand extends Controller
 {
@@ -154,7 +154,7 @@ class MigratorCommand extends Controller
     /**
      * Runs rollback instruction.
      *
-     * @return integer
+     * @return int
      */
     protected function doRollback(): int
     {
