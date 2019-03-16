@@ -326,6 +326,10 @@ class Debug
     {
         $export = $this->dumpData($data);
 
+        if (php_sapi_name() === 'cli') {
+            return $export;
+        }
+
         return str_replace(
             '&lt;?php&nbsp;',
             '',
