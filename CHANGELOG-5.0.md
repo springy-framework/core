@@ -15,7 +15,6 @@
 -   Added `Springy\Core\Debug::getInstance` method
 -   Added `Springy\Core\Kernel::getInstance` method
 -   Added `Springy\Core\Kernel->configuration` method
--   Added `Springy\Core\Kernel->getEnvironmentType` method
 -   Added `Springy\Core\Kernel->errorHandler` method
 -   Added `Springy\Core\Kernel->httpRequest` method
 -   Added `Springy\Core\Kernel->httpResponse` method

@@ -40,11 +40,6 @@ class KernelTest extends TestCase
         $this->assertEquals($this->conf['environment'], $this->kernel->getEnvironment());
     }
 
-    public function testGetEnvironmentType()
-    {
-        $this->assertEquals(Kernel::ENV_TYPE_CLI, $this->kernel->getEnvironmentType());
-    }
-
     public function testApplicationDetails()
     {
         $this->assertEquals($this->conf['app']['name'], $this->kernel->getApplicationName());

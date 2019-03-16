@@ -17,9 +17,6 @@ use Springy\Security\Authentication;
 
 class Kernel extends MainKernel
 {
-    /** @var string the execution environment type */
-    protected static $envType = self::ENV_TYPE_CLI;
-
     /**
      * Calls the controller endpoint.
      *
@@ -64,10 +61,6 @@ class Kernel extends MainKernel
      */
     protected function discoverController(): bool
     {
-        // if (self::$envType === self::ENV_TYPE_CLI) {
-        //     return false;
-        // }
-
         $uri = URI::getInstance();
 
         $this->setAuthDriver();

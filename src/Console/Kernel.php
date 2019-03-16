@@ -31,10 +31,6 @@ class Kernel extends MainKernel
      */
     protected function discoverController(): bool
     {
-        // if (self::$envType === self::ENV_TYPE_WEB) {
-        //     return false;
-        // }
-
         $this->exitStatus = 0;
         $input = new ArgvInput();
         $this->output = new ConsoleOutput();

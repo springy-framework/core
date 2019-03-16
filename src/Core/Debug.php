@@ -18,8 +18,6 @@ class Debug
     /** @var self globally singleton instance */
     protected static $instance;
 
-    /** @var bool the output must be in CLI format */
-    protected static $cliOutput;
     /** @var array the debug informations array */
     protected static $debug;
 
@@ -32,7 +30,6 @@ class Debug
             return;
         }
 
-        self::$cliOutput = Kernel::getInstance()->getEnvironmentType() === Kernel::ENV_TYPE_CLI;
         self::$debug = [];
         self::$instance = $this;
     }
@@ -310,12 +307,12 @@ class Debug
             return '';
         }
 
-        $return = [];
+        $return = '';
         foreach (self::$debug as $debug) {
-            $return[] = $this->$format($debug);
+            $return .= $this->$format($debug);
         }
 
-        return implode(self::$cliOutput ? LF : '', $return);
+        return $return;
     }
 
     /**
@@ -328,10 +325,6 @@ class Debug
     public function highligh($data): string
     {
         $export = $this->dumpData($data);
-
-        if (self::$cliOutput) {
-            return $export;
-        }
 
         return str_replace(
             '&lt;?php&nbsp;',
@@ -353,10 +346,6 @@ class Debug
      */
     public function inject(string $content)
     {
-        if (self::$cliOutput) {
-            return $content;
-        }
-
         $this->add('Execution time: '.
             sprintf('%.8f', Kernel::getInstance()->runTime()).
             ' seconds '.LF.'Maximum memory used: '.$this->getMemoryString(memory_get_peak_usage(true)),
@@ -374,6 +363,11 @@ class Debug
             }
 
             return substr_replace($content, ',"springy_debug":'.$this->get('json'), -1, 0);
+        }
+
+        // Others content types than HTML
+        if ($cType != 'text/html') {
+            return $content;
         }
 
         // Injects into a HTML

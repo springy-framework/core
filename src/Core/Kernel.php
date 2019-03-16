@@ -49,8 +49,6 @@ class Kernel
 
     /** @var float application started time */
     protected static $startime;
-    /** @var string the execution environment type */
-    protected static $envType;
     /** @var Configuration the configuration handler */
     protected static $configuration;
     /** @var Handler the application error/exception handler */
@@ -72,7 +70,6 @@ class Kernel
             return;
         }
 
-        static::$envType = (php_sapi_name() === 'cli') ? self::ENV_TYPE_CLI : self::ENV_TYPE_WEB;
         self::$configuration = new Configuration();
         self::$errorHandler = new Handler();
         static::$instance = $this;
@@ -309,16 +306,6 @@ class Kernel
     }
 
     /**
-     * Returns the application type.
-     *
-     * @return string
-     */
-    public function getEnvironmentType(): string
-    {
-        return self::$envType;
-    }
-
-    /**
      * Returns the application HTTP request instance.
      *
      * @return Request
@@ -403,7 +390,7 @@ class Kernel
             }
 
             $env = empty($env) ? (
-                (self::$envType === self::ENV_TYPE_CLI) ? 'cli' : URI::getInstance()->host()
+                (php_sapi_name() === 'cli') ? 'cli' : URI::getInstance()->host()
             ) : $env;
 
             // Verify if has an alias for host
