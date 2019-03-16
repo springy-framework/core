@@ -9,10 +9,9 @@
  * @version   1.0.0
  */
 
-namespace Springy\Database;
+namespace Springy\Console;
 
 use Springy\Database\Migration\Migrator;
-use Springy\Console\Controller;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\ProgressBar;

@@ -12,7 +12,6 @@
 namespace Springy\Console;
 
 use Springy\Core\Kernel as MainKernel;
-use Springy\Database\MigratorCommand;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
