@@ -2,11 +2,11 @@
 /**
  * Database migration console command.
  *
- * @copyright 2015 Fernando Val
+ * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version   2.0.0
+ * @version   1.0.0
  */
 
 namespace Springy\Database;
@@ -38,10 +38,10 @@ class MigratorCommand extends Controller
     protected function configure()
     {
         parent::configure();
-        $this->addArgument('instruction', InputArgument::OPTIONAL, 'The migrate instruction');
+        $this->addArgument('instruction', InputArgument::OPTIONAL, 'The migrate instruction.');
 
-        $this->addOption('revision', 'r', InputOption::VALUE_OPTIONAL, 'The target revision');
-        $this->addOption('database', 'd', InputOption::VALUE_OPTIONAL, 'Database name');
+        $this->addOption('revision', 'r', InputOption::VALUE_OPTIONAL, 'The target revision.');
+        $this->addOption('database', 'd', InputOption::VALUE_OPTIONAL, 'Database name.');
 
         $this->addUsage('%command.full_name% <instruction> [<options>]');
     }
@@ -95,17 +95,14 @@ class MigratorCommand extends Controller
             '  %command.full_name% migrate|rollback|status [<options>]',
             '',
             'Instructions:',
-            '  migrate   Install database migrations',
-            '  rollback  Rollback database migrations',
-            '  status    Show database migration status',
+            '  migrate   Install database migrations.',
+            '  rollback  Rollback database migrations.',
+            '  status    Show database migration status.',
             '',
-            'Options:',
-            '  -r --revision=<REVISION>  Target revisions version',
-            '  -d --database=<DATABASE>  Database name',
-            // $this->getSynopsis(false),
         ]);
 
         $this->output->writeln($this->getProcessedHelp());
+        $this->printOptions();
     }
 
     /**

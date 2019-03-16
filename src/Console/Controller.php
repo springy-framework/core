@@ -72,11 +72,11 @@ class Controller extends Command implements ControllerInterface
         // Global options
         $this->addOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.');
         $this->addOption('quiet', 'q', InputOption::VALUE_NONE, 'Do not output any message.');
-        $this->addOption('verbose', 'v|vv|vvv', InputOption::VALUE_OPTIONAL, 'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug.');
-        $this->addOption('version', 'V', InputOption::VALUE_NONE, 'Display application version.');
         $this->addOption('ansi', null, InputOption::VALUE_NONE, 'Force ANSI output.');
         $this->addOption('no-ansi', null, InputOption::VALUE_NONE, 'Disable ANSI output.');
+        $this->addOption('verbose', 'v|vv|vvv', InputOption::VALUE_OPTIONAL, 'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug.');
         $this->addOption('no-interaction', 'n', InputOption::VALUE_NONE, 'Do not ask any interactive question.');
+        $this->addOption('version', 'V', InputOption::VALUE_NONE, 'Display application version.');
     }
 
     /**
@@ -180,6 +180,46 @@ class Controller extends Command implements ControllerInterface
             $this->description ? $this->description : $this->name,
             '',
         ]);
+    }
+
+    /**
+     * Prints the list of options for help output.
+     *
+     * @return void
+     */
+    protected function printOptions()
+    {
+        $leftcol = 0;
+        $options = [];
+
+        foreach ($this->getDefinition()->getOptions() as $option) {
+            $value = '';
+
+            if ($option->acceptValue()) {
+                $value = sprintf(
+                    ' %s%s%s',
+                    $option->isValueOptional() ? '[' : '',
+                    strtoupper($option->getName()),
+                    $option->isValueOptional() ? ']' : ''
+                );
+            }
+
+            $shortcut = $option->getShortcut() ? sprintf('-%s ', $option->getShortcut()) : '';
+            $optString = sprintf('%s--%s%s', $shortcut, $option->getName(), $value);
+            $options[] = [
+                $optString,
+                $option->getDescription(),
+            ];
+
+            $leftcol = max($leftcol, strlen($optString));
+        }
+
+        $this->output->writeln('Options:');
+        foreach ($options as $option) {
+            $this->output->writeln(
+                '  '.str_pad($option[0], $leftcol + 2, ' ').$option[1]
+            );
+        }
     }
 
     /**

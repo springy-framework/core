@@ -20,8 +20,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Kernel extends MainKernel
 {
+    /** @var int exit status code */
     protected $exitStatus;
-
+    /** @var OutputInterface the console output interface */
     protected $output;
 
     /**
@@ -44,11 +45,11 @@ class Kernel extends MainKernel
         }
 
         $command = $input->getFirstArgument();
-        if ($command === null) {
-            return false;
-        }
+        // if ($command === null) {
+        //     return $this->discoverInternals($command);
+        // }
 
-        $segment = $this->findController('App\\Controllers\\Console\\', [$command]);
+        $segment = $this->findController('App\\Controllers\\Console\\', [$command ?? '']);
         if ($segment < 0 && !$this->discoverInternals($command)) {
             return false;
         }
@@ -68,10 +69,13 @@ class Kernel extends MainKernel
     protected function discoverInternals(string $command = null): bool
     {
         if ($command === null) {
-            return false;
+            $command = 'help';
         }
 
         switch ($command) {
+            case 'help':
+                static::$controller = new HelpCommand([$command]);
+                return true;
             case 'migrator':
                 static::$controller = new MigratorCommand([$command]);
                 return true;
@@ -97,7 +101,18 @@ class Kernel extends MainKernel
     protected function getGeneralHelp()
     {
         return [
-            'Usage: ',
+            'Usage:',
+            '  %command.full_name% <command> [<options>]',
+            '',
+            'Instructions:',
+            '  help',
+            '  migrate   Install database migrations',
+            '  rollback  Rollback database migrations',
+            '  status    Show database migration status',
+            '',
+            'Options:',
+            '  -r --revision=<REVISION>  Target revisions version',
+            '  -d --database=<DATABASE>  Database name',
         ];
     }
 

@@ -17,6 +17,9 @@ use Springy\Security\Authentication;
 
 class Kernel extends MainKernel
 {
+    /** @var string the execution environment type */
+    protected static $envType = self::ENV_TYPE_CLI;
+
     /**
      * Calls the controller endpoint.
      *
