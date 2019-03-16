@@ -96,11 +96,11 @@ class ConnectionTest extends TestCase
             .') WITH (OIDS=FALSE);';
 
         $connection->run($sql);
-        $connection->run('TRUNCATE TABLE test_spf');
-        $connection->run('ALTER SEQUENCE IF EXISTS test_spf_id_seq RESTART WITH 1');
+        $connection->run('TRUNCATE TABLE public.test_spf');
+        $connection->run('ALTER SEQUENCE IF EXISTS public.test_spf_id_seq RESTART WITH 1');
 
         $result = $connection->insert(
-            'INSERT INTO test_spf("name","created") VALUES '
+            'INSERT INTO public.test_spf("name","created") VALUES '
             .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
             .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
             .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
