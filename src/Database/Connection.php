@@ -124,6 +124,41 @@ class Connection
     }
 
     /**
+     * Reconnect to the database if a PDO connection is missing.
+     *
+     * @return void
+     */
+    protected function checkMissingConnection()
+    {
+        if ($this->getPdo() === null) {
+            $this->connect();
+        }
+    }
+
+    /**
+     * Executes the quary again if is caused by lost connection.
+     *
+     * @param Throwable $err
+     *
+     * @throws PDOException
+     *
+     * @return void
+     */
+    protected function executeAgainIfLostConnection(Throwable $err)
+    {
+        if (!$this->isLostConnection($err)) {
+            throw $err;
+        }
+
+        try {
+            $this->lastError = null;
+            $this->executeQuery();
+        } catch (Throwable $err) {
+            throw $err;
+        }
+    }
+
+    /**
      * Executes the query.
      *
      * @throws PDOException
@@ -133,29 +168,21 @@ class Connection
     protected function executeQuery()
     {
         try {
+            $this->statement = $this->getPdo()->prepare(
+                $this->lastQuery,
+                [PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY]
+            );
+
+            $this->bindParameters();
+            $this->statement->closeCursor();
             $this->statement->execute();
         } catch (Throwable $err) {
-            do {
-                if ($this->isLostConnection($err)) {
-                    $this->connect();
+            $this->lastError = $err->getMessage();
 
-                    if (!$this->isConnected()) {
-                        return;
-                    }
-
-                    try {
-                        $this->statement->execute();
-
-                        break;
-                    } catch (Throwable $err) {
-                    }
-                }
-
-                $this->lastError = $err->getMessage();
-            } while (false);
+            throw $err;
         }
 
-        if ($this->cacheLifeTime && $this->lastError === null) {
+        if ($this->cacheLifeTime) {
             $this->saveCache();
         }
     }
@@ -200,46 +227,6 @@ class Connection
         } catch (Exception $e) {
             $this->statement = null;
         }
-    }
-
-    /**
-     * Prepares the statement.
-     *
-     * @throws PDOException
-     * @throws SpringyException
-     *
-     * @return void
-     */
-    protected function prepare()
-    {
-        try {
-            $this->statement = $this->getPdo()->prepare($this->lastQuery, [
-                PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY,
-            ]);
-
-            return true;
-        } catch (Throwable $err) {
-            if ($this->isLostConnection($err)) {
-                $this->connect();
-
-                if (!$this->isConnected()) {
-                    return false;
-                }
-
-                try {
-                    $this->statement = $this->getPdo()->prepare($this->lastQuery, [
-                        PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY,
-                    ]);
-
-                    return true;
-                } catch (Throwable $err) {
-                }
-            }
-
-            $this->lastError = $err->getMessage();
-        }
-
-        return false;
     }
 
     /**
@@ -300,7 +287,8 @@ class Connection
     public function connect()
     {
         // Is a connector to the identity?
-        if (isset(self::$conectionIds[$this->identity])) {
+        if (isset(self::$conectionIds[$this->identity])
+            && self::$conectionIds[$this->identity]->getPdo() !== null) {
             return;
         }
 
@@ -417,14 +405,17 @@ class Connection
         $query = null;
 
         $this->loadCache();
-
-        if ($this->statement !== null || !$this->prepare()) {
+        if ($this->statement !== null) {
             return;
         }
 
-        $this->bindParameters();
-        $this->statement->closeCursor();
-        $this->executeQuery();
+        $this->checkMissingConnection();
+
+        try {
+            $this->executeQuery();
+        } catch (Throwable $err) {
+            $this->executeAgainIfLostConnection($err);
+        }
     }
 
     /**
@@ -479,7 +470,7 @@ class Connection
         $this->statement = $this->getAll();
         $this->cacheLifeTime = 0;
 
-        return $this->statement;
+        return $this->statement ?? [];
     }
 
     /**

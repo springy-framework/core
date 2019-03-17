@@ -54,6 +54,38 @@ class Handler
     }
 
     /**
+     * Displays the application error trace.
+     *
+     * @SuppressWarnings(PHPMD.ExitExpression)
+     *
+     * @return void
+     */
+    protected function displayCliError()
+    {
+        echo LF.'Application error:'.LF;
+        echo '  '.$this->exception->getMessage().LF;
+        echo LF.'Stack trace:'.LF;
+
+        foreach ($this->exception->getTrace() as $index => $trace) {
+            echo '  '.str_pad($index, 3, ' ', STR_PAD_LEFT).': ';
+
+            if (!isset($trace['file'])) {
+                echo $trace['class'] ?? '';
+                echo $trace['type'] ?? '';
+                echo $trace['function'] ?? '';
+                echo LF;
+
+                continue;
+            }
+
+            echo $trace['file'].': '.$trace['line'].LF;
+        }
+        // echo $this->exception->getTraceAsString();
+
+        exit(1);
+    }
+
+    /**
      * Displays the application error page.
      *
      * @SuppressWarnings(PHPMD.ExitExpression)
@@ -62,6 +94,10 @@ class Handler
      */
     protected function displayError()
     {
+        if (php_sapi_name() === 'cli') {
+            $this->displayCliError();
+        }
+
         $response = Response::getInstance();
 
         $response->header()->clear();

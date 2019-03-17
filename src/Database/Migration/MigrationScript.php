@@ -15,6 +15,7 @@ use Closure;
 use DateTime;
 use Springy\Database\Connection;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 class MigrationScript
 {

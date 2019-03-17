@@ -22,26 +22,12 @@ class Kernel
     // Framework version
     const VERSION = '5.0.0';
 
-    // Execution environment type constants
-    const ENV_TYPE_CLI = 'cli';
-    const ENV_TYPE_WEB = 'web';
-
     // Constants path
     const PATH_WEB_ROOT = 'ROOT';
 
-    const PATH_PROJECT = 'PROJ';
-    const PATH_CONF = 'CONF';
     const PATH_APPLICATION = 'APP';
     const PATH_VAR = 'VAR';
-    const PATH_CLASSES = 'CLASSES';
-    const PATH_CONTROLLER = 'CONTROLLER';
-    const PATH_LIBRARY = 'LIB';
     const PATH_ROOT = 'ROOT';
-    const PATH_VENDOR = 'VENDOR';
-    const PATH_MIGRATION = 'MIGRATION';
-    // Path constants to back compatibility
-    const PATH_SYSTEM = self::PATH_APPLICATION;
-    const PATH_CLASS = self::PATH_CLASSES;
 
     /** @var static Kernel globally instance */
     protected static $instance;

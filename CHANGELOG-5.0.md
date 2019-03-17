@@ -70,7 +70,6 @@
 -   Added `Springy\Utils\FileSystemUtils` trait
 -   Added `Springy\Utils\StringUtils` trait
 -   Added `Springy\Validation\Rule` class
--   Added constants `Springy\Core\Kernel::ENV_TYPE_CLI` and `Springy\Core\Kernel::ENV_TYPE_WEB`
 -   Added configuration file `dbms.php` (see bellow)
 -   Added configuration entry `'application.authentication'` (see bellow)
 -   Added configuration entry `'template.auto_escape'`

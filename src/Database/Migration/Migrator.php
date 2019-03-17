@@ -47,8 +47,6 @@ class Migrator
             throw new SpringyException('Migration path configuration missing for "'.$identity.'"');
         }
 
-        Kernel::getInstance()->errorHandler()->addIgnoredError(PDOException::class);
-
         $this->applied = [];
         $this->notApplied = [];
         $this->connection = new Connection($identity);
