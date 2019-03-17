@@ -93,7 +93,6 @@ class ConnectionTest extends TestCase
             .'"name" character varying(20) NOT NULL,'
             .'"created" timestamp without time zone NOT NULL,'
             .'"deleted" SMALLINT NOT NULL DEFAULT \'0\'::smallint,'
-            .'CONSTRAINT test_spf_pkey PRIMARY KEY ("id")'
             .') WITH (OIDS=FALSE);'
         );
         $this->assertEquals('', $connection->getError());
