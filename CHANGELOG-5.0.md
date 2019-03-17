@@ -2,6 +2,11 @@
 
 ## v5.0.0
 
+### To do
+
+-   Alternative routes
+-   Automatic URL redirections
+
 ### Added
 
 -   Added `Springy\Console\Controller` class

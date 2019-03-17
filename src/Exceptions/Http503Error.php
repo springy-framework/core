@@ -1,6 +1,6 @@
 <?php
 /**
- * Springy HTTP 404 Page not found class.
+ * Springy HTTP 503 Service unavailable class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,7 +11,7 @@
 
 namespace Springy\Exceptions;
 
-class Http404Error extends HttpError
+class Http503Error extends HttpError
 {
     /**
      * Constructor.
@@ -22,8 +22,8 @@ class Http404Error extends HttpError
      * @param int       $code     the code will be replaced by 403 HTTP forbidden error.
      * @param Throwable $previous
      */
-    public function __construct(string $message = 'Not Found', int $code = 0, Throwable $previous = null)
+    public function __construct(string $message = 'Service Unavailable', int $code = 0, Throwable $previous = null)
     {
-        parent::__construct($message, 404, $previous);
+        parent::__construct($message, 503, $previous);
     }
 }
