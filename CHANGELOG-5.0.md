@@ -6,6 +6,8 @@
 
 -   Alternative routes
 -   Automatic URL redirections
+-   Error logging
+-   Application error notification to webmaster
 
 ### Added
 
@@ -387,7 +389,7 @@ All SQL files will be imported on migrate only and no rollback scripts.
 
 #### PHP Migration Scripts
 
-Must by in namespace `App\Migrations\Rev#` where # is the version number and contains a method called `migrate()`.
+Must be in namespace `App\Migrations\Rev#` where **#** is the version number and contains a method called `migrate()`.
 
 If there is no method called `rollback()` no rollback can be applied to the migration.
 

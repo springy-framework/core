@@ -12,8 +12,6 @@
 namespace Springy\Database\Migration;
 
 use Closure;
-use PDOException;
-use Springy\Core\Kernel;
 use Springy\Database\Connection;
 use Springy\Exceptions\SpringyException;
 use Throwable;
