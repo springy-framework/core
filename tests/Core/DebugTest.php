@@ -52,6 +52,14 @@ class DebugTest extends TestCase
         $this->assertStringStartsWith('<div class="springy-debug-info">', $this->debug->get('html'));
     }
 
+    public function testGetSimpleData()
+    {
+        $this->debug->add('Bar', false);
+        $this->debug->add('Foo', true, false);
+
+        $this->assertCount(2, $this->debug->getSimpleData());
+    }
+
     public function testHighlight()
     {
         $intVar = 0;

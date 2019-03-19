@@ -315,6 +315,11 @@ class Debug
         return $return;
     }
 
+    /**
+     * Gets the debug data as a reduced array.
+     *
+     * @return array
+     */
     public function getSimpleData(): array
     {
         $debug = [];
@@ -322,7 +327,7 @@ class Debug
             $debug[] = [
                 'memory' => $data[0],
                 'time'   => $data[1],
-                'data'   => $data[2]
+                'data'   => $data[2],
             ];
         }
 
