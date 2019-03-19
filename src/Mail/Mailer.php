@@ -32,7 +32,7 @@ class Mailer
     {
         $this->startDriver();
 
-        if (($errorsTo = config_get('application.errors_go_to', '')) !== '') {
+        if (($errorsTo = config_get('mail.errors_go_to', '')) !== '') {
             $this->addHeader('Errors-To', $errorsTo);
         }
 
