@@ -20,7 +20,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Terminal;
+// use Symfony\Component\Console\Terminal;
 
 class Controller extends Command implements ControllerInterface
 {
@@ -45,7 +45,7 @@ class Controller extends Command implements ControllerInterface
      */
     protected $name;
 
-    protected $terminal;
+    // protected $terminal;
 
     /**
      * The output interface implementation.
@@ -63,7 +63,7 @@ class Controller extends Command implements ControllerInterface
     {
         $this->name = $segments[0] ?? null;
 
-        $this->terminal = new Terminal();
+        // $this->terminal = new Terminal();
 
         parent::__construct($this->name);
 
@@ -131,8 +131,8 @@ class Controller extends Command implements ControllerInterface
      */
     protected function configIO()
     {
-        putenv('LINES='.$this->terminal->getHeight());
-        putenv('COLUMNS='.$this->terminal->getWidth());
+        // putenv('LINES='.$this->terminal->getHeight());
+        // putenv('COLUMNS='.$this->terminal->getWidth());
 
         $verbosities = [
             OutputInterface::VERBOSITY_QUIET => ['-q', '--quiet'],
@@ -165,6 +165,20 @@ class Controller extends Command implements ControllerInterface
     protected function getAppNameVersion(): string
     {
         return sprintf('%s <info>%s</info>', app_name(), app_version());
+    }
+
+    /**
+     * Returns command tag for current sapi.
+     *
+     * @return string
+     */
+    protected function getCommandTag(): string
+    {
+        if (php_sapi_name() === 'cli') {
+            return '%command.full_name%';
+        }
+
+        return '%command.name%';
     }
 
     /**
