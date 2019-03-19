@@ -45,7 +45,7 @@ class ErrorsCommand extends Controller
         $this->addArgument('instruction', InputArgument::OPTIONAL, 'Instruction.');
         $this->addArgument('parameter', InputArgument::OPTIONAL, 'Parameter.');
 
-        $this->addUsage('%command.full_name% <instruction> [<options>]');
+        $this->addUsage($this->getCommandTag().' <instruction> [<options>]');
 
         $this->logDir = Kernel::getInstance()->configuration()->get('main.errors_log');
     }
@@ -260,7 +260,7 @@ class ErrorsCommand extends Controller
     }
 
     /**
-     * Proccesses the instruction;
+     * Proccesses the instruction.
      *
      * @SuppressWarnings(CyclomaticComplexity)
      *
@@ -360,7 +360,7 @@ class ErrorsCommand extends Controller
 
         $this->setHelp([
             'Usage:',
-            '  %command.full_name% [<instruction>] [<options>]',
+            '  '.$this->getCommandTag().' [<instruction>] [<options>]',
             '',
             'Instructions:',
             '  delete [CRC]  Delete an application error.',

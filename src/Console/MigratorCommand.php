@@ -42,7 +42,7 @@ class MigratorCommand extends Controller
         $this->addOption('database', 'd', InputOption::VALUE_OPTIONAL, 'Database name.');
         $this->addOption('revision', 'r', InputOption::VALUE_OPTIONAL, 'The target revision.');
 
-        $this->addUsage('%command.full_name% <instruction> [<options>]');
+        $this->addUsage($this->getCommandTag().' <instruction> [<options>]');
     }
 
     /**
@@ -91,7 +91,7 @@ class MigratorCommand extends Controller
     {
         $this->setHelp([
             'Usage:',
-            '  %command.full_name% migrate|rollback|status [<options>]',
+            '  '.$this->getCommandTag().' migrate|rollback|status [<options>]',
             '',
             'Instructions:',
             '  migrate   Install database migrations.',

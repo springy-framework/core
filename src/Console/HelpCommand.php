@@ -18,7 +18,7 @@ class HelpCommand extends Controller
      *
      * @var string
      */
-    protected $description = 'Command line usage help';
+    protected $description = 'Console help';
 
     /**
      * Runs the command.
@@ -30,7 +30,7 @@ class HelpCommand extends Controller
         $this->name = '';
         $this->setHelp([
             'Usage:',
-            '  '.$_SERVER['PHP_SELF'].' <command> [<options>]',
+            '  '.(php_sapi_name() === 'cli' ? $_SERVER['PHP_SELF'].' ' : '').'<command> <options>',
             '',
             'Commands:',
             '  help      Display this help message.',
