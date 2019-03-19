@@ -20,7 +20,7 @@ use Springy\Security\AclManager;
 
 class Controller implements ControllerInterface
 {
-    /** @var AclManager the ACL manager object */
+    /** @var \Springy\Security\AclManager the ACL manager object */
     protected $aclManager;
     /** @var bool the controller is restricted to signed in users */
     protected $authNeeded = false;
@@ -28,7 +28,7 @@ class Controller implements ControllerInterface
     protected $hasPermission;
     /** @var mixed */
     protected $redirectUnsigned = false;
-    /** @var AclUserInterface the current user object */
+    /** @var \Springy\Security\AclUserInterface the current user object */
     protected $user;
 
     /**
