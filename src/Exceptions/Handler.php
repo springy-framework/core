@@ -11,13 +11,19 @@
 
 namespace Springy\Exceptions;
 
+use DateTime;
 use Exception;
 use PDOException;
+use Springy\Core\Debug;
 use Springy\Core\Kernel;
 use Springy\HTTP\Response;
+use Springy\Utils\NetworkUtils;
+use Symfony\Component\Yaml\Yaml;
 
 class Handler
 {
+    use NetworkUtils;
+
     const HT_ERROR = 1;
     const HT_EXCEPTION = 2;
 
@@ -26,19 +32,22 @@ class Handler
     /** @var mixed previous exception handler */
     protected $prevExceptionHandler;
 
-    /** @var int type of the last handler throwed */
-    protected $handlerType;
     /** @var Exception last exception throwed */
     protected $exception;
+    /** @var int type of the last handler throwed */
+    protected $handlerType;
     /** @var array list of ignored errors */
     protected $ignoredErrors;
+    /** @var string directory to save error logs */
+    protected $logDir;
 
     /**
      * Constructor.
      */
-    public function __construct()
+    public function __construct(string $logDir = '')
     {
         error_reporting(E_ALL);
+        $this->logDir = $logDir;
         $this->ignoredErrors = [];
         $this->setHandlers();
     }
@@ -94,6 +103,8 @@ class Handler
      */
     protected function displayError()
     {
+        $this->save2Log();
+
         if (php_sapi_name() === 'cli') {
             $this->displayCliError();
         }
@@ -125,6 +136,16 @@ class Handler
         $response->send($config->get('application.debug'));
 
         exit(1);
+    }
+
+    /**
+     * Returns the CRC for current error.
+     *
+     * @return string
+     */
+    protected function getCrc(): string
+    {
+        return hash('crc32', $this->exception->getCode().$this->exception->getFile().$this->exception->getLine());
     }
 
     /**
@@ -190,6 +211,77 @@ class Handler
             restore_exception_handler();
             $this->prevExceptionHandler = null;
         }
+    }
+
+    protected function getYaml(string $filePath): array
+    {
+        if (realpath($filePath)) {
+            return Yaml::parseFile($filePath);
+        }
+
+        $remoteAddr = $this->getRealRemoteAddr();
+
+        $error = [
+            'description'  => sprintf(
+                '%s in %s:%s',
+                $this->exception->getMessage(),
+                $this->exception->getFile(),
+                $this->exception->getLine()
+            ),
+            'occurrences'  => 0,
+            'date'         => (new DateTime())->format('c'),
+            'informations' => [
+                'code'        => $this->exception->getCode(),
+                'file'        => $this->exception->getFile(),
+                'line'        => $this->exception->getLine(),
+                'message'     => $this->exception->getMessage(),
+                'first'       => (new DateTime())->format('c'),
+                'uname'       => php_uname(),
+                'safe_mode'   => ini_get('safe_mode') ? 'Yes' : 'No',
+                'sapi_name'   => php_sapi_name(),
+            ],
+            'request' => [
+                'uri'      => $_SERVER['REQUEST_URI'] ?? '',
+                'method'   => $_SERVER['REQUEST_METHOD'] ?? '',
+                'protocol' => $_SERVER['SERVER_PROTOCOL'] ?? '',
+            ],
+            'client' => [
+                'address'    => $remoteAddr,
+                'referrer'   => $_SERVER['HTTP_REFERER'] ?? '',
+                'reverse'    => $remoteAddr ? gethostbyaddr($remoteAddr) : '',
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            ],
+            'php_vars' => [
+                'cookie'  => $_COOKIE ?? [],
+                'env'     => $_ENV ?? [],
+                'files'   => $_FILES ?? [],
+                'get'     => $_GET ?? [],
+                'post'    => $_POST ?? [],
+                'server'  => $_SERVER ?? [],
+                'session' => $_SESSION ?? [],
+            ],
+            'debug' => Debug::getInstance()->getSimpleData(),
+            'trace' => $this->exception->getTrace(),
+        ];
+
+        return $error;
+    }
+
+    protected function save2Log()
+    {
+        if (!$this->logDir) {
+            return;
+        }
+
+        $errorCode = $this->getCrc();
+        $filePath = $this->logDir.DS.$errorCode.'.yml';
+        $error = $this->getYaml($filePath);
+        $error['occurrences'] += 1;
+        $error['date'] = (new DateTime())->format('c');
+
+        $yaml = Yaml::dump($error);
+
+        file_put_contents($filePath, $yaml);
     }
 
     /**
@@ -311,6 +403,18 @@ class Handler
     {
         $this->prevErrorHandler = set_error_handler([$this, 'errorHandler']);
         $this->prevExceptionHandler = set_exception_handler([$this, 'exceptionHandler']);
+    }
+
+    /**
+     * Sets the output log folder path.
+     *
+     * @param string $logDir
+     *
+     * @return void
+     */
+    public function setLogDir(string $logDir)
+    {
+        $this->logDir = $logDir;
     }
 
     /**

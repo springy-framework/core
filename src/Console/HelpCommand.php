@@ -34,6 +34,7 @@ class HelpCommand extends Controller
             '',
             'Commands:',
             '  help      Display this help message.',
+            '  errors    Display the application errors log.',
             '  migrator  Install database migrations.',
             '',
         ]);

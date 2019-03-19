@@ -75,6 +75,7 @@
 -   Added `Springy\Utils\JSON->merge` method
 -   Added `Springy\Utils\JSON->setData` method
 -   Added `Springy\Utils\FileSystemUtils` trait
+-   Added `Springy\Utils\NetworkUtils` trait
 -   Added `Springy\Utils\StringUtils` trait
 -   Added `Springy\Validation\Rule` class
 -   Added configuration file `dbms.php` (see bellow)
@@ -178,7 +179,6 @@
 -   Main system configuration `CHARSET` renamed to `main.charset`
 -   Main system configuration `ENVIRONMENT` renamed to `main.environment`
 -   Configuration `'mail.default_driver'` renamed to `'mail.driver'`
--   Configuration `'mail.errors_go_to'` moved to `'application.errors_go_to'`
 -   Configuration `'mail.mails_go_to'` renamed to `'mail.fake_to'`
 -   Configuration `'system'` renamed to `'application'`
 -   Configuration `'template.auto_reload'` renamed to `'template.force_compile'`
@@ -231,7 +231,7 @@
 -   Removed `Springy\Pagination` class
 -   Removed `Springy\Utils\Excel` class
 -   Removed `Springy\Utils\JSON_Static` class
--   Removed `Springy\Utils\Strings` class. See new trait `Springy\Utils\StringUtils` for substitute methods.
+-   Removed `Springy\Utils\Strings` class. See new trait `Springy\Utils\StringUtils` and `Springy\Utils\NetworkUtils` for substitute methods.
 -   Removed `Springy\Utils\ZipFile` class
 -   Removed `Springy\Kernel::objectToArray()` method
 -   Removed `Springy\Kernel::arrayToObject()` method
@@ -282,6 +282,7 @@
 -   Removed support to configuration `'template.debugging_ctrl'`
 -   Removed support to configuration `'template.errors'`
 -   Removed support to configuration `'template.escape_html'` see `'template.auto_escape'`
+-   Removed support to configuration `'system.system_error.save_in_database'`
 -   Removed support to Manuel Lemos' MIME Mail Message classes. Thanks a lot!
 -   Removed template variable `HOST`
 -   Removed template variable `CURRENT_PAGE_URI`

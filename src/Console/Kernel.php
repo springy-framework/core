@@ -68,6 +68,10 @@ class Kernel extends MainKernel
         }
 
         switch ($command) {
+            case 'errors':
+                static::$controller = new ErrorsCommand([$command]);
+
+                return true;
             case 'help':
                 static::$controller = new HelpCommand([$command]);
 

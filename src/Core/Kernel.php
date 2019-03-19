@@ -427,6 +427,8 @@ class Kernel
             $conf['ENVIRONMENT_VARIABLE'] ?? 'ENVIRONMENT'
         );
 
+        self::$errorHandler->setLogDir($conf['errors_log'] ?? '');
+
         // Define the application paths
         // $this->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);
         // self::path(self::PATH_APPLICATION, $conf['APP_PATH'] ?? realpath($conf['ROOT_PATH'].'/../app'));

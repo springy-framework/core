@@ -315,6 +315,20 @@ class Debug
         return $return;
     }
 
+    public function getSimpleData(): array
+    {
+        $debug = [];
+        foreach (self::$debug as $data) {
+            $debug[] = [
+                'memory' => $data[0],
+                'time'   => $data[1],
+                'data'   => $data[2]
+            ];
+        }
+
+        return $debug;
+    }
+
     /**
      * Hightlights the data details.
      *
