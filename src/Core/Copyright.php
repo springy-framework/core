@@ -15,15 +15,20 @@ class Copyright
     /**
      * Prints the framework copyright page.
      *
-     * @return void
+     * @return string
      */
-    public function content()
+    public function content(): string
     {
         $html = file_get_contents(__DIR__.DS.'assets'.DS.'copyright.html');
 
         return $html;
     }
 
+    /**
+     * Gets self.
+     *
+     * @return self
+     */
     public static function getInstance()
     {
         return new self();
