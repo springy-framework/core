@@ -171,7 +171,7 @@ class ErrorsCommand extends Controller
         $table->setColumnMaxWidth(4, 4);
 
         foreach (new DirectoryIterator($this->logDir) as $file) {
-            if (!$file->isFile()) {
+            if (!$file->isFile() || $file->getExtension() !== 'yml') {
                 continue;
             }
 
