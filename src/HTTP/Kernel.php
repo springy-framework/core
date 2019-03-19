@@ -11,6 +11,7 @@
 
 namespace Springy\HTTP;
 
+use Springy\Core\Copyright;
 use Springy\Core\Kernel as MainKernel;
 use Springy\Exceptions\Http404Error;
 use Springy\Security\Authentication;
@@ -108,10 +109,18 @@ class Kernel extends MainKernel
             return false;
         }
 
+        array_shift($segments);
         $response = Response::getInstance();
 
-        if (count($segments) == 2 && $segments[1] == 'about') {
+        if (count($segments) == 1 && $segments[0] == 'about') {
             $response->body(Copyright::getInstance()->content());
+
+            return true;
+        }
+
+        if ($segments[0] == 'terminal') {
+            array_shift($segments);
+            self::$controller = new Terminal($segments);
 
             return true;
         }
