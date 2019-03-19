@@ -2,6 +2,7 @@
 
 return [
     'driver' => 'phpmailer',
+    'errors_go_to' => '',
     'fake_to' => '',
     'settings' => [
         'protocol' => 'smtp',
