@@ -40,15 +40,18 @@ class Handler
     protected $ignoredErrors;
     /** @var string directory to save error logs */
     protected $logDir;
+    /** @var array the list of errors that should not be logged nor reported */
+    protected $unreportable;
 
     /**
      * Constructor.
      */
-    public function __construct(string $logDir = '')
+    public function __construct(string $logDir = '', array $unreportable = [])
     {
         error_reporting(E_ALL);
         $this->logDir = $logDir;
         $this->ignoredErrors = [];
+        $this->unreportable = $unreportable;
         $this->setHandlers();
     }
 
@@ -213,6 +216,13 @@ class Handler
         }
     }
 
+    /**
+     * Gets the error from Yaml file or prepare new array.
+     *
+     * @param string $filePath
+     *
+     * @return array
+     */
     protected function getYaml(string $filePath): array
     {
         if (realpath($filePath)) {
@@ -267,9 +277,14 @@ class Handler
         return $error;
     }
 
+    /**
+     * Saves the error/exception to Yml log file.
+     *
+     * @return void
+     */
     protected function save2Log()
     {
-        if (!$this->logDir) {
+        if (!$this->logDir || !is_dir($this->logDir) || $this->shouldntReport()) {
             return;
         }
 
@@ -282,6 +297,17 @@ class Handler
         $yaml = Yaml::dump($error);
 
         file_put_contents($filePath, $yaml);
+    }
+
+    /**
+     * Checks whether the error/exception should not be reported.
+     *
+     * @return bool
+     */
+    protected function shouldntReport()
+    {
+        return in_array(get_class($this->exception), $this->unreportable) ||
+            in_array(get_class($this->exception->getCode()), $this->unreportable);
     }
 
     /**
@@ -415,6 +441,18 @@ class Handler
     public function setLogDir(string $logDir)
     {
         $this->logDir = $logDir;
+    }
+
+    /**
+     * Sets the list of errors that should not be logged nor reported.
+     *
+     * @param array $unreportable
+     *
+     * @return void
+     */
+    public function setUnreportable(array $unreportable)
+    {
+        $this->unreportable = $unreportable;
     }
 
     /**

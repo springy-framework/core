@@ -6,8 +6,14 @@
 
 -   Alternative routes
 -   Automatic URL redirections
--   Error logging
--   Application error notification to webmaster
+-   Error reporting to webmaster
+
+#### Test cases to do
+
+-   Springy\Exceptions\Handler->setLogDir()
+-   Springy\Exceptions\Handler->setUnreportable()
+-   Springy\Utils\NetworkUtils
+-   All console classes
 
 ### Added
 
