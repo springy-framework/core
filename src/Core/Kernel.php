@@ -429,6 +429,7 @@ class Kernel
 
         self::$errorHandler->setLogDir($conf['errors_log'] ?? '');
         self::$errorHandler->setUnreportable($conf['unreportable_errors'] ?? []);
+        self::$errorHandler->setWebmasters($conf['errors_reporting'] ?? '');
 
         // Define the application paths
         // $this->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);

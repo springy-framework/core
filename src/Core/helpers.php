@@ -40,6 +40,16 @@ function app($service = null)
 }
 
 /**
+ * Returns the application environment.
+ *
+ * @return string
+ */
+function app_env(): string
+{
+    return Springy\Core\Kernel::getInstance()->getEnvironment();
+}
+
+/**
  * Returns the application name.
  *
  * @return string

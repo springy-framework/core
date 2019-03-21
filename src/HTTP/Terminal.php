@@ -24,13 +24,13 @@ class Terminal
      *
      * @param array $segments
      */
-    public function __construct(array $segments)
+    public function __construct()
     {
         Kernel::getInstance()->configuration()->set('application.debug', false);
 
         $this->response = Response::getInstance();
 
-        $this->parseSegments($segments);
+        $this->parseCommand();
     }
 
     /**
@@ -46,6 +46,7 @@ class Terminal
         $commands = [
             'errors' => 'Springy\Console\ErrorsCommand',
             'help'   => 'Springy\Console\HelpCommand',
+            'show'   => [$this, 'showCommand'],
         ];
 
         if (!isset($commands[$command])) {
@@ -62,27 +63,38 @@ class Terminal
         $this->response->body($output->fetch());
     }
 
+    protected function getCommand($closure)
+    {
+        if (is_array($closure)) {
+            return call_user_func($closure);
+        }
+    }
+
     /**
      * Parses the segments array and try to execute de command.
      *
-     * @param array $segments
-     *
      * @return void
      */
-    protected function parseSegments(array $segments)
+    protected function parseCommand()
     {
-        if (count($segments) === 0) {
+        $input = new Input();
+
+        if (!$input->has('command')) {
             return $this->startTerminal();
         }
 
-        $command = str_replace('%20', ' ', implode('/', $segments));
+        $command = $input->get('command');
+
         $parameters = explode(' ', $command);
-        $command = array_shift($parameters);
-        $parameters[] = '--no-interaction';
-        $parameters = implode(' ', $parameters);
-        if (!strpos($parameters, '--no-ansi')) {
-            $parameters .= ' --ansi';
+        if (!in_array('--no-interaction', $parameters)) {
+            $parameters[] = '--no-interaction';
         }
+        if (!in_array('--no-ansi', $parameters)) {
+            $parameters[] = ' --ansi';
+        }
+
+        $command = array_shift($parameters);
+        $parameters = implode(' ', $parameters);
 
         $this->command($command, $parameters);
     }
@@ -96,5 +108,10 @@ class Terminal
     {
         $body = file_get_contents(__DIR__.DS.'assets'.DS.'terminal.html');
         $this->response->body($body);
+    }
+
+    protected function showCommand()
+    {
+
     }
 }

@@ -32,6 +32,7 @@ namespace Springy\Mail\Drivers;
 use SendGrid as SendGridAPI;
 use SendGrid\Mail\Mail;
 use Springy\Exceptions\SpringyException;
+use Throwable;
 
 class SendGrid implements MailDriverInterface
 {
@@ -179,7 +180,7 @@ class SendGrid implements MailDriverInterface
         try {
             $response = $this->sendgrid->send($this->mailObj);
             $this->lastError = $response->body();
-        } catch (\Throwable $err) {
+        } catch (Throwable $err) {
             $this->lastError = $err->getCode().' - '.$err->getMessage().' at '.$err->getFile().' ('.$err->getLine().')';
         }
 

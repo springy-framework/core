@@ -12,7 +12,10 @@
 
 -   Springy\Exceptions\Handler->setLogDir()
 -   Springy\Exceptions\Handler->setUnreportable()
+-   Springy\Exceptions\Handler->addWebmaster()
+-   Springy\Exceptions\Handler->setWebmaster()
 -   Springy\Utils\NetworkUtils
+-   Helper functions
 -   All console classes
 
 ### Added

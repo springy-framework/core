@@ -105,21 +105,18 @@ class Kernel extends MainKernel
 
         $segments = URI::getInstance()->getSegments();
 
-        if (empty(($segments)) || $segments[0] !== 'springy') {
+        if (count($segments) < 2 || count($segments) > 2 || $segments[0] !== 'springy') {
             return false;
         }
 
         array_shift($segments);
         $response = Response::getInstance();
 
-        if (count($segments) == 1 && $segments[0] == 'about') {
+        if ($segments[0] == 'about') {
             $response->body(Copyright::getInstance()->content());
 
             return true;
-        }
-
-        if ($segments[0] == 'terminal') {
-            array_shift($segments);
+        } else if ($segments[0] == 'terminal') {
             self::$controller = new Terminal($segments);
 
             return true;
