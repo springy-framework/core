@@ -46,7 +46,7 @@ class Terminal
         $commands = [
             'errors' => 'Springy\Console\ErrorsCommand',
             'help'   => 'Springy\Console\HelpCommand',
-            'show'   => [$this, 'showCommand'],
+            // 'show'   => [$this, 'showCommand'],
         ];
 
         if (!isset($commands[$command])) {
@@ -112,6 +112,6 @@ class Terminal
 
     protected function showCommand()
     {
-
+        return false;
     }
 }

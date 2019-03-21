@@ -1,6 +1,6 @@
 <?php
 /**
- * Exception handler class.
+ * Errors handler class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -12,17 +12,20 @@
 namespace Springy\Exceptions;
 
 use DateTime;
-use Exception;
 use PDOException;
 use Springy\Core\Debug;
 use Springy\Core\Kernel;
 use Springy\HTTP\Response;
+use Springy\Mail\Mailer;
 use Springy\Utils\NetworkUtils;
+use Springy\Utils\StringUtils;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 class Handler
 {
     use NetworkUtils;
+    use StringUtils;
 
     const HT_ERROR = 1;
     const HT_EXCEPTION = 2;
@@ -32,7 +35,7 @@ class Handler
     /** @var mixed previous exception handler */
     protected $prevExceptionHandler;
 
-    /** @var Exception last exception throwed */
+    /** @var \Throwable last exception throwed */
     protected $exception;
     /** @var int type of the last handler throwed */
     protected $handlerType;
@@ -42,6 +45,8 @@ class Handler
     protected $logDir;
     /** @var array the list of errors that should not be logged nor reported */
     protected $unreportable;
+    /** @var array the webmasters email addresses */
+    protected $webmasters;
 
     /**
      * Constructor.
@@ -52,6 +57,7 @@ class Handler
         $this->logDir = $logDir;
         $this->ignoredErrors = [];
         $this->unreportable = $unreportable;
+        $this->webmasters = [];
         $this->setHandlers();
     }
 
@@ -187,36 +193,6 @@ class Handler
     }
 
     /**
-     * Shows a 4xx error.
-     *
-     * @return void
-     */
-    protected function httpError()
-    {
-        Response::getInstance()->header()->httpResponseCode($this->exception->getCode());
-
-        $this->displayError();
-    }
-
-    /**
-     * Restores to previous error and exception handlers.
-     *
-     * @return void
-     */
-    protected function restoreHandlers()
-    {
-        if ($this->prevErrorHandler) {
-            restore_error_handler();
-            $this->prevErrorHandler = null;
-        }
-
-        if ($this->prevExceptionHandler) {
-            restore_exception_handler();
-            $this->prevExceptionHandler = null;
-        }
-    }
-
-    /**
      * Gets the error from Yaml file or prepare new array.
      *
      * @param string $filePath
@@ -232,12 +208,7 @@ class Handler
         $remoteAddr = $this->getRealRemoteAddr();
 
         $error = [
-            'description'  => sprintf(
-                '%s in %s:%s',
-                $this->exception->getMessage(),
-                $this->exception->getFile(),
-                $this->exception->getLine()
-            ),
+            'crc'          => $this->getCrc(),
             'occurrences'  => 0,
             'date'         => (new DateTime())->format('c'),
             'informations' => [
@@ -251,9 +222,11 @@ class Handler
                 'sapi_name'   => php_sapi_name(),
             ],
             'request' => [
+                'host'     => $_SERVER['HTTP_HOST'] ?? '',
                 'uri'      => $_SERVER['REQUEST_URI'] ?? '',
                 'method'   => $_SERVER['REQUEST_METHOD'] ?? '',
                 'protocol' => $_SERVER['SERVER_PROTOCOL'] ?? '',
+                'secure'   => $_SERVER['HTTPS'] ?? '',
             ],
             'client' => [
                 'address'    => $remoteAddr,
@@ -278,6 +251,86 @@ class Handler
     }
 
     /**
+     * Shows a 4xx error.
+     *
+     * @return void
+     */
+    protected function httpError()
+    {
+        Response::getInstance()->header()->httpResponseCode($this->exception->getCode());
+
+        $this->displayError();
+    }
+
+    protected function reportWebmaster(string $file)
+    {
+        if (!count($this->webmasters)) {
+            return;
+        }
+
+        try {
+            $email = new Mailer();
+        } catch (Throwable $err) {
+            // Discards the error and don't send the report.
+            $err = null;
+
+            return;
+        }
+
+        $message = sprintf(
+            '<strong>%s - System Error Report</strong><br><br>'
+            .'The application was aborted with the following error:<br><br>'
+            .'<p>Error code: <strong>%s</strong></p>'
+            .'<p>Error Message: <font color="red">%s</font></p>'
+            .'<p>File: <strong>%s</strong></p>'
+            .'<p>Line: <strong>%d</strong></p><br>'
+            .'The error was identified with the CRC <font color="red">%s</font>',
+            app_name(),
+            $this->exception->getCode(),
+            $this->exception->getMessage(),
+            $this->exception->getFile(),
+            $this->exception->getLine(),
+            $this->getCrc()
+        );
+
+        foreach ($this->webmasters as $address) {
+            $email->addTo($address, 'Webmaster');
+        }
+
+        $email->setFrom('application@localhost', app_name().' - System Error Report');
+        $email->setSubject(sprintf(
+            'Error on %s v%s [%s] at %s',
+            app_name(),
+            app_version(),
+            app_env(),
+            $_SERVER['HTTP_HOST'] ?? $_SERVER['PHP_SELF'] ?? '?'
+        ));
+        $email->setBody($message);
+        if (is_file($file)) {
+            $email->addAttachment($file, 'errorlog', 'text/plain');
+        }
+        $email->send();
+    }
+
+    /**
+     * Restores to previous error and exception handlers.
+     *
+     * @return void
+     */
+    protected function restoreHandlers()
+    {
+        if ($this->prevErrorHandler) {
+            restore_error_handler();
+            $this->prevErrorHandler = null;
+        }
+
+        if ($this->prevExceptionHandler) {
+            restore_exception_handler();
+            $this->prevExceptionHandler = null;
+        }
+    }
+
+    /**
      * Saves the error/exception to Yml log file.
      *
      * @return void
@@ -296,7 +349,15 @@ class Handler
 
         $yaml = Yaml::dump($error);
 
+        $shouldntReport = is_file($filePath);
+
         file_put_contents($filePath, $yaml);
+
+        if ($shouldntReport) {
+            return;
+        }
+
+        $this->reportWebmaster($filePath);
     }
 
     /**
@@ -307,7 +368,7 @@ class Handler
     protected function shouldntReport()
     {
         return in_array(get_class($this->exception), $this->unreportable) ||
-            in_array(get_class($this->exception->getCode()), $this->unreportable);
+            in_array($this->exception->getCode(), $this->unreportable);
     }
 
     /**
@@ -330,6 +391,26 @@ class Handler
         if (!in_array($error, $this->ignoredErrors)) {
             $this->ignoredErrors[] = $error;
         }
+    }
+
+    /**
+     * Adds an email to the webmasters list.
+     *
+     * @param string $email
+     *
+     * @return void
+     */
+    public function addWebmaster(string $email)
+    {
+        if (in_array($email, $this->webmasters)) {
+            return;
+        }
+
+        if (!$this->isValidEmailAddress($email, false)) {
+            return;
+        }
+
+        $this->webmasters[] = $email;
     }
 
     /**
@@ -382,7 +463,7 @@ class Handler
     /**
      * Exception handler method.
      *
-     * @param Exception|Error|Throwable $err
+     * @param \Exception|\Error|\Throwable $err
      *
      * @return void
      */
@@ -453,6 +534,28 @@ class Handler
     public function setUnreportable(array $unreportable)
     {
         $this->unreportable = $unreportable;
+    }
+
+    /**
+     * Sets the webmasters array.
+     *
+     * @param string|array $webmasters
+     *
+     * @return void
+     */
+    public function setWebmasters($webmasters)
+    {
+        $this->webmasters = [];
+
+        if (is_array($webmasters)) {
+            foreach ($webmasters as $email) {
+                $this->addWebmaster($email);
+            }
+
+            return;
+        }
+
+        $this->addWebmaster($webmasters);
     }
 
     /**
