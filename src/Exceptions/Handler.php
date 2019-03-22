@@ -262,6 +262,13 @@ class Handler
         $this->displayError();
     }
 
+    /**
+     * Sends error report to webmasters.
+     *
+     * @param string $file
+     *
+     * @return void
+     */
     protected function reportWebmaster(string $file)
     {
         if (!count($this->webmasters)) {
@@ -297,7 +304,7 @@ class Handler
             $email->addTo($address, 'Webmaster');
         }
 
-        $email->setFrom('application@localhost', app_name().' - System Error Report');
+        $email->setFrom($this->webmasters[0], app_name().' - System Error Report');
         $email->setSubject(sprintf(
             'Error on %s v%s [%s] at %s',
             app_name(),

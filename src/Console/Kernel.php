@@ -40,10 +40,6 @@ class Kernel extends MainKernel
         }
 
         $command = $input->getFirstArgument();
-        // if ($command === null) {
-        //     return $this->discoverInternals($command);
-        // }
-
         $segment = $this->findController('App\\Console\\', [$command ?? '']);
         if ($segment < 0 && !$this->discoverInternals($command)) {
             return false;
@@ -67,22 +63,18 @@ class Kernel extends MainKernel
             $command = 'help';
         }
 
-        switch ($command) {
-            case 'errors':
-                static::$controller = new ErrorsCommand([$command]);
-
-                return true;
-            case 'help':
-                static::$controller = new HelpCommand([$command]);
-
-                return true;
-            case 'migrator':
-                static::$controller = new MigratorCommand([$command]);
-
-                return true;
+        $commands = [
+            'errors'   => 'Springy\Console\ErrorsCommand',
+            'help'     => 'Springy\Console\HelpCommand',
+            'migrator' => 'Springy\Console\MigratorCommand',
+        ];
+        if (!isset($commands[$command])) {
+            return false;
         }
 
-        return false;
+        static::$controller = new $commands[$command]([$command]);
+
+        return true;
     }
 
     /**

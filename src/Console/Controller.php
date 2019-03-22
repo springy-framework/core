@@ -190,9 +190,7 @@ class Controller extends Command implements ControllerInterface
     protected function printTitle()
     {
         $this->output->writeln([
-            $this->getAppNameVersion(),
-            '',
-            $this->description ? $this->description : $this->name,
+            $this->getAppNameVersion().' - '.($this->description ? $this->description : $this->name),
             '',
         ]);
     }

@@ -6,7 +6,6 @@
 
 -   Alternative routes
 -   Automatic URL redirections
--   Error reporting to webmaster
 
 #### Test cases to do
 

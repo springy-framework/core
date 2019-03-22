@@ -29,27 +29,59 @@ class ErrorsCommand extends Controller
      */
     protected $description = 'Application errors';
 
+    protected $commandInstructions;
+    /** @var bool comming from cli interface */
+    protected $commingCli;
     /** @var string the errors log directory */
     protected $logDir;
+    /** @var string the instruction */
+    protected $instruction;
     /** @var string parameter to the instruction */
     protected $parameter;
-    /** @var string third argument */
-    protected $argument;
+    /** @var string error crc */
+    protected $crc;
+    /** @var bool stay into interactive mode */
+    protected $stayInteractive;
 
-    // List of show sub-commands
-    const SHOW_COMMAND = [
-        'cookie',
-        'debug',
-        'details',
-        'get',
-        'post',
-        'server',
-        'session',
-        'trace',
-    ];
+    /**
+     * Adds an instruction to instructions list.
+     *
+     * @param string $name
+     * @param string $function
+     * @param string $parameter
+     * @param string $description
+     * @param boolean $onlyInteractive
+     * @param string $alias
+     * @param boolean $hidden
+     * @param boolean $terminator
+     *
+     * @return void
+     */
+    protected function addInstruction(
+        string $name,
+        string $function,
+        string $parameter,
+        string $description,
+        bool $onlyInteractive = false,
+        string $alias = '',
+        bool $hidden = false,
+        bool $terminator = false
+    ) {
+        $this->commandInstructions[$name] = (object) [
+            'description'     => $description,
+            'caller'          => $function,
+            'parameter'       => $parameter,
+            'onlyInteractive' => $onlyInteractive,
+            'alias'           => $alias,
+            'hidden'          => $hidden,
+            'terminator'      => $terminator,
+        ];
+    }
 
     /**
      * Configures the command.
+     *
+     * @SuppressWarnings(ExcessiveMethodLength)
      *
      * @return void
      */
@@ -57,12 +89,23 @@ class ErrorsCommand extends Controller
     {
         parent::configure();
         $this->addArgument('instruction', InputArgument::OPTIONAL, 'Instruction.');
-        $this->addArgument('parameter', InputArgument::OPTIONAL, 'Parameter.');
-        $this->addArgument('argument', InputArgument::OPTIONAL, 'Third argument.');
-
-        $this->addUsage($this->getCommandTag().' <instruction> [<options>]');
+        $this->addArgument('crc', InputArgument::OPTIONAL, 'Error CRC.');
+        $this->addUsage('<instruction> [<options>]');
 
         $this->logDir = Kernel::getInstance()->configuration()->get('main.errors_log');
+
+        $this->addInstruction('cookie', 'showCookie', '<CRC>', 'Display the $_COOKIE var content for the error.');
+        $this->addInstruction('debug', 'showDebug', '<CRC>', 'Display the debug content for the error.');
+        $this->addInstruction('delete', 'doDelete', '<CRC>|all', 'Delete one or all application errors.');
+        $this->addInstruction('details', 'showDetails', '<CRC>', 'Display the details for the error.', false, 'show');
+        $this->addInstruction('exit', '', '', 'Exit from interactive mmode.', true, 'quit', false, true);
+        $this->addInstruction('get', 'showGet', '<CRC>', 'Display the $_GET var content for the error.');
+        $this->addInstruction('help', 'printHelp', '', 'Display this help messagem.', false, '?');
+        $this->addInstruction('list', 'doList', '', 'Display the list of application errors.');
+        $this->addInstruction('post', 'showPost', '<CRC>', 'Display the $_POST var content for the error.');
+        $this->addInstruction('server', 'showServer', '<CRC>', 'Display the $_SERVER var content for the error.');
+        $this->addInstruction('session', 'showSession', '<CRC>', 'Display the $_SESSION var content for the error.');
+        $this->addInstruction('trace', 'showTrace', '<CRC>', 'Display the stack trace content for the error.');
     }
 
     /**
@@ -74,22 +117,23 @@ class ErrorsCommand extends Controller
     {
         $this->printTitle();
 
-        $instruction = $this->input->getArgument('instruction');
-        if ($instruction === null) {
+        $this->commingCli = true;
+        $this->instruction = $this->getInstruction($this->input->getArgument('instruction'));
+        $this->crc = $this->input->getArgument('crc');
+        $this->stayInteractive = !$this->output->isQuiet() && $this->input->isInteractive();
+
+        if ($this->instruction === null) {
             $this->printHelp();
 
             return 1;
         }
 
-        $this->parameter = $this->input->getArgument('parameter');
-        $this->argument = $this->input->getArgument('argument');
-
-        $result = $this->instruction($instruction, false);
+        $result = $this->runInstruction();
         if ($result > 0) {
             return $result;
         }
 
-        return $this->getInstruction();
+        return $this->inputInstruction();
     }
 
     /**
@@ -146,21 +190,16 @@ class ErrorsCommand extends Controller
      */
     protected function doDelete(): int
     {
-        if ($this->parameter === null) {
-            $helper = new QuestionHelper();
-            $question = new Question('What error to delete? CRC: ');
-            $this->parameter = $helper->ask($this->input, $this->output, $question);
-
-            if (!$this->parameter) {
-                return 1;
-            }
+        $this->getCrc();
+        if (!$this->crc) {
+            return 1;
         }
 
-        if ($this->parameter === 'all') {
+        if ($this->crc === 'all') {
             return $this->deleteAll();
         }
 
-        return $this->delete($this->logDir.DS.$this->parameter.'.yml');
+        return $this->delete($this->logDir.DS.$this->crc.'.yml');
     }
 
     /**
@@ -212,75 +251,82 @@ class ErrorsCommand extends Controller
     }
 
     /**
-     * Gets the CRC if needed.
+     * Gets the CRC from default IO.
      *
-     * @return int
+     * @return void
      */
-    protected function getCrc(): int
+    protected function getCrc()
     {
-        if (!in_array($this->parameter, self::SHOW_COMMAND)) {
-            $this->argument = $this->parameter;
-            $this->parameter = 'details';
-
-            return 0;
-        }
-
-        if ($this->argument === null) {
+        if ($this->crc === null) {
             $helper = new QuestionHelper();
             $question = new Question('Enter CRC: ');
-            $this->argument = $helper->ask($this->input, $this->output, $question);
-
-            if (!$this->parameter) {
-                return 1;
-            }
+            $this->crc = $helper->ask($this->input, $this->output, $question);
         }
-
-        return 0;
     }
 
     /**
-     * Show an error details.
+     * Gets the error data.
      *
-     * @return int
+     * @return array|bool
      */
-    protected function doShow(): int
+    protected function getError()
     {
-        if ($this->parameter === null) {
-            $helper = new QuestionHelper();
-            $question = new Question('What to show? ');
-            $question->setAutocompleterValues(self::SHOW_COMMAND);
-            $this->parameter = $helper->ask($this->input, $this->output, $question);
+        if ($this->getCrc()) {
+            return false;
+        }
 
-            if (!$this->parameter) {
-                return 1;
+        $file = $this->logDir.DS.$this->crc.'.yml';
+        if (!is_file($file)) {
+            $this->output->writeln(
+                '<error>Error identified by <comment>'
+                .$this->crc
+                .'</> CRC not found.</>'
+            );
+
+            return false;
+        }
+
+        return Yaml::parseFile($file);
+    }
+
+    /**
+     * Gets the instruction object by given name.
+     *
+     * @param string $name
+     *
+     * @return object|bool|null
+     */
+    protected function getInstruction(string $name = null)
+    {
+        if ($name === null) {
+            return;
+        }
+
+        foreach ($this->commandInstructions as $instruction => $obj) {
+            if ($instruction === $name || $obj->alias === $name) {
+                return $obj;
             }
         }
 
-        if ($this->getCrc()) {
-            return 1;
+        return false;
+    }
+
+    /**
+     * Gets the list os instruction names.
+     *
+     * @return array
+     */
+    protected function getInstructionsKeys(): array
+    {
+        $instructions = [];
+        foreach ($this->commandInstructions as $key => $obj) {
+            $instructions[] = $key;
+            if ($obj->alias) {
+                $instructions[] = $obj->alias;
+            }
         }
 
-        $file = $this->logDir.DS.$this->argument.'.yml';
-        if (!is_file($file)) {
-            $this->output->writeln('<error>CRC error not found.</>');
-
-            return 1;
-        }
-
-        $error = Yaml::parseFile($file);
-        $commands = [
-            'cookie'  => 'showCookie',
-            'debug'   => 'showDebug',
-            'details' => 'showDetails',
-            'get'     => 'showGet',
-            'post'    => 'showPost',
-            'server'  => 'showServer',
-            'session' => 'showSession',
-            'trace'   => 'showTrace',
-        ];
-        $func = $commands[$this->parameter];
-
-        return call_user_func([$this, $func], $error);
+        return $instructions;
     }
 
     /**
@@ -288,96 +334,37 @@ class ErrorsCommand extends Controller
      *
      * @return int
      */
-    protected function getInstruction(): int
+    protected function inputInstruction(): int
     {
-        if ($this->output->isQuiet() || !$this->input->isInteractive() || $this->parameter !== null) {
-            return 0;
-        }
-
-        do {
-            $this->parameter = null;
-            $this->argument = null;
+        while ($this->stayInteractive) {
+            $this->commingCli = false;
+            $this->crc = null;
 
             $helper = new QuestionHelper();
             $question = new Question('instruction> ');
-            $question->setAutocompleterValues([
-                'delete',
-                'exit',
-                'list',
-                'quit',
-                'show',
-                'sho cookie',
-                'sho debug',
-                'sho details',
-                'sho get',
-                'sho post',
-                'sho server',
-                'sho session',
-                'sho trace',
-                'show cookie',
-                'show debug',
-                'show details',
-                'show get',
-                'show post',
-                'show server',
-                'show session',
-                'show trace',
-            ]);
+            $question->setAutocompleterValues($this->getInstructionsKeys());
             $question->setNormalizer(function ($value) {
                 return $value ? trim($value) : '';
             });
             $input = $helper->ask($this->input, $this->output, $question);
 
-            $parts = explode(' ', $input);
-            $instruction = $parts[0];
-            $this->parameter = $parts[1] ?? null;
-            $this->argument = $parts[2] ?? null;
-
-            if ($instruction == 'exit' || $instruction == 'q' || $instruction == 'quit') {
-                return 0;
+            if (!$input) {
+                continue;
             }
 
-            $this->instruction($instruction, true);
-        } while (true);
-    }
+            $parts = explode(' ', $input);
 
-    /**
-     * Proccesses the instruction.
-     *
-     * @SuppressWarnings(CyclomaticComplexity)
-     *
-     * @param string $instruction
-     * @param bool   $onlyInstructions
-     *
-     * @return int
-     */
-    protected function instruction(string $instruction = null, bool $onlyInstructions = false): int
-    {
-        switch ($instruction) {
-            case 'd':
-            case 'del':
-            case 'delete':
-                return $this->doDelete();
-            case '?':
-            case 'h':
-            case 'help':
-                return $this->printHelp($onlyInstructions);
-            case 'l':
-            case 'list':
-                return $this->doList();
-            case 's':
-            case 'sho':
-            case 'show':
-                return $this->doShow();
-        }
+            $this->instruction = $this->getInstruction($parts[0]);
+            $this->crc = $parts[1] ?? null;
 
-        $this->output->writeln([
-            sprintf('Invalid instruction <error>%s</>', $instruction),
-            '',
-        ]);
-        $this->printHelp($onlyInstructions);
+            if ($this->instruction !== false && $this->instruction->terminator) {
+                break;
+            }
 
-        return 1;
+            $this->runInstruction();
+        };
+
+        return 0;
     }
 
     /**
@@ -409,31 +396,36 @@ class ErrorsCommand extends Controller
      *
      * @return void
      */
-    protected function printHelp(bool $onlyInstructions = false)
+    protected function printHelp()
     {
-        if ($onlyInstructions) {
-            return $this->printInstructions();
+        if ($this->commingCli) {
+            $this->stayInteractive = false;
+            $this->setHelp([
+                'Usage:',
+                '  '.$this->getCommandTag().' [<instruction>] [<options>]',
+                '',
+            ]);
+            $this->output->writeln($this->getProcessedHelp());
         }
 
-        $this->setHelp([
-            'Usage:',
-            '  '.$this->getCommandTag().' [<instruction>] [<options>]',
-            '',
-            'Instructions:',
-            '  delete <CRC>|all  Delete an application error or all errors.',
-            '  list              Display the list of application errors.',
-            '  show <parameter>  Display an application error details.',
-            '',
-            'Instruction show parameters:',
-            '  details <CRC>  Display the error details.',
-            '  post <CRC>     Display content of the $_POST var.',
-            '  server <CRC>   Display content of the $_SERVER var.',
-            '  session <CRC>  Display content of the $_SESSION var.',
-            '  trace <CRC>    Display the stack trace.',
-            '',
-        ]);
-        $this->output->writeln($this->getProcessedHelp());
-        $this->printOptions();
+        $table = new Table($this->output);
+        $table->setStyle('compact');
+        foreach ($this->commandInstructions as $name => $obj) {
+            if (!$obj->hidden && (!$this->commingCli || !$obj->onlyInteractive)) {
+                $table->addRow([
+                    ' '.$name.($obj->alias ? '|'.$obj->alias : '').' '.$obj->parameter,
+                    ' '.$obj->description,
+                ]);
+            }
+        }
+
+        $this->output->writeln('Instructions:');
+        $table->render();
+        $this->output->writeln('');
+
+        if ($this->commingCli) {
+            $this->printOptions();
+        }
 
         return 0;
     }
@@ -448,31 +440,11 @@ class ErrorsCommand extends Controller
     protected function printInfo(array $error)
     {
         $this->output->writeln([
-            sprintf('Error ID: <info>%s</>', $this->argument),
+            sprintf('Error ID: <info>%s</>', $this->crc),
             sprintf('Code:     <comment>%s</>', $error['informations']['code'] ?? ''),
             sprintf('Message:  <info>%s</>', $error['informations']['message'] ?? ''),
             '',
         ]);
-    }
-
-    /**
-     * Shows help message.
-     *
-     * @return void
-     */
-    protected function printInstructions()
-    {
-        $this->setHelp([
-            'Instructions:',
-            '  delete  Delete an application error.',
-            '  list    Display the list of application errors.',
-            '  show    Display an application error details.',
-            '  exit    Exit to terminal.',
-            '',
-        ]);
-        $this->output->writeln($this->getProcessedHelp());
-
-        return 0;
     }
 
     /**
@@ -504,14 +476,37 @@ class ErrorsCommand extends Controller
     }
 
     /**
-     * Shows the error $_COOKIE var content.
-     *
-     * @param array $error
+     * Proccesses the instruction.
      *
      * @return int
      */
-    protected function showCookie(array $error): int
+    protected function runInstruction(): int
     {
+        if ($this->instruction === false) {
+            $this->output->writeln([
+                sprintf('Invalid instruction <error>%s</>', $this->instruction),
+                '',
+            ]);
+            // $this->printHelp();
+
+            return 1;
+        }
+
+        return call_user_func([$this, $this->instruction->caller]);
+    }
+
+    /**
+     * Shows the error $_COOKIE var content.
+     *
+     * @return int
+     */
+    protected function showCookie(): int
+    {
+        $error = $this->getError();
+        if ($error == false) {
+            return 1;
+        }
+
         $this->printInfo($error);
         $this->output->writeln('<comment>$_COOKIE:</>');
         $this->printVar($error['php_vars']['cookie']);
@@ -523,12 +518,15 @@ class ErrorsCommand extends Controller
     /**
      * Shows the debug data.
      *
-     * @param array $error
-     *
      * @return int
      */
-    protected function showDebug(array $error): int
+    protected function showDebug(): int
     {
+        $error = $this->getError();
+        if ($error == false) {
+            return 1;
+        }
+
         $this->printInfo($error);
         $this->output->writeln('<comment>Debug data:</>');
         $this->printVar($error['debug']);
@@ -540,14 +538,17 @@ class ErrorsCommand extends Controller
     /**
      * Shows the error details.
      *
-     * @param array $error
-     *
      * @return int
      */
-    protected function showDetails(array $error): int
+    protected function showDetails(): int
     {
+        $error = $this->getError();
+        if ($error == false) {
+            return 1;
+        }
+
         $this->output->writeln([
-            sprintf('Error ID:     <info>%s</>', $this->argument),
+            sprintf('Error ID:     <info>%s</>', $this->crc),
             sprintf('Occurrences:  <info>%d</>', $error['occurrences'] ?? ''),
             sprintf('Last:         <info>%s</>', $error['date'] ?? ''),
             '',
@@ -590,12 +591,15 @@ class ErrorsCommand extends Controller
     /**
      * Shows the error $_GET var content.
      *
-     * @param array $error
-     *
      * @return int
      */
-    protected function showGet(array $error): int
+    protected function showGet(): int
     {
+        $error = $this->getError();
+        if ($error == false) {
+            return 1;
+        }
+
         $this->printInfo($error);
         $this->output->writeln('<comment>$_GET:</>');
         $this->printVar($error['php_vars']['get']);
@@ -607,12 +611,15 @@ class ErrorsCommand extends Controller
     /**
      * Shows the error $_POST var content.
      *
-     * @param array $error
-     *
      * @return int
      */
-    protected function showPost(array $error): int
+    protected function showPost(): int
     {
+        $error = $this->getError();
+        if ($error == false) {
+            return 1;
+        }
+
         $this->printInfo($error);
         $this->output->writeln('<comment>$_POST:</>');
         $this->printVar($error['php_vars']['post']);
@@ -624,12 +631,15 @@ class ErrorsCommand extends Controller
     /**
      * Shows the error $_SERVER var content.
      *
-     * @param array $error
-     *
      * @return int
      */
-    protected function showServer(array $error): int
+    protected function showServer(): int
     {
+        $error = $this->getError();
+        if ($error == false) {
+            return 1;
+        }
+
         $this->printInfo($error);
         $this->output->writeln('<comment>$_SERVER:</>');
         $this->printVar($error['php_vars']['server']);
@@ -641,12 +651,15 @@ class ErrorsCommand extends Controller
     /**
      * Shows the error $_SESSION var content.
      *
-     * @param array $error
-     *
      * @return int
      */
-    protected function showSession(array $error): int
+    protected function showSession(): int
     {
+        $error = $this->getError();
+        if ($error == false) {
+            return 1;
+        }
+
         $this->printInfo($error);
         $this->output->writeln('<comment>$_SESSION:</>');
         $this->printVar($error['php_vars']['session']);
@@ -658,12 +671,15 @@ class ErrorsCommand extends Controller
     /**
      * Shows the error stack trace.
      *
-     * @param array $error
-     *
      * @return int
      */
-    protected function showTrace(array $error): int
+    protected function showTrace(): int
     {
+        $error = $this->getError();
+        if ($error == false) {
+            return 1;
+        }
+
         $this->printInfo($error);
         $this->output->writeln('Stack trace:');
 

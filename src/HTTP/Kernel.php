@@ -116,7 +116,7 @@ class Kernel extends MainKernel
             $response->body(Copyright::getInstance()->content());
 
             return true;
-        } else if ($segments[0] == 'terminal') {
+        } elseif ($segments[0] == 'terminal') {
             self::$controller = new Terminal($segments);
 
             return true;
