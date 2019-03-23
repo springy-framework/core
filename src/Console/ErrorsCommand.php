@@ -29,6 +29,7 @@ class ErrorsCommand extends Controller
      */
     protected $description = 'Application errors';
 
+    /** @var array the list of instructions */
     protected $commandInstructions;
     /** @var bool comming from cli interface */
     protected $commingCli;
@@ -50,10 +51,10 @@ class ErrorsCommand extends Controller
      * @param string $function
      * @param string $parameter
      * @param string $description
-     * @param boolean $onlyInteractive
+     * @param bool   $onlyInteractive
      * @param string $alias
-     * @param boolean $hidden
-     * @param boolean $terminator
+     * @param bool   $hidden
+     * @param bool   $terminator
      *
      * @return void
      */
@@ -362,7 +363,7 @@ class ErrorsCommand extends Controller
             }
 
             $this->runInstruction();
-        };
+        }
 
         return 0;
     }

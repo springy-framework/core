@@ -44,9 +44,9 @@ class Terminal
     protected function command(string $command, string $parameters)
     {
         $commands = [
-            'errors' => 'Springy\Console\ErrorsCommand',
-            'help'   => 'Springy\Console\HelpCommand',
-            // 'show'   => [$this, 'showCommand'],
+            'errors'   => 'Springy\Console\ErrorsCommand',
+            'migrator' => 'Springy\Console\MigratorCommand',
+            'help'     => 'Springy\Console\HelpCommand',
         ];
 
         if (!isset($commands[$command])) {
@@ -61,13 +61,6 @@ class Terminal
         $command = new $class([$command]);
         $command->run($input, $output);
         $this->response->body($output->fetch());
-    }
-
-    protected function getCommand($closure)
-    {
-        if (is_array($closure)) {
-            return call_user_func($closure);
-        }
     }
 
     /**
@@ -108,10 +101,5 @@ class Terminal
     {
         $body = file_get_contents(__DIR__.DS.'assets'.DS.'terminal.html');
         $this->response->body($body);
-    }
-
-    protected function showCommand()
-    {
-        return false;
     }
 }
