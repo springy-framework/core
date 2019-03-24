@@ -16,8 +16,11 @@ class Request
     /** @var self Request globally instance */
     protected static $instance;
 
+    protected static $body;
     /** @var string HTTP request method */
     protected static $method;
+    /** @var string the received body in raw format */
+    protected static $rawBody;
     /** @var string HTTP_X_REQUESTED_WITH value */
     protected static $requestedWith;
 
@@ -26,9 +29,56 @@ class Request
      */
     public function __construct()
     {
+        if (static::$instance !== null) {
+            return;
+        }
+
         self::$method = $_SERVER['REQUEST_METHOD'] ?? null;
+        self::$rawBody = $this->getRawData();
+        self::$body = $this->parseRawData();
         self::$requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
         self::$instance = $this;
+    }
+
+    protected function getRawData()
+    {
+        if (isset($GLOBALS['HTTP_RAW_POST_DATA'])) {
+            return $GLOBALS['HTTP_RAW_POST_DATA'];
+        }
+
+        return file_get_contents('php://input');
+    }
+
+    protected function parseRawData()
+    {
+        $encoding = mb_detect_encoding(self::$rawBody, 'auto');
+        if ($encoding != 'UTF-8') {
+            self::$rawBody = iconv($encoding, 'UTF-8', self::$rawBody);
+        }
+
+        $request = json_decode(self::$rawBody);
+
+        return $request;
+    }
+
+    /**
+     * Returns received body.
+     *
+     * @return array|null
+     */
+    public function getBody()
+    {
+        return self::$body;
+    }
+
+    /**
+     * Returns the request method.
+     *
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        return self::$method ?? '';
     }
 
     /**
@@ -39,6 +89,16 @@ class Request
     public function isAjax(): bool
     {
         return strtolower(self::$requestedWith) === 'xmlhttprequest';
+    }
+
+    /**
+     * Checks whether the request method was a DELETE.
+     *
+     * @return bool
+     */
+    public function isDelete(): bool
+    {
+        return self::$method === 'DELETE';
     }
 
     /**
@@ -62,6 +122,26 @@ class Request
     }
 
     /**
+     * Checks whether the request method was a OPTIONS.
+     *
+     * @return bool
+     */
+    public function isOptions()
+    {
+        return self::$method === 'OPTIONS';
+    }
+
+    /**
+     * Checks whether the request method was a PATCH.
+     *
+     * @return bool
+     */
+    public function isPatch()
+    {
+        return self::$method === 'PATCH';
+    }
+
+    /**
      * Checks whether the request method was a POST.
      *
      * @return bool
@@ -72,13 +152,13 @@ class Request
     }
 
     /**
-     * Returns the request method.
+     * Checks whether the request method was a PUT.
      *
-     * @return string
+     * @return bool
      */
-    public function method(): string
+    public function isPut(): bool
     {
-        return self::$method ?? '';
+        return self::$method === 'PUT';
     }
 
     /**

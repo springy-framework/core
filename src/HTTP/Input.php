@@ -44,7 +44,7 @@ class Input
         $this->files = UploadedFile::arrayToUploadedFiles($_FILES);
 
         $request = Request::getInstance();
-        $this->requestMethod = $request->method();
+        $this->requestMethod = $request->getMethod();
         $this->ajaxRequest = $request->isAjax();
 
         // Loads the data saved in session in the last request and clear the session

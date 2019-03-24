@@ -95,6 +95,15 @@ function config_set(string $key, $val)
     return Springy\Core\Kernel::getInstance()->configuration()->set($key, $val);
 }
 
+function current_url()
+{
+    return 'http'.(($_SERVER["HTTPS"] ?? '') == 'on' ? 's' : '')
+        ."://"
+        .($_SERVER['HTTP_HOST'] ?? $_SERVER["SERVER_PORT"] ?? '')
+        .(($_SERVER["SERVER_PORT"] ?? '80') != 80 ? $_SERVER["SERVER_PORT"] : '')
+        .($_SERVER["REQUEST_URI"] ?? '');
+}
+
 /**
  * A var_dump and die help function.
  *

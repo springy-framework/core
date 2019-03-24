@@ -20,6 +20,11 @@ class RequestTest extends TestCase
         $this->request = Request::getInstance();
     }
 
+    public function testGetMethod()
+    {
+        $this->assertEmpty($this->request->getMethod());
+    }
+
     public function testIsAjax()
     {
         $this->assertFalse($this->request->isAjax());
@@ -38,10 +43,5 @@ class RequestTest extends TestCase
     public function testIsPost()
     {
         $this->assertFalse($this->request->isPost());
-    }
-
-    public function testMethod()
-    {
-        $this->assertEmpty($this->request->method());
     }
 }

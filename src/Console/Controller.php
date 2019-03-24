@@ -21,8 +21,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-// use Symfony\Component\Console\Terminal;
-
 class Controller extends Command implements ControllerInterface
 {
     /**
@@ -46,8 +44,6 @@ class Controller extends Command implements ControllerInterface
      */
     protected $name;
 
-    // protected $terminal;
-
     /**
      * The output interface implementation.
      *
@@ -63,8 +59,6 @@ class Controller extends Command implements ControllerInterface
     public function __construct(array $segments)
     {
         $this->name = $segments[0] ?? null;
-
-        // $this->terminal = new Terminal();
 
         parent::__construct($this->name);
 
@@ -132,9 +126,6 @@ class Controller extends Command implements ControllerInterface
      */
     protected function configIO()
     {
-        // putenv('LINES='.$this->terminal->getHeight());
-        // putenv('COLUMNS='.$this->terminal->getWidth());
-
         $verbosities = [
             OutputInterface::VERBOSITY_QUIET => ['-q', '--quiet'],
             OutputInterface::VERBOSITY_DEBUG => ['-vvv', '--verbose=3'],
@@ -165,7 +156,7 @@ class Controller extends Command implements ControllerInterface
      */
     protected function getAppNameVersion(): string
     {
-        return sprintf('%s <info>%s</info>', app_name(), app_version());
+        return sprintf('<options=bold>%s v%s</>', app_name(), app_version());
     }
 
     /**

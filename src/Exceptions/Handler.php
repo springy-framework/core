@@ -592,9 +592,7 @@ class Handler
             return true;
         }
 
-        // DB::rollBackAll();
-
-        // Gets the error code.
+        // Sets HTTP 500 error.
         Response::getInstance()->header()->httpResponseCode(500);
 
         $this->displayError();
