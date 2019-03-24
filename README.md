@@ -12,7 +12,7 @@ A micro framework for smart PHP developers.
 
 > **WARNING!** This project is still a work in progress.
 >
-> **Note** This repository contains the core code of the Springy framework. If you want to build an application using Springy, visit the project skeleton [repository](https://github.com/springy-framework/skeleton).
+> **Note** This repository contains the core code of the Springy framework. If you want to build an application using Springy, visit the project skeleton [repository](https://github.com/springy-framework/springy).
 
 Springy is a micro [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) framework for coders who work with the [PHP](http://www.php.net) language to develop web applications.
 
