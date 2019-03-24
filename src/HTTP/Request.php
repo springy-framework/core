@@ -15,7 +15,7 @@ class Request
 {
     /** @var self Request globally instance */
     protected static $instance;
-
+    /** @var object|null HTTP request body */
     protected static $body;
     /** @var string HTTP request method */
     protected static $method;
@@ -40,6 +40,11 @@ class Request
         self::$instance = $this;
     }
 
+    /**
+     * Gets raw body data.
+     *
+     * @return void
+     */
     protected function getRawData()
     {
         if (isset($GLOBALS['HTTP_RAW_POST_DATA'])) {
@@ -49,6 +54,11 @@ class Request
         return file_get_contents('php://input');
     }
 
+    /**
+     * Parses the raw body data and returns a decoded JSon.
+     *
+     * @return object|null
+     */
     protected function parseRawData()
     {
         $encoding = mb_detect_encoding(self::$rawBody, 'auto');
@@ -64,7 +74,7 @@ class Request
     /**
      * Returns received body.
      *
-     * @return array|null
+     * @return object|null
      */
     public function getBody()
     {

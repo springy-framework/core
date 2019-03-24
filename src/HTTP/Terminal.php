@@ -104,9 +104,13 @@ class Terminal
      */
     protected function parseRpc()
     {
-        $body = (array) $this->request->getBody();
-        $this->requestId = (int) $body['id'] ?? 0;
-        $method = $body['method'] ?? '';
+        $body = $this->request->getBody();
+        if ($body === null) {
+            return $this->sendError(400, 'Bad request');
+        }
+
+        $this->requestId = $body->id ?? 0;
+        $method = $body->method ?? '';
 
         if ($method === 'system.describe') {
             return $this->serviceDescription();
@@ -118,7 +122,7 @@ class Terminal
             return $this->sendError(401, 'Login requested');
         }
 
-        $params = $body['params'] ?? [];
+        $params = $body->params ?? [];
         if (!in_array('--no-interaction', $params)) {
             $params[] = '--no-interaction';
         }
@@ -209,12 +213,10 @@ class Terminal
      */
     protected function serviceLogin()
     {
-        $body = (array) $this->request->getBody();
-        $params = $body['params'] ?? [];
+        $body = $this->request->getBody();
+        $params = $body->params ?? [];
 
-        if (count($params) != 2) {
-            return $this->sendError(403, 'Invalid user or password.');
-        } elseif ($params[0] !== 'hugo' || $params[1] !== '123') {
+        if (count($params) != 2 || $params[0] !== 'hugo' || $params[1] !== '123') {
             return $this->sendError(403, 'Invalid user or password.');
         }
 

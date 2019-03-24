@@ -13,35 +13,19 @@ use Springy\HTTP\Request;
 
 class RequestTest extends TestCase
 {
-    public $request;
-
-    public function setUp()
+    public function testRequestOnCli()
     {
-        $this->request = Request::getInstance();
-    }
+        $request = Request::getInstance();
 
-    public function testGetMethod()
-    {
-        $this->assertEmpty($this->request->getMethod());
-    }
-
-    public function testIsAjax()
-    {
-        $this->assertFalse($this->request->isAjax());
-    }
-
-    public function testIsGet()
-    {
-        $this->assertFalse($this->request->isGet());
-    }
-
-    public function testIsHead()
-    {
-        $this->assertFalse($this->request->isHead());
-    }
-
-    public function testIsPost()
-    {
-        $this->assertFalse($this->request->isPost());
+        $this->assertEmpty($request->getMethod());
+        $this->assertNull($request->getBody());
+        $this->assertFalse($request->isAjax());
+        $this->assertFalse($request->isDelete());
+        $this->assertFalse($request->isGet());
+        $this->assertFalse($request->isHead());
+        $this->assertFalse($request->isOptions());
+        $this->assertFalse($request->isPatch());
+        $this->assertFalse($request->isPost());
+        $this->assertFalse($request->isPut());
     }
 }
