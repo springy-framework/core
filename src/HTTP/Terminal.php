@@ -11,13 +11,22 @@
 
 namespace Springy\HTTP;
 
+use Springy\Utils\JSON;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 class Terminal
 {
+    /** @var Request the request object */
+    protected $request;
+    /** @var int JSON-RPC request ID */
+    protected $requestId;
     /** @var Response the response object */
     protected $response;
+
+    // The authentication session id var name
+    const TERM_SESSION_ID = 'termId';
 
     /**
      * Constructor.
@@ -28,9 +37,18 @@ class Terminal
     {
         Kernel::getInstance()->configuration()->set('application.debug', false);
 
+        $this->request = Request::getInstance();
         $this->response = Response::getInstance();
 
-        $this->parseCommand();
+        if ($this->request->isGet()) {
+            return $this->startTerminal();
+        } elseif (!$this->request->isPost() || !$this->request->isAjax()) {
+            $this->response->header()->notFound();
+
+            return;
+        }
+
+        $this->parseRpc();
     }
 
     /**
@@ -50,7 +68,7 @@ class Terminal
         ];
 
         if (!isset($commands[$command])) {
-            $this->response->body('[[!gb;red;]Command not found.]');
+            $this->sendError(404, 'Invalid command.'.LF);
 
             return;
         }
@@ -60,36 +78,151 @@ class Terminal
         $output = new BufferedOutput();
         $command = new $class([$command]);
         $command->run($input, $output);
-        $this->response->body($output->fetch());
+        $this->sendResult($output->fetch());
     }
 
     /**
-     * Parses the segments array and try to execute de command.
+     * Returns the greetings message.
      *
      * @return void
      */
-    protected function parseCommand()
+    protected function getHello()
     {
-        $input = new Input();
+        $format = new OutputFormatter(true);
 
-        if (!$input->has('command')) {
-            return $this->startTerminal();
+        return $format->format(sprintf(
+            '\n<options=bold>%s v%s</> - Web Console Terminal\n\n<info>Welcome!</>\n',
+            app_name(),
+            app_version()
+        ));
+    }
+
+    /**
+     * Parses the JSON-RPC request.
+     *
+     * @return void
+     */
+    protected function parseRpc()
+    {
+        $body = (array) $this->request->getBody();
+        $this->requestId = (int) $body['id'] ?? 0;
+        $method = $body['method'] ?? '';
+
+        if ($method === 'system.describe') {
+            return $this->serviceDescription();
+        } elseif ($method === 'login') {
+            return $this->serviceLogin();
+        } elseif ($method === 'logout') {
+            return $this->serviceLogout();
+        } elseif (!Session::getInstance()->get(self::TERM_SESSION_ID, false)) {
+            return $this->sendError(401, 'Login requested');
         }
 
-        $command = $input->get('command');
-
-        $parameters = explode(' ', $command);
-        if (!in_array('--no-interaction', $parameters)) {
-            $parameters[] = '--no-interaction';
+        $params = $body['params'] ?? [];
+        if (!in_array('--no-interaction', $params)) {
+            $params[] = '--no-interaction';
         }
-        if (!in_array('--no-ansi', $parameters)) {
-            $parameters[] = ' --ansi';
+        if (!in_array('--no-ansi', $params)) {
+            $params[] = ' --ansi';
         }
 
-        $command = array_shift($parameters);
-        $parameters = implode(' ', $parameters);
+        $this->command($method, implode(' ', $params));
+    }
 
-        $this->command($command, $parameters);
+    protected function serviceDescription()
+    {
+        $json = new JSON([
+            'sdversion' => '2.0',
+            'name'      => app_name(),
+            'address'   => current_url(),
+            'id'        => 'urn:md5:'.md5(current_url()),
+            'procs'     => [
+                [
+                    'name'   => 'errors',
+                    'help'   => 'Show application errors.',
+                    'params' => ['command', 'parameter'],
+                ],
+                [
+                    'name'   => 'migrator',
+                    'help'   => 'Database migrator.',
+                    'params' => ['command', 'parameter'],
+                ],
+            ],
+        ]);
+        $json->send();
+    }
+
+    /**
+     * Sends a JSON-RPC error.
+     *
+     * @param int    $code
+     * @param string $message
+     *
+     * @return void
+     */
+    protected function sendError(int $code, string $message)
+    {
+        $this->sendResult(null, [
+            'code'    => $code,
+            'message' => $message,
+            'data'    => [
+                'name' => 'JSONRPCError',
+            ],
+        ]);
+    }
+
+    /**
+     * Sends a JSON-RPC result.
+     *
+     * @param string $result
+     * @param array  $error
+     *
+     * @return void
+     */
+    protected function sendResult(string $result = null, array $error = null)
+    {
+        $json = new JSON([
+            'jsonrpc' => '2.0',
+            'result'  => $result,
+            'id'      => $this->requestId,
+            'error'   => $error,
+        ], $error['code'] ?? 200);
+        $json->send();
+    }
+
+    /**
+     * Kills the login session.
+     *
+     * @return void
+     */
+    protected function serviceLogout()
+    {
+        Session::getInstance()->forget(self::TERM_SESSION_ID);
+
+        $this->sendResult('');
+    }
+
+    /**
+     * Performs the login in terminal.
+     *
+     * @return void
+     */
+    protected function serviceLogin()
+    {
+        $body = (array) $this->request->getBody();
+        $params = $body['params'] ?? [];
+
+        if (count($params) != 2) {
+            return $this->sendError(403, 'Invalid user or password.');
+        } elseif ($params[0] !== 'hugo' || $params[1] !== '123') {
+            return $this->sendError(403, 'Invalid user or password.');
+        }
+
+        $sessionId = md5($params[0].':'.$params[1].':'.microtime());
+
+        Session::getInstance()->set(self::TERM_SESSION_ID, $sessionId);
+
+        $this->sendResult($sessionId);
     }
 
     /**
@@ -100,6 +233,8 @@ class Terminal
     protected function startTerminal()
     {
         $body = file_get_contents(__DIR__.DS.'assets'.DS.'terminal.html');
-        $this->response->body($body);
+        $this->response->body(
+            str_replace('###GREATINGS###', $this->getHello(), $body)
+        );
     }
 }

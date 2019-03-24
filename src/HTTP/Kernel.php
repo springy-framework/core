@@ -99,7 +99,7 @@ class Kernel extends MainKernel
      */
     protected function discoverMagic(): bool
     {
-        if (!Request::getInstance()->isGet()) {
+        if (!Request::getInstance()->isGet() && !Request::getInstance()->isPost()) {
             return false;
         }
 
@@ -112,7 +112,7 @@ class Kernel extends MainKernel
         array_shift($segments);
         $response = Response::getInstance();
 
-        if ($segments[0] == 'about') {
+        if (Request::getInstance()->isGet() && $segments[0] == 'about') {
             $response->body(Copyright::getInstance()->content());
 
             return true;

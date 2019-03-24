@@ -91,30 +91,91 @@
     </style>
     <script>
         jQuery(function($, undefined) {
-            $('.terminal').terminal(function(command, term) {
+            const callRPC = function (term, command, params, callback) {
+                term.pause();
+
+                $.ajax({
+                    url: '/springy/terminal',
+                    method: 'POST',
+                    data: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: $.terminal.last_id() + 1,
+                        method: command,
+                        params: params
+                    }),
+                    success: (response) => {
+                        if (response.error) {
+                            term.error(response.error.message).resume();
+
+                            return;
+                        }
+
+                        term.echo(response.result).resume();
+
+                        if (callback) {
+                            callback();
+                        }
+                    },
+                    error: (jqXHR, textStatus, errorThrown) => {
+                        console.log(jqXHR);
+                        if (jqXHR.responseJSON.error.message) {
+                            term.error(jqXHR.responseJSON.error.message).resume();
+
+                            return;
+                        }
+
+                        term.error(errorThrown).resume();
+                    }
+                });
+            };
+
+            const runCmd = function (command, term) {
                 command = command.trim();
                 if (command == '' || command == '?') {
                     return;
                 }
 
-                term.pause();
-                $.ajax({
-                    url: '/springy/terminal',
-                    method: 'GET',
-                    data: {
-                        command: command
-                    },
-                    success: (response) => {
-                        term.echo(response).resume();
-                    },
-                    error: (jqXHR, textStatus, errorThrown) => {
-                        term.error(errorThrown).resume();
-                    }
-                });
-            }, {
-                greetings: '[[!gb;white;]Springy Terminal v1.0]\n',
-                name: 'terminal',
-                prompt: 'command> '
+                if (command === 'logout') {
+                    callRPC(term, 'logout', [], function () {
+                        term.clear();
+                        term.logout();
+                    });
+
+                    return;
+                }
+
+                var params = command.split(' ');
+
+                command = params.shift();
+
+                callRPC(term, command, params);
+            };
+
+            $('.terminal').terminal(runCmd, {
+                login: function (user, password, callback) {
+                    var term = this;
+                    $.ajax({
+                        url: '/springy/terminal',
+                        method: 'POST',
+                        data: JSON.stringify({
+                            jsonrpc: '2.0',
+                            id: $.terminal.last_id() + 1,
+                            method: 'login',
+                            params: [user, password]
+                        }),
+                        success: function (response) {
+                            callback(response.result);
+                        },
+                        error: () => {
+                            callback(null);
+                        }
+                    });
+                },
+                greetings: '###GREATINGS###',
+                name: 'springyTerm',
+                prompt: 'command> ',
+                completion: true,
+                unixFormattingEscapeBrackets: true
             });
         });
     </script>
