@@ -265,6 +265,7 @@
 -   Removed `Springy\Security\AclManager->setDefaultModule()` method
 -   Removed `Springy\Security\AclManager->setupCurrentAclObject()` method
 -   Removed `Springy\Security\BasicHasher->generateHash()` method
+-   Removed `Springy\SOAP` class
 -   Removed `Springy\Template->clearConfig()` method
 -   Removed `Springy\Template->display()` method
 -   Removed `Springy\Template->registerPlugin()` method see new method `Springy\Template\Template->addFunction()`

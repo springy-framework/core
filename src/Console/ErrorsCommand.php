@@ -141,10 +141,11 @@ class ErrorsCommand extends Controller
      * Deletes an application error.
      *
      * @param string $file
+     * @param bool   $silent
      *
      * @return int
      */
-    protected function delete(string $file): int
+    protected function delete(string $file, bool $silent = false): int
     {
         if (!is_file($file)) {
             $this->output->writeln('<error>CRC error not found.</>');
@@ -159,7 +160,9 @@ class ErrorsCommand extends Controller
             return 1;
         }
 
-        $this->output->writeln('<info>Error successfully deleted.</>');
+        if (!$silent) {
+            $this->output->writeln('<info>Error successfully deleted.</>');
+        }
 
         return 0;
     }
@@ -172,14 +175,16 @@ class ErrorsCommand extends Controller
     protected function deleteAll(): int
     {
         foreach (new DirectoryIterator($this->logDir) as $file) {
-            if (!$file->isFile()) {
+            if (!$file->isFile() || $file->getExtension() !== 'yml') {
                 continue;
             }
 
-            if ($this->delete($file->getPathname()) > 0) {
+            if ($this->delete($file->getPathname(), true) > 0) {
                 return 1;
             }
         }
+
+        $this->output->writeln('<info>All errors successfully deleted.</>');
 
         return 0;
     }

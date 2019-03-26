@@ -49,7 +49,7 @@ class Kernel
      *
      * Is not allowed to call from outside to prevent from creating multiple instances.
      */
-    public function __construct($appConf = null)
+    private function __construct($appConf = null)
     {
         $this->errorHandler = new Handler();
         static::$instance = $this;
