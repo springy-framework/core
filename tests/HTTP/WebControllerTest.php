@@ -26,7 +26,7 @@ class WebControllerTest extends TestCase
 
     public function setUp()
     {
-        $kernel = Springy\HTTP\Kernel::getInstance();
+        $kernel = Kernel::getInstance();
         $config = $kernel->configuration();
 
         $config->set('application.authentication.hasher', 'Springy\Security\BasicHasher');
