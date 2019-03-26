@@ -11,6 +11,7 @@
 
 namespace Springy\HTTP;
 
+use Springy\Core\Configuration;
 use Springy\Core\Debug;
 
 class Response
@@ -19,9 +20,9 @@ class Response
     protected static $instance;
 
     /** @var Header the HTTP header object */
-    protected static $header;
+    protected $header;
     /** @var string the body content */
-    protected static $body;
+    protected $body;
 
     /**
      * Constructor.
@@ -30,8 +31,8 @@ class Response
      */
     private function __construct()
     {
-        self::$header = new Header();
-        self::$body = '';
+        $this->header = new Header();
+        $this->body = '';
         self::$instance = $this;
     }
 
@@ -59,10 +60,10 @@ class Response
     public function body(string $content = null): string
     {
         if ($content !== null) {
-            self::$body = $content;
+            $this->body = $content;
         }
 
-        return self::$body;
+        return $this->body;
     }
 
     /**
@@ -72,32 +73,30 @@ class Response
      */
     public function header(): Header
     {
-        return self::$header;
+        return $this->header;
     }
 
     public function notFound()
     {
-        self::$header->notFound();
+        $this->header->notFound();
     }
 
     /**
      * Sends the response header and content to default outpou.
      *
-     * @param bool $debug
-     *
      * @return void
      */
-    public function send(bool $debug = false)
+    public function send()
     {
         $this->header()->send();
 
-        if ($debug) {
-            echo Debug::getInstance()->inject(self::$body);
+        if (Configuration::getInstance()->get('application.debug')) {
+            echo Debug::getInstance()->inject($this->body);
 
             return;
         }
 
-        echo self::$body;
+        echo $this->body;
     }
 
     /**

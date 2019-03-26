@@ -24,11 +24,10 @@ class Standard implements SessionDriverInterface
 
     /**
      * Constructor.
-     *
-     * @param Configuration $config
      */
-    public function __construct(Configuration $config)
+    public function __construct()
     {
+        $config = Configuration::getInstance();
         $this->data = [];
         $this->domain = $config->get('session.domain', '');
     }

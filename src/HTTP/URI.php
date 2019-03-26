@@ -18,11 +18,11 @@ class URI
     protected static $instance;
 
     /** @var string HTTP host */
-    protected static $httpHost;
+    protected $httpHost;
     /** @var string the URI string without query string parameters */
-    protected static $uriString;
+    protected $uriString;
     /** @var array the URI segments */
-    protected static $segments;
+    protected $segments;
 
     /**
      * Constructor.
@@ -31,12 +31,12 @@ class URI
      */
     private function __construct()
     {
-        self::$segments = [];
-        self::$uriString = '';
-        self::$httpHost = $this->parseHost();
+        $this->segments = [];
+        $this->uriString = '';
+        $this->httpHost = $this->parseHost();
         self::$instance = $this;
 
-        if (self::$httpHost === '$') {
+        if ($this->httpHost === '$') {
             return;
         }
 
@@ -103,12 +103,12 @@ class URI
     protected function parseRequestURI()
     {
         if (empty($_SERVER['REQUEST_URI'])) {
-            self::$uriString = $this->parsePathInfo();
+            $this->uriString = $this->parsePathInfo();
 
             return;
         }
 
-        self::$uriString = explode('?', $_SERVER['REQUEST_URI'])[0];
+        $this->uriString = explode('?', $_SERVER['REQUEST_URI'])[0];
     }
 
     /**
@@ -118,15 +118,25 @@ class URI
      */
     protected function parseSegments()
     {
-        foreach (explode('/', trim(self::$uriString, '/')) as $segment) {
+        foreach (explode('/', trim($this->uriString, '/')) as $segment) {
             $segment = trim($segment);
 
             if ($segment == '') {
                 continue;
             }
 
-            self::$segments[] = $segment;
+            $this->segments[] = $segment;
         }
+    }
+
+    /**
+     * Return the current host with protocol.
+     *
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->httpHost;
     }
 
     /**
@@ -136,7 +146,7 @@ class URI
      */
     public function getSegments(): array
     {
-        return self::$segments;
+        return $this->segments;
     }
 
     /**
@@ -146,17 +156,7 @@ class URI
      */
     public function getURIString(): string
     {
-        return self::$uriString ?? '';
-    }
-
-    /**
-     * Return the current host with protocol.
-     *
-     * @return string
-     */
-    public function host(): string
-    {
-        return self::$httpHost;
+        return $this->uriString ?? '';
     }
 
     /**

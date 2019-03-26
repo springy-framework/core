@@ -22,7 +22,7 @@ class InputTest extends TestCase
 
     public function setUp()
     {
-        $config = new Configuration(__DIR__.'/../conf', 'test');
+        $config = Configuration::getInstance(__DIR__.'/../conf', 'test');
         $session = Session::getInstance();
         $session->configure($config);
 

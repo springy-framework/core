@@ -46,7 +46,7 @@ function app($service = null)
  */
 function app_env(): string
 {
-    return Springy\Core\Kernel::getInstance()->getEnvironment();
+    return Springy\Core\Configuration::getInstance()->getEnvironment();
 }
 
 /**
@@ -79,7 +79,7 @@ function app_version(): string
  */
 function config_get(string $key, $default = null)
 {
-    return Springy\Core\Kernel::getInstance()->configuration()->get($key, $default);
+    return Springy\Core\Configuration::getInstance()->get($key, $default);
 }
 
 /**
@@ -92,7 +92,18 @@ function config_get(string $key, $default = null)
  */
 function config_set(string $key, $val)
 {
-    return Springy\Core\Kernel::getInstance()->configuration()->set($key, $val);
+    return Springy\Core\Configuration::getInstance()->set($key, $val);
+}
+
+/**
+ * Returns the current URL.
+ *
+ * @return string
+ */
+function current_host(): string
+{
+    return ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_PORT'] ?? '')
+        .(($_SERVER['SERVER_PORT'] ?? '80') != 80 ? ':'.$_SERVER['SERVER_PORT'] : '');
 }
 
 /**
@@ -105,7 +116,7 @@ function current_url(): string
     return 'http'.(($_SERVER['HTTPS'] ?? '') == 'on' ? 's' : '')
         .'://'
         .($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_PORT'] ?? '')
-        .(($_SERVER['SERVER_PORT'] ?? '80') != 80 ? $_SERVER['SERVER_PORT'] : '')
+        .(($_SERVER['SERVER_PORT'] ?? '80') != 80 ? ':'.$_SERVER['SERVER_PORT'] : '')
         .($_SERVER['REQUEST_URI'] ?? '');
 }
 

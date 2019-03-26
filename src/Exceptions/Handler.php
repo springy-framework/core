@@ -13,8 +13,8 @@ namespace Springy\Exceptions;
 
 use DateTime;
 use PDOException;
+use Springy\Core\Configuration;
 use Springy\Core\Debug;
-use Springy\Core\Kernel;
 use Springy\HTTP\Response;
 use Springy\Mail\Mailer;
 use Springy\Utils\NetworkUtils;
@@ -127,7 +127,7 @@ class Handler
         $response->header()->cacheControl('must-revalidate, post-check=0, pre-check=0');
         $response->header()->cacheControl('private', false);
 
-        $config = Kernel::getInstance()->configuration();
+        $config = Configuration::getInstance();
         $path = $config->get('template.paths.errors').DS.'http'.$response->header()->httpResponseCode().'error.html';
 
         $body = $this->getErrorName($this->exception->getCode())
@@ -142,7 +142,7 @@ class Handler
         }
 
         $response->body($body);
-        $response->send($config->get('application.debug'));
+        $response->send();
 
         exit(1);
     }

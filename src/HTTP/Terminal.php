@@ -11,6 +11,7 @@
 
 namespace Springy\HTTP;
 
+use Springy\Core\Configuration;
 use Springy\Utils\JSON;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\StringInput;
@@ -37,7 +38,7 @@ class Terminal
      */
     public function __construct()
     {
-        $configuration = Kernel::getInstance()->configuration();
+        $configuration = Configuration::getInstance();
         $configuration->set('application.debug', false);
         $this->credential = $configuration->get(
             'application.authentication.terminal',

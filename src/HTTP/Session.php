@@ -21,11 +21,11 @@ class Session
     protected static $instance;
 
     /** @var SessionDriverInterface the session driver object */
-    protected static $engine;
+    protected $engine;
     /** @var string the session cookie name */
-    protected static $name;
+    protected $name;
     /** @var bool the session is started */
-    protected static $started;
+    protected $started;
 
     /**
      * Constructor.
@@ -34,7 +34,7 @@ class Session
      */
     private function __construct()
     {
-        self::$started = false;
+        $this->started = false;
         self::$instance = $this;
     }
 
@@ -61,7 +61,7 @@ class Session
      */
     protected function checkConfig()
     {
-        if (self::$engine === null) {
+        if ($this->engine === null) {
             throw new SpringyException('Session not configurated yet.');
         }
     }
@@ -74,11 +74,11 @@ class Session
     protected function checkSession()
     {
         $cookie = Cookie::getInstance();
-        $sessId = $cookie->get(self::$name);
+        $sessId = $cookie->get($this->name);
 
         // Deletes session cookie if empty session ID
         if ($sessId == '') {
-            $cookie->delete(self::$name);
+            $cookie->delete($this->name);
         }
 
         // Reset session id if it is invalid
@@ -92,17 +92,17 @@ class Session
     /**
      * Configures the session handler.
      *
-     * @param Configuration $config
-     *
      * @return self
      */
-    public function configure(Configuration $config): self
+    public function configure(): self
     {
-        if (self::$engine !== null) {
+        $config = Configuration::getInstance();
+
+        if ($this->engine !== null) {
             throw new SpringyException('Session already configurated.');
         }
 
-        self::$name = $config->get('session.name', 'SPSESSID');
+        $this->name = $config->get('session.name', 'SPSESSID');
 
         $engine = $config->get('session.engine');
         if ($engine === null) {
@@ -110,7 +110,7 @@ class Session
         }
 
         $engine = 'Springy\\HTTP\\SessionDrivers\\'.$engine;
-        self::$engine = new $engine($config);
+        $this->engine = new $engine();
 
         return self::getInstance();
     }
@@ -125,8 +125,7 @@ class Session
     public function defined(string $name): bool
     {
         $this->start();
-
-        return self::$engine->defined($name);
+        return $this->engine->defined($name);
     }
 
     /**
@@ -139,8 +138,7 @@ class Session
     public function forget(string $name)
     {
         $this->start();
-
-        self::$engine->forget($name);
+        $this->engine->forget($name);
     }
 
     /**
@@ -149,13 +147,12 @@ class Session
      * @param string $name
      * @param mixed  $default
      *
-     * @return void
+     * @return mixed
      */
     public function get(string $name, $default = null)
     {
         $this->start();
-
-        return self::$engine->get($name, $default);
+        return $this->engine->get($name, $default);
     }
 
     /**
@@ -167,7 +164,7 @@ class Session
     {
         $this->start();
 
-        return self::$engine->getId();
+        return $this->engine->getId();
     }
 
     /**
@@ -181,8 +178,7 @@ class Session
     public function set(string $name, $value = null)
     {
         $this->start();
-
-        self::$engine->set($name, $value);
+        $this->engine->set($name, $value);
     }
 
     /**
@@ -194,12 +190,12 @@ class Session
      */
     public function setId(string $sessId)
     {
-        if (self::$started) {
+        if ($this->started) {
             throw new SpringyException('Can\'t set session id because already started');
         }
 
         $this->checkConfig();
-        self::$engine->setId($sessId);
+        $this->engine->setId($sessId);
     }
 
     /**
@@ -211,21 +207,21 @@ class Session
      */
     public function start(string $name = null): bool
     {
-        if (self::$started) {
-            return self::$started;
+        if ($this->started) {
+            return $this->started;
         }
 
-        if (self::$engine === null) {
-            $this->configure(Kernel::getInstance()->configuration());
+        if ($this->engine === null) {
+            $this->configure();
         }
 
-        self::$name = $name ?? self::$name;
-        session_name(self::$name);
+        $this->name = $name ?? $this->name;
+        session_name($this->name);
         $this->checkSession();
 
-        self::$started = self::$engine->start();
+        $this->started = $this->engine->start();
 
-        return self::$started;
+        return $this->started;
     }
 
     /**

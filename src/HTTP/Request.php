@@ -15,14 +15,15 @@ class Request
 {
     /** @var self Request globally instance */
     protected static $instance;
+
     /** @var object|null HTTP request body */
-    protected static $body;
+    protected $body;
     /** @var string HTTP request method */
-    protected static $method;
+    protected $method;
     /** @var string the received body in raw format */
-    protected static $rawBody;
+    protected $rawBody;
     /** @var string HTTP_X_REQUESTED_WITH value */
-    protected static $requestedWith;
+    protected $requestedWith;
 
     /**
      * Constructor.
@@ -31,10 +32,10 @@ class Request
      */
     private function __construct()
     {
-        self::$method = $_SERVER['REQUEST_METHOD'] ?? null;
-        self::$rawBody = $this->getRawData();
-        self::$body = $this->parseRawData();
-        self::$requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+        $this->method = $_SERVER['REQUEST_METHOD'] ?? null;
+        $this->rawBody = $this->getRawData();
+        $this->body = $this->parseRawData();
+        $this->requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
         self::$instance = $this;
     }
 
@@ -75,12 +76,12 @@ class Request
      */
     protected function parseRawData()
     {
-        $encoding = mb_detect_encoding(self::$rawBody, 'auto');
+        $encoding = mb_detect_encoding($this->rawBody, 'auto');
         if ($encoding != 'UTF-8') {
-            self::$rawBody = iconv($encoding, 'UTF-8', self::$rawBody);
+            $this->rawBody = iconv($encoding, 'UTF-8', $this->rawBody);
         }
 
-        $request = json_decode(self::$rawBody);
+        $request = json_decode($this->rawBody);
 
         return $request;
     }
@@ -92,7 +93,7 @@ class Request
      */
     public function getBody()
     {
-        return self::$body;
+        return $this->body;
     }
 
     /**
@@ -102,7 +103,7 @@ class Request
      */
     public function getMethod(): string
     {
-        return self::$method ?? '';
+        return $this->method ?? '';
     }
 
     /**
@@ -112,7 +113,7 @@ class Request
      */
     public function isAjax(): bool
     {
-        return strtolower(self::$requestedWith) === 'xmlhttprequest';
+        return strtolower($this->requestedWith) === 'xmlhttprequest';
     }
 
     /**
@@ -122,7 +123,7 @@ class Request
      */
     public function isDelete(): bool
     {
-        return self::$method === 'DELETE';
+        return $this->method === 'DELETE';
     }
 
     /**
@@ -132,7 +133,7 @@ class Request
      */
     public function isGet(): bool
     {
-        return self::$method === 'GET';
+        return $this->method === 'GET';
     }
 
     /**
@@ -142,7 +143,7 @@ class Request
      */
     public function isHead(): bool
     {
-        return self::$method === 'HEAD';
+        return $this->method === 'HEAD';
     }
 
     /**
@@ -152,7 +153,7 @@ class Request
      */
     public function isOptions()
     {
-        return self::$method === 'OPTIONS';
+        return $this->method === 'OPTIONS';
     }
 
     /**
@@ -162,7 +163,7 @@ class Request
      */
     public function isPatch()
     {
-        return self::$method === 'PATCH';
+        return $this->method === 'PATCH';
     }
 
     /**
@@ -172,7 +173,7 @@ class Request
      */
     public function isPost(): bool
     {
-        return self::$method === 'POST';
+        return $this->method === 'POST';
     }
 
     /**
@@ -182,7 +183,7 @@ class Request
      */
     public function isPut(): bool
     {
-        return self::$method === 'PUT';
+        return $this->method === 'PUT';
     }
 
     /**

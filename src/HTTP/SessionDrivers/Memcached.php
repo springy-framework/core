@@ -26,13 +26,12 @@ class Memcached extends Standard implements SessionDriverInterface
 
     /**
      * Constructor.
-     *
-     * @param Configuration $config
      */
-    public function __construct(Configuration $config)
+    public function __construct()
     {
-        parent::__construct($config);
+        parent::__construct();
 
+        $config = Configuration::getInstance();
         $this->expires = $config->get('session.expires', 1440);
         $this->host = $config->get('session.host', 'localhost');
         $this->port = $config->get('session.port', 11211);

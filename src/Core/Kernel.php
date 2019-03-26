@@ -33,15 +33,13 @@ class Kernel
     protected static $instance;
 
     /** @var float application started time */
-    protected static $startime;
-    /** @var Configuration the configuration handler */
-    protected static $configuration;
+    protected $startime;
     /** @var Handler the application error/exception handler */
-    protected static $errorHandler;
+    protected $errorHandler;
     /** @var mixed the controller object */
-    protected static $controller;
+    protected $controller;
     /** @var mixed the hook object */
-    protected static $hook;
+    protected $hook;
 
     /// System path
     private static $paths = [];
@@ -51,10 +49,9 @@ class Kernel
      *
      * Is not allowed to call from outside to prevent from creating multiple instances.
      */
-    private function __construct($appConf = null)
+    public function __construct($appConf = null)
     {
-        self::$configuration = new Configuration();
-        self::$errorHandler = new Handler();
+        $this->errorHandler = new Handler();
         static::$instance = $this;
 
         if ($appConf !== null) {
@@ -74,11 +71,11 @@ class Kernel
      */
     public function __destruct()
     {
-        if (static::$hook === null || !is_callable([static::$hook, 'shutdown'])) {
+        if ($this->hook === null || !is_callable([$this->hook, 'shutdown'])) {
             return;
         }
 
-        static::$hook->shutdown();
+        $this->hook->shutdown();
     }
 
     /**
@@ -146,7 +143,7 @@ class Kernel
         $this->loadHookController($baseNS, $arguments);
 
         // Creates the controller
-        static::$controller = new $name($arguments);
+        $this->controller = new $name($arguments);
 
         return true;
     }
@@ -168,9 +165,9 @@ class Kernel
             return;
         }
 
-        static::$hook = new $name($baseNS, $arguments);
-        if (is_callable([static::$hook, 'startup'])) {
-            static::$hook->startup();
+        $this->hook = new $name($baseNS, $arguments);
+        if (is_callable([$this->hook, 'startup'])) {
+            $this->hook->startup();
         }
     }
 
@@ -230,23 +227,13 @@ class Kernel
     }
 
     /**
-     * Returns the configuration handler.
-     *
-     * @return Configuration
-     */
-    public function configuration(): Configuration
-    {
-        return self::$configuration;
-    }
-
-    /**
      * Returns the application error and exception handler.
      *
      * @return Handler
      */
     public function errorHandler(): Handler
     {
-        return self::$errorHandler;
+        return $this->errorHandler;
     }
 
     /**
@@ -286,16 +273,6 @@ class Kernel
     }
 
     /**
-     * The system environment.
-     *
-     * @return string
-     */
-    public function getEnvironment(): string
-    {
-        return self::$configuration->getEnvironment();
-    }
-
-    /**
      * Returns the application HTTP request instance.
      *
      * @return Request
@@ -325,12 +302,12 @@ class Kernel
     public function run(float $startime = null): self
     {
         // Can be executed once
-        if (self::$startime !== null) {
+        if ($this->startime !== null) {
             return static::$instance;
         }
 
         // Overwrites the application started time if defined
-        self::$startime = $startime ?? microtime(true);
+        $this->startime = $startime ?? microtime(true);
 
         if (!$this->discoverController()) {
             $this->notFound();
@@ -346,20 +323,7 @@ class Kernel
      */
     public function runTime(): float
     {
-        return microtime(true) - self::$startime;
-    }
-
-    /**
-     * Sets the system charset.
-     *
-     * @param string $charset
-     *
-     * @return void
-     */
-    public function setCharset(string $charset)
-    {
-        config_set('main.charset', $charset);
-        ini_set('default_charset', $charset);
+        return microtime(true) - $this->startime;
     }
 
     /**
@@ -374,7 +338,7 @@ class Kernel
     {
         // Define environment by host?
         if (trim($env) === '') {
-            $env = php_sapi_name() === 'cli' ? 'console' : URI::getInstance()->host();
+            $env = php_sapi_name() === 'cli' ? 'console' : URI::getInstance()->getHost();
 
             // Verify if has an alias for host
             foreach ($alias as $host => $val) {
@@ -389,7 +353,7 @@ class Kernel
             }
         }
 
-        self::$configuration->setEnvironment($env);
+        Configuration::getInstance()->setEnvironment($env);
     }
 
     /**
@@ -413,20 +377,21 @@ class Kernel
             throw new SpringyException('Configuration files path not found.');
         }
 
-        self::$configuration->setPath($conf['config_path']);
-        self::$configuration->load('main');
+        $configuration = Configuration::getInstance();
+        $configuration->setPath($conf['config_path']);
+        $configuration->load('main');
 
         ini_set('date.timezone', $conf['timezone'] ?? 'UTC');
+        ini_set('default_charset', $conf['charset'] ?? 'UTF-8');
 
-        $this->setCharset($conf['charset'] ?? 'UTF-8');
         $this->setEnvironment(
             $conf['environment'] ?? '',
             $conf['ENVIRONMENT_ALIAS'] ?? []
         );
 
-        self::$errorHandler->setLogDir($conf['errors_log'] ?? '');
-        self::$errorHandler->setUnreportable($conf['unreportable_errors'] ?? []);
-        self::$errorHandler->setWebmasters($conf['errors_reporting'] ?? '');
+        $this->errorHandler->setLogDir($conf['errors_log'] ?? '');
+        $this->errorHandler->setUnreportable($conf['unreportable_errors'] ?? []);
+        $this->errorHandler->setWebmasters($conf['errors_reporting'] ?? '');
 
         // Define the application paths
         // $this->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);

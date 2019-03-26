@@ -9,6 +9,7 @@
  * @version   1.0.0
  */
 use PHPUnit\Framework\TestCase;
+use Springy\Core\Configuration;
 use Springy\Exceptions\Http403Error;
 use Springy\HTTP\Controller;
 use Springy\HTTP\Kernel;
@@ -26,8 +27,8 @@ class WebControllerTest extends TestCase
 
     public function setUp()
     {
+        $config = Configuration::getInstance();
         $kernel = Kernel::getInstance();
-        $config = $kernel->configuration();
 
         $config->set('application.authentication.hasher', 'Springy\Security\BasicHasher');
         $config->set('application.authentication.identity', 'TstUser');
@@ -40,7 +41,7 @@ class WebControllerTest extends TestCase
 
         $kernel->setUp(__DIR__.'/../conf/main.php');
 
-        Session::getInstance()->configure($kernel->configuration());
+        Session::getInstance()->configure($config);
 
         $kernel->setAuthDriver();
         // Login the user

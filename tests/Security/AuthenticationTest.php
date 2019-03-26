@@ -9,7 +9,7 @@
  * @version   1.0.0
  */
 use PHPUnit\Framework\TestCase;
-use Springy\Core\Kernel;
+use Springy\Core\Configuration;
 use Springy\HTTP\Session;
 use Springy\Security\AuthDriver;
 use Springy\Security\Authentication;
@@ -29,7 +29,7 @@ class AuthenticationTest extends TestCase
     public function setUp()
     {
         Session::getInstance()->configure(
-            Kernel::getInstance()->configuration()
+            Configuration::getInstance()
         );
 
         $hasher = new BasicHasher();

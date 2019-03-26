@@ -11,6 +11,7 @@
 
 namespace Springy\HTTP;
 
+use Springy\Core\Configuration;
 use Springy\Core\Copyright;
 use Springy\Core\Kernel as MainKernel;
 use Springy\Exceptions\Http404Error;
@@ -30,8 +31,8 @@ class Kernel extends MainKernel
      */
     protected function callEndpoint(array $arguments): bool
     {
-        if (!static::$controller->_hasPermission()) {
-            static::$controller->_forbidden();
+        if (!$this->controller->_hasPermission()) {
+            $this->controller->_forbidden();
 
             return true;
         }
@@ -53,7 +54,7 @@ class Kernel extends MainKernel
         array_shift($arguments);
 
         // Call the endpoint method and passes the rest of arguments
-        static::$controller->$endpoint($arguments);
+        $this->controller->$endpoint($arguments);
 
         return true;
     }
@@ -69,7 +70,7 @@ class Kernel extends MainKernel
 
         $this->setAuthDriver();
 
-        if (Request::getInstance()->isHead() && $uri->host() == '') {
+        if (Request::getInstance()->isHead() && $uri->getHost() == '') {
             $response = Response::getInstance();
             $response->header()->pragma('no-cache');
             $response->header()->expires('0');
@@ -80,7 +81,7 @@ class Kernel extends MainKernel
         }
 
         // Updates the configuration host
-        self::$configuration->configHost($uri->host());
+        Configuration::getInstance()->configHost($uri->getHost());
 
         $segments = $uri->getSegments();
         $segment = $this->findController('App\\Controllers\\Web\\', $segments);
@@ -121,7 +122,7 @@ class Kernel extends MainKernel
 
             return true;
         } elseif ($segments[0] == 'terminal') {
-            self::$controller = new Terminal($segments);
+            $this->controller = new Terminal($segments);
 
             return true;
         }
@@ -140,7 +141,7 @@ class Kernel extends MainKernel
     {
         // Gets first segment of arguments as endpoint method, if has
         $endpoint = array_shift($arguments);
-        if ($endpoint && is_callable([static::$controller, $endpoint])) {
+        if ($endpoint && is_callable([$this->controller, $endpoint])) {
             return $endpoint;
         }
 
@@ -166,7 +167,7 @@ class Kernel extends MainKernel
      */
     protected function setupAuthDrv()
     {
-        $driver = self::$configuration->get('application.authentication.driver');
+        $driver = Configuration::getInstance()->get('application.authentication.driver');
 
         if ($driver === null) {
             app()->bind('user.auth.driver', function ($data) {
@@ -190,7 +191,7 @@ class Kernel extends MainKernel
      */
     protected function setupAuthEvt(string $element, $default = null)
     {
-        $option = self::$configuration->get('application.authentication.'.$element, $default);
+        $option = Configuration::getInstance()->get('application.authentication.'.$element, $default);
 
         if ($option === null) {
             return;
@@ -210,7 +211,7 @@ class Kernel extends MainKernel
      */
     public function setAuthDriver()
     {
-        if (is_array(self::$configuration->get('application.authentication'))) {
+        if (is_array(Configuration::getInstance()->get('application.authentication'))) {
             $this->setupAuthEvt('hasher', 'Springy\Security\BCryptHasher');
             $this->setupAuthEvt('identity');
             $this->setupAuthDrv();
@@ -227,8 +228,6 @@ class Kernel extends MainKernel
      */
     public function send()
     {
-        Response::getInstance()->send(
-            self::$configuration->get('application.debug')
-        );
+        Response::getInstance()->send();
     }
 }

@@ -13,7 +13,7 @@ namespace Springy\Console;
 
 use DateTime;
 use DirectoryIterator;
-use Springy\Core\Kernel;
+use Springy\Core\Configuration;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -93,7 +93,7 @@ class ErrorsCommand extends Controller
         $this->addArgument('crc', InputArgument::OPTIONAL, 'Error CRC.');
         $this->addUsage('<instruction> [<options>]');
 
-        $this->logDir = Kernel::getInstance()->configuration()->get('main.errors_log');
+        $this->logDir = Configuration::getInstance()->get('main.errors_log');
 
         $this->addInstruction('cookie', 'showCookie', '<CRC>', 'Display the $_COOKIE var content for the error.');
         $this->addInstruction('debug', 'showDebug', '<CRC>', 'Display the debug content for the error.');

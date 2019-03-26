@@ -12,6 +12,7 @@
 
 namespace Springy\Template;
 
+use Springy\Core\Configuration;
 use Springy\Core\Kernel;
 use Springy\Exceptions\SpringyException;
 
@@ -39,8 +40,8 @@ class Template
     {
         $this->startDriver();
 
+        $config = Configuration::getInstance();
         $kernel = Kernel::getInstance();
-        $config = $kernel->configuration();
 
         $this->fileSufix = $config->get('template.file_sufix', '.html');
 
@@ -67,7 +68,7 @@ class Template
             'APP_NAME'      => $kernel->getApplicationName(),
             'APP_VERSION'   => $kernel->getApplicationVersion(),
             'APP_CODE_NAME' => $kernel->getAppCodeName(),
-            'ENVIRONMENT'   => $kernel->getEnvironment(),
+            'ENVIRONMENT'   => $config->getEnvironment(),
         ];
 
         if ($template !== null) {

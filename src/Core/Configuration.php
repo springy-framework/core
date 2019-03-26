@@ -17,6 +17,9 @@ use Springy\Utils\ArrayUtils;
 
 class Configuration
 {
+    /** @var self globally singleton instance */
+    protected static $instance;
+
     /** @var array the array of configuration */
     protected $confs;
     /** @var string the configuration root path */
@@ -35,12 +38,29 @@ class Configuration
     /**
      * Constructor.
      */
-    public function __construct(string $path = null, string $env = null, string $host = null)
+    private function __construct(string $path = null, string $env = null, string $host = null)
     {
         $this->configSets = [];
         $this->configPath = $path ?? __DIR__.'/../../../../conf';
         $this->envDir = $env ?? 'production';
         $this->host = $host ?? '';
+        self::$instance = $this;
+    }
+
+    /**
+     * Prevents the instance from being cloned (which would create a second instance of it).
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * Prevents from being unserialized (which would create a second instance of it).
+     *
+     * @SuppressWarnings(UnusedPrivateMethod)
+     */
+    private function __wakeup()
+    {
     }
 
     /**
@@ -276,5 +296,29 @@ class Configuration
     public function setPath(string $path = null)
     {
         $this->configPath = $path;
+    }
+
+    /**
+     * Returns current instance.
+     *
+     * @return static
+     */
+    public static function getInstance(string $path = null, string $env = null, string $host = null): self
+    {
+        if (static::$instance === null) {
+            new static($path, $env, $host);
+        }
+
+        if (null !== $path) {
+            static::$instance->setPath($path);
+        }
+        if (null !== $env) {
+            static::$instance->setEnvironment($env);
+        }
+        if (null !== $host) {
+            static::$instance->configHost($host);
+        }
+
+        return static::$instance;
     }
 }

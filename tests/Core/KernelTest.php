@@ -22,22 +22,9 @@ class KernelTest extends TestCase
         $this->kernel = Kernel::getInstance();
     }
 
-    public function testConfiguration()
-    {
-        $this->assertInstanceOf(
-            Springy\Core\Configuration::class,
-            $this->kernel->configuration()
-        );
-    }
-
     public function testErrorHandler()
     {
         $this->assertInstanceOf(Springy\Exceptions\Handler::class, $this->kernel->errorHandler());
-    }
-
-    public function testGetEnvironment()
-    {
-        $this->assertEquals($this->conf['environment'], $this->kernel->getEnvironment());
     }
 
     public function testApplicationDetails()
@@ -55,21 +42,5 @@ class KernelTest extends TestCase
     public function testHttpRequest()
     {
         $this->assertInstanceOf(Springy\HTTP\Request::class, $this->kernel->httpRequest());
-    }
-
-    public function testSetEnvironment()
-    {
-        $this->kernel->setEnvironment('testcase');
-        $this->assertEquals('testcase', $this->kernel->getEnvironment());
-
-        // Test environment configuration by host or cli alias
-        $this->kernel->setEnvironment('', [
-            'console' => 'testcase',
-        ]);
-        $this->assertEquals('testcase', $this->kernel->getEnvironment());
-
-        // Test environment configuration by setting empty
-        $this->kernel->setEnvironment('', []);
-        $this->assertEquals('console', $this->kernel->getEnvironment());
     }
 }

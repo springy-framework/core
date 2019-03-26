@@ -58,7 +58,7 @@ class Model extends RowsIterator
     protected $embeds;
     /** @var array the group by elements */
     protected $groupBy;
-    /** @var array the having filter elements */
+    /** @var Conditions the having filter elements */
     protected $having;
     /** @var array the list of joins */
     protected $joins;

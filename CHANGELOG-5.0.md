@@ -22,7 +22,6 @@
 -   Added `Springy\Console\Controller` class
 -   Added `Springy\Console\Kernel` class
 -   Added `Springy\Core\Configuration->configHost()` method
--   Added `Springy\Core\Configuration->getEnvironment()` method
 -   Added `Springy\Core\Configuration->setEnvironment()` method
 -   Added `Springy\Core\Configuration->getPath()` method
 -   Added `Springy\Core\Configuration->setPath()` method
@@ -30,11 +29,9 @@
 -   Added `Springy\Core\Debug::getInstance()` method
 -   Added `Springy\Core\Debug->getSimpleData()` method
 -   Added `Springy\Core\Kernel::getInstance()` method
--   Added `Springy\Core\Kernel->configuration()` method
 -   Added `Springy\Core\Kernel->errorHandler()` method
 -   Added `Springy\Core\Kernel->httpRequest()` method
 -   Added `Springy\Core\Kernel->httpResponse()` method
--   Added `Springy\Core\Kernel->setCharset()` method
 -   Added `Springy\Core\Kernel->setUp()` method
 -   Added `Springy\Database\Connection->delete()` method
 -   Added `Springy\Database\Connection->fetchCurrent()` method
@@ -148,7 +145,6 @@
 -   Method `Springy\DB\Conditions->condition()` was renamed to `Springy\Database\Query\Conditions->add()`
 -   Method `Springy\Kernel::addIgnoredError()` moved to `Springy\Exceptions\Handler->addIgnoredError()`
 -   Method `Springy\Kernel::delIgnoredError()` moved to `Springy\Exceptions\Handler->delIgnoredError()`
--   Method `Springy\Kernel::environment()` was separated in `Springy\Core\Kernel->getEnvironment()` and `Springy\Core\Kernel->setEnvironment()`
 -   Method `Springy\Kernel::getIgnoredError()` moved to `Springy\Exceptions\Handler->getIgnoredError()`
 -   Method `Springy\Kernel::projectCodeName()` was changed to read only and renamed to `Springy\Core\Kernel->getAppCodeName()`
 -   Method `Springy\Kernel::systemName()` was changed to read only and renamed to `Springy\Core\Kernel->getApplicationName()`
@@ -236,19 +232,20 @@
 -   Removed `Springy\DBUpdate` class
 -   Removed `Springy\DBWhere` class
 -   Removed `Springy\DeepDir` class
+-   Removed `Springy\Kernel::arrayToObject()` method
+-   Removed `Springy\Kernel::assignTemplateVar()` method
+-   Removed `Springy\Kernel::charset()` method
+-   Removed `Springy\Kernel::environment()` method
+-   Removed `Springy\Kernel::getTemplateFunctions()` method
+-   Removed `Springy\Kernel::getTemplateVar()` method
+-   Removed `Springy\Kernel::objectToArray()` method
+-   Removed `Springy\Kernel::registerTemplateFunction()` method
 -   Removed `Springy\Log` class
 -   Removed `Springy\Pagination` class
 -   Removed `Springy\Utils\Excel` class
 -   Removed `Springy\Utils\JSON_Static` class
 -   Removed `Springy\Utils\Strings` class. See new trait `Springy\Utils\StringUtils` and `Springy\Utils\NetworkUtils` for substitute methods.
 -   Removed `Springy\Utils\ZipFile` class
--   Removed `Springy\Kernel::objectToArray()` method
--   Removed `Springy\Kernel::arrayToObject()` method
--   Removed `Springy\Kernel::assignTemplateVar()` method
--   Removed `Springy\Kernel::charset()` method
--   Removed `Springy\Kernel::getTemplateFunctions()` method
--   Removed `Springy\Kernel::getTemplateVar()` method
--   Removed `Springy\Kernel::registerTemplateFunction()` method
 -   Removed `Springy\Mail->body()` method. See new methods `Springy\Mail\Mailer->setBody()` and `Springy\Mail\Mailer->setAlternativeBody()`
 -   Removed `Springy\Mail->setHeader()` method
 -   Removed `Springy\Model->calculateColumns()` method
@@ -273,9 +270,13 @@
 -   Removed `Springy\Template->registerPlugin()` method see new method `Springy\Template\Template->addFunction()`
 -   Removed `Springy\Template->setAutoTemplatePaths()` method
 -   Removed `Springy\Template->setConfigDir()` method
+-   Removed `Springy\URI::_GET()` method see new class `Springy\HTTP\Input`
 -   Removed `Springy\URI::getParams()` method now you must uses `Springy\HTTP\Input` class to get query string values
 -   Removed `Springy\URI::parseURI()` method
 -   Removed `Springy\URI::validateURI()` method
+-   Removed `Springy\URI::getParam()` method see new class `Springy\HTTP\Input`
+-   Removed `Springy\URI::httpHost()` method see new helper funcion `current_host()`
+-   Removed `Springy\URI::isAjaxRequest()` method see new class `Springy\HTTP\Request`
 -   Removed `Springy\Utils\JSON->getDados()` method
 -   Removed `Springy\Utils\JSON->printJ()` method
 -   Removed `Springy\Validation\Validator->getDefaultErrorMessage()` method

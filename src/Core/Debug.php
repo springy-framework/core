@@ -19,7 +19,7 @@ class Debug
     protected static $instance;
 
     /** @var array the debug informations array */
-    protected static $debug;
+    protected $debug;
 
     /**
      * Constructor.
@@ -28,7 +28,7 @@ class Debug
      */
     private function __construct()
     {
-        self::$debug = [];
+        $this->debug = [];
         self::$instance = $this;
     }
 
@@ -257,12 +257,12 @@ class Debug
         ];
 
         if ($revert) {
-            array_unshift(self::$debug, $debug);
+            array_unshift($this->debug, $debug);
 
             return;
         }
 
-        self::$debug[] = $debug;
+        $this->debug[] = $debug;
     }
 
     /**
@@ -322,7 +322,7 @@ class Debug
         }
 
         $return = '';
-        foreach (self::$debug as $debug) {
+        foreach ($this->debug as $debug) {
             $return .= $this->$format($debug);
         }
 
@@ -337,7 +337,7 @@ class Debug
     public function getSimpleData(): array
     {
         $debug = [];
-        foreach (self::$debug as $data) {
+        foreach ($this->debug as $data) {
             $debug[] = [
                 'memory' => $data[0],
                 'time'   => $data[1],

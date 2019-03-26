@@ -17,7 +17,7 @@ class ConfigurationTest extends TestCase
 
     public function setUp()
     {
-        $this->conf = new Configuration(__DIR__.'/../conf', 'test', 'foo.bar');
+        $this->conf = Configuration::getInstance(__DIR__.'/../conf', 'test', 'foo.bar');
     }
 
     public function testConfigHost()

@@ -48,7 +48,7 @@ class Kernel extends MainKernel
             return false;
         }
 
-        $this->exitStatus = static::$controller->run($input, $this->output);
+        $this->exitStatus = $this->controller->run($input, $this->output);
 
         return true;
     }
@@ -75,7 +75,7 @@ class Kernel extends MainKernel
             return false;
         }
 
-        static::$controller = new $commands[$command]([$command]);
+        $this->controller = new $commands[$command]([$command]);
 
         return true;
     }

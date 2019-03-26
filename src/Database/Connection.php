@@ -16,7 +16,7 @@ namespace Springy\Database;
 use Memcached;
 use PDO;
 use PDOStatement;
-use Springy\Core\Kernel;
+use Springy\Core\Configuration;
 use Springy\Exceptions\SpringyException;
 use Throwable;
 
@@ -253,7 +253,8 @@ class Connection
             $this->statement->closeCursor();
             $this->statement = $rows;
         } catch (Throwable $err) {
-            debug($this->lastQuery, 'Erro: '.$err->getMessage());
+            debug($this->lastQuery);
+            debug('Erro: '.$err->getMessage());
         }
     }
 
@@ -292,7 +293,7 @@ class Connection
             return;
         }
 
-        $config = Kernel::getInstance()->configuration();
+        $config = Configuration::getInstance();
         $drivers = [
             'mysql'      => 'MySQL',
             'pgsql'      => 'PostgreSQL',
