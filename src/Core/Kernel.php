@@ -48,13 +48,11 @@ class Kernel
 
     /**
      * Constructor.
+     *
+     * Is not allowed to call from outside to prevent from creating multiple instances.
      */
-    public function __construct($appConf = null)
+    private function __construct($appConf = null)
     {
-        if (static::$instance !== null) {
-            return;
-        }
-
         self::$configuration = new Configuration();
         self::$errorHandler = new Handler();
         static::$instance = $this;
@@ -62,6 +60,13 @@ class Kernel
         if ($appConf !== null) {
             $this->setUp($appConf);
         }
+    }
+
+    /**
+     * Prevents the instance from being cloned (which would create a second instance of it).
+     */
+    private function __clone()
+    {
     }
 
     /**
@@ -362,21 +367,14 @@ class Kernel
      *
      * @param string $env
      * @param array  $alias
-     * @param string $envar
      *
      * @return void
      */
-    public function setEnvironment(string $env, array $alias = [], string $envar = '')
+    public function setEnvironment(string $env, array $alias = [])
     {
         // Define environment by host?
         if (trim($env) === '') {
-            if (trim($envar) !== '') {
-                $env = getenv($envar);
-            }
-
-            $env = empty($env) ? (
-                (php_sapi_name() === 'cli') ? 'cli' : URI::getInstance()->host()
-            ) : $env;
+            $env = php_sapi_name() === 'cli' ? 'console' : URI::getInstance()->host();
 
             // Verify if has an alias for host
             foreach ($alias as $host => $val) {
@@ -415,7 +413,7 @@ class Kernel
             throw new SpringyException('Configuration files path not found.');
         }
 
-        self::$configuration->configPath($conf['config_path']);
+        self::$configuration->setPath($conf['config_path']);
         self::$configuration->load('main');
 
         ini_set('date.timezone', $conf['timezone'] ?? 'UTC');
@@ -423,8 +421,7 @@ class Kernel
         $this->setCharset($conf['charset'] ?? 'UTF-8');
         $this->setEnvironment(
             $conf['environment'] ?? '',
-            $conf['ENVIRONMENT_ALIAS'] ?? [],
-            $conf['ENVIRONMENT_VARIABLE'] ?? 'ENVIRONMENT'
+            $conf['ENVIRONMENT_ALIAS'] ?? []
         );
 
         self::$errorHandler->setLogDir($conf['errors_log'] ?? '');
@@ -443,10 +440,10 @@ class Kernel
      *
      * @return static
      */
-    public static function getInstance(): self
+    public static function getInstance($appConf = null): self
     {
         if (static::$instance === null) {
-            new static();
+            new static($appConf);
         }
 
         return static::$instance;

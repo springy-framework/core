@@ -28,8 +28,8 @@ class ConfigurationTest extends TestCase
 
     public function testConfigPath()
     {
-        $this->assertEquals(__DIR__.'/../conf', $this->conf->configPath());
-        $this->assertEquals(__DIR__, $this->conf->configPath(__DIR__));
+        $this->conf->setPath(__DIR__);
+        $this->assertEquals(__DIR__, $this->conf->getPath());
     }
 
     public function testGet()
@@ -69,7 +69,7 @@ class ConfigurationTest extends TestCase
         $this->conf->set('simpsons.dog', 'Sant\'s Little Helper');
         $this->conf->save('simpsons');
 
-        $fileName = $this->conf->configPath().DS.$this->conf->getEnvironment().DS.'simpsons.json';
+        $fileName = $this->conf->getPath().DS.$this->conf->getEnvironment().DS.'simpsons.json';
 
         $this->assertFileExists($fileName);
         unlink($fileName);

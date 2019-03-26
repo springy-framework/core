@@ -14,7 +14,6 @@ use Springy\HTTP\Controller;
 use Springy\HTTP\Kernel;
 use Springy\HTTP\Session;
 use Springy\Security\AuthDriver;
-use Springy\Security\Authentication;
 
 require_once __DIR__.'/../mocks/mockUser.php';
 
@@ -27,7 +26,7 @@ class WebControllerTest extends TestCase
 
     public function setUp()
     {
-        $kernel = new Kernel();
+        $kernel = Springy\HTTP\Kernel::getInstance();
         $config = $kernel->configuration();
 
         $config->set('application.authentication.hasher', 'Springy\Security\BasicHasher');

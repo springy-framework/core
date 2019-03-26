@@ -19,6 +19,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Kernel extends MainKernel
 {
+    /** @var static Kernel globally instance */
+    protected static $instance;
+
     /** @var int exit status code */
     protected $exitStatus;
     /** @var OutputInterface the console output interface */

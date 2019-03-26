@@ -15,6 +15,7 @@ class CopyrightTest extends TestCase
 {
     public function testContent()
     {
-        $this->assertStringStartsWith('<!DOCTYPE html>', Copyright::getInstance()->content());
+        $copyright = new Copyright();
+        $this->assertStringStartsWith('<!DOCTYPE html>', $copyright->content());
     }
 }

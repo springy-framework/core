@@ -91,91 +91,30 @@
     </style>
     <script>
         jQuery(function($, undefined) {
-            const callRPC = function (term, command, params, callback) {
-                term.pause();
-
-                $.ajax({
-                    url: '/springy/terminal',
-                    method: 'POST',
-                    data: JSON.stringify({
-                        jsonrpc: '2.0',
-                        id: $.terminal.last_id() + 1,
-                        method: command,
-                        params: params
-                    }),
-                    success: (response) => {
-                        if (response.error) {
-                            term.error(response.error.message).resume();
-
-                            return;
-                        }
-
-                        term.echo(response.result).resume();
-
-                        if (callback) {
-                            callback();
-                        }
-                    },
-                    error: (jqXHR, textStatus, errorThrown) => {
-                        console.log(jqXHR);
-                        if (jqXHR.responseJSON.error.message) {
-                            term.error(jqXHR.responseJSON.error.message).resume();
-
-                            return;
-                        }
-
-                        term.error(errorThrown).resume();
-                    }
-                });
-            };
-
-            const runCmd = function (command, term) {
-                command = command.trim();
-                if (command == '' || command == '?') {
-                    return;
-                }
-
-                if (command === 'logout') {
-                    callRPC(term, 'logout', [], function () {
-                        term.clear();
-                        term.logout();
-                    });
-
-                    return;
-                }
-
-                var params = command.split(' ');
-
-                command = params.shift();
-
-                callRPC(term, command, params);
-            };
-
-            $('.terminal').terminal(runCmd, {
-                login: function (user, password, callback) {
-                    var term = this;
-                    $.ajax({
-                        url: '/springy/terminal',
-                        method: 'POST',
-                        data: JSON.stringify({
-                            jsonrpc: '2.0',
-                            id: $.terminal.last_id() + 1,
-                            method: 'login',
-                            params: [user, password]
-                        }),
-                        success: function (response) {
-                            callback(response.result);
-                        },
-                        error: () => {
-                            callback(null);
-                        }
-                    });
-                },
+            $('.terminal').terminal('/springy/terminal', {
+                login: true,
                 greetings: '###GREATINGS###',
                 name: 'springyTerm',
                 prompt: 'command> ',
                 completion: true,
-                unixFormattingEscapeBrackets: true
+                unixFormattingEscapeBrackets: true,
+                onAfterCommand: function (command) {
+                    if (command === 'logout') {
+                        this.clear();
+                        this.logout();
+                    }
+                },
+                onAfterLogout: function () {
+                    this.clear();
+                    $.jrpc(this.URI, 'logout', []);
+                },
+                onRPCError: function (error) {
+                    this.error(error.message).resume();
+
+                    if (error.code === 401) {
+                        this.logout();
+                    }
+                }
             });
         });
     </script>

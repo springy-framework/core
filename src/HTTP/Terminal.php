@@ -18,6 +18,8 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 class Terminal
 {
+    /** @var array the user/password credential */
+    protected $credential;
     /** @var Request the request object */
     protected $request;
     /** @var int JSON-RPC request ID */
@@ -35,7 +37,12 @@ class Terminal
      */
     public function __construct()
     {
-        Kernel::getInstance()->configuration()->set('application.debug', false);
+        $configuration = Kernel::getInstance()->configuration();
+        $configuration->set('application.debug', false);
+        $this->credential = $configuration->get(
+            'application.authentication.terminal',
+            ['springy', 'terminal']
+        );
 
         $this->request = Request::getInstance();
         $this->response = Response::getInstance();
@@ -111,6 +118,9 @@ class Terminal
 
         $this->requestId = $body->id ?? 0;
         $method = $body->method ?? '';
+        $params = $body->params ?? [];
+        $cred = array_shift($params);
+        $sessId = Session::getInstance()->get(self::TERM_SESSION_ID, false);
 
         if ($method === 'system.describe') {
             return $this->serviceDescription();
@@ -118,11 +128,10 @@ class Terminal
             return $this->serviceLogin();
         } elseif ($method === 'logout') {
             return $this->serviceLogout();
-        } elseif (!Session::getInstance()->get(self::TERM_SESSION_ID, false)) {
-            return $this->sendError(401, 'Login requested');
+        } elseif (!$sessId || $sessId !== $cred) {
+            return $this->sendError(401, 'Session terminated. Please login again.');
         }
 
-        $params = $body->params ?? [];
         if (!in_array('--no-interaction', $params)) {
             $params[] = '--no-interaction';
         }
@@ -133,6 +142,11 @@ class Terminal
         $this->command($method, implode(' ', $params));
     }
 
+    /**
+     * Describes the service.
+     *
+     * @return void
+     */
     protected function serviceDescription()
     {
         $json = new JSON([
@@ -144,12 +158,17 @@ class Terminal
                 [
                     'name'   => 'errors',
                     'help'   => 'Show application errors.',
-                    'params' => ['command', 'parameter'],
+                    // 'params' => ['command', 'parameter'],
                 ],
                 [
                     'name'   => 'migrator',
                     'help'   => 'Database migrator.',
-                    'params' => ['command', 'parameter'],
+                    // 'params' => ['command', 'parameter'],
+                ],
+                [
+                    'name'   => 'logout',
+                    'help'   => 'Ends terminal session.',
+                    // 'params' => ['command', 'parameter'],
                 ],
             ],
         ]);
@@ -190,7 +209,8 @@ class Terminal
             'result'  => $result,
             'id'      => $this->requestId,
             'error'   => $error,
-        ], $error['code'] ?? 200);
+        ]);
+        // ], $error['code'] ?? 200);
         $json->send();
     }
 
@@ -216,7 +236,7 @@ class Terminal
         $body = $this->request->getBody();
         $params = $body->params ?? [];
 
-        if (count($params) != 2 || $params[0] !== 'hugo' || $params[1] !== '123') {
+        if (count($params) != 2 || $params[0] !== $this->credential[0] || $params[1] !== $this->credential[1]) {
             return $this->sendError(403, 'Invalid user or password.');
         }
 

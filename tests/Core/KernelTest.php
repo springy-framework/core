@@ -62,19 +62,14 @@ class KernelTest extends TestCase
         $this->kernel->setEnvironment('testcase');
         $this->assertEquals('testcase', $this->kernel->getEnvironment());
 
-        // Test environment configuration by env_var
-        putenv('ENVIRONMENT=unittest');
-        $this->kernel->setEnvironment('', [], 'ENVIRONMENT');
-        $this->assertEquals('unittest', $this->kernel->getEnvironment());
-
         // Test environment configuration by host or cli alias
         $this->kernel->setEnvironment('', [
-            'cli' => 'testcase',
+            'console' => 'testcase',
         ]);
         $this->assertEquals('testcase', $this->kernel->getEnvironment());
 
         // Test environment configuration by setting empty
-        $this->kernel->setEnvironment('', [], '');
-        $this->assertEquals('cli', $this->kernel->getEnvironment());
+        $this->kernel->setEnvironment('', []);
+        $this->assertEquals('console', $this->kernel->getEnvironment());
     }
 }

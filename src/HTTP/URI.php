@@ -26,13 +26,11 @@ class URI
 
     /**
      * Constructor.
+     *
+     * Is not allowed to call from outside to prevent from creating multiple instances.
      */
-    public function __construct()
+    private function __construct()
     {
-        if (self::$instance !== null) {
-            return;
-        }
-
         self::$segments = [];
         self::$uriString = '';
         self::$httpHost = $this->parseHost();
@@ -44,6 +42,22 @@ class URI
 
         $this->parseRequestURI();
         $this->parseSegments();
+    }
+
+    /**
+     * Prevents the instance from being cloned (which would create a second instance of it).
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * Prevents from being unserialized (which would create a second instance of it).
+     *
+     * @SuppressWarnings(UnusedPrivateMethod)
+     */
+    private function __wakeup()
+    {
     }
 
     /**

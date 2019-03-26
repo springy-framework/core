@@ -27,14 +27,14 @@ class User implements IdentityInterface, AclUserInterface
     {
         if ($data['uuid'] == '0001' || $data['email'] == 'homer@springfield.local') {
             $this->uuid = '0001';
-            $this->email = $uid;
+            $this->email = 'homer@springfield.local';
             $this->password = $this->validPass();
 
             return;
         }
 
-        $this->uid = '';
-        $this->name = '';
+        $this->uuid = '';
+        $this->email = '';
         $this->password = '';
     }
 

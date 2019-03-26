@@ -23,14 +23,4 @@ class Copyright
 
         return $html;
     }
-
-    /**
-     * Gets self.
-     *
-     * @return self
-     */
-    public static function getInstance()
-    {
-        return new self();
-    }
 }

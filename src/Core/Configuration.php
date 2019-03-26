@@ -38,7 +38,7 @@ class Configuration
     public function __construct(string $path = null, string $env = null, string $host = null)
     {
         $this->configSets = [];
-        $this->configPath = $path ?? __DIR__.'/../../../../../conf';
+        $this->configPath = $path ?? __DIR__.'/../../../../conf';
         $this->envDir = $env ?? 'production';
         $this->host = $host ?? '';
     }
@@ -148,22 +148,6 @@ class Configuration
     }
 
     /**
-     * Get or set the configurations file path.
-     *
-     * @param string $path
-     *
-     * @return string
-     */
-    public function configPath(string $path = null): string
-    {
-        if ($path !== null) {
-            $this->configPath = $path;
-        }
-
-        return $this->configPath;
-    }
-
-    /**
      * Gets the configuration entry.
      *
      * @param string $entry   dotted string of the configuration entry.
@@ -190,6 +174,16 @@ class Configuration
     public function getEnvironment(): string
     {
         return $this->envDir;
+    }
+
+    /**
+     * Gets the configurations file path.
+     *
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->configPath;
     }
 
     /**
@@ -270,5 +264,17 @@ class Configuration
     public function setEnvironment(string $env)
     {
         $this->envDir = $env;
+    }
+
+    /**
+     * Sets the configurations file path.
+     *
+     * @param string $path
+     *
+     * @return void
+     */
+    public function setPath(string $path = null)
+    {
+        $this->configPath = $path;
     }
 }

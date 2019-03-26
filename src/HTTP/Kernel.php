@@ -18,6 +18,9 @@ use Springy\Security\Authentication;
 
 class Kernel extends MainKernel
 {
+    /** @var static Kernel globally instance */
+    protected static $instance;
+
     /**
      * Calls the controller endpoint.
      *
@@ -113,7 +116,8 @@ class Kernel extends MainKernel
         $response = Response::getInstance();
 
         if (Request::getInstance()->isGet() && $segments[0] == 'about') {
-            $response->body(Copyright::getInstance()->content());
+            $copyright = new Copyright();
+            $response->body($copyright->content());
 
             return true;
         } elseif ($segments[0] == 'terminal') {

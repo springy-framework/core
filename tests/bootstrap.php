@@ -19,4 +19,4 @@ if (!is_dir(__DIR__.'/var')) {
     mkdir(__DIR__.'/var', 0775);
 }
 
-$app = new Springy\Core\Kernel(__DIR__.'/conf/main.php');
+$app = Springy\Core\Kernel::getInstance(__DIR__.'/conf/main.php');
