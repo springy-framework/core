@@ -12,7 +12,6 @@
 namespace Springy\HTTP;
 
 use Springy\Core\Configuration;
-use Springy\Core\Kernel;
 use Springy\Exceptions\SpringyException;
 
 class Session
@@ -125,6 +124,7 @@ class Session
     public function defined(string $name): bool
     {
         $this->start();
+
         return $this->engine->defined($name);
     }
 
@@ -152,6 +152,7 @@ class Session
     public function get(string $name, $default = null)
     {
         $this->start();
+
         return $this->engine->get($name, $default);
     }
 
