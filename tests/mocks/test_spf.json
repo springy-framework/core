@@ -1,0 +1,24 @@
+{
+    "id": {
+        "primaryKey": true,
+        "readonly": true
+    },
+    "name": {
+        "type": "string",
+        "hook": "myHook",
+        "validation": [
+            "required",
+            "minlength:3"
+        ]
+    },
+    "created": {
+        "insertedAt": true,
+        "readonly": true
+    },
+    "deleted": {
+        "softDelete": true
+    },
+    "person": {
+        "computed": "person"
+    }
+}

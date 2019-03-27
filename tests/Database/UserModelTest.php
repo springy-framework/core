@@ -190,29 +190,6 @@ class UserModelTest extends TestCase
 class TestSpf extends Model
 {
     protected $table = 'test_spf';
-    protected $columns = [
-        'id' => [
-            'pk' => true,
-            'readonly' => true,
-        ],
-        'name' => [
-            'type' => 'string',
-            'hook' => 'myHook',
-            'validation' => [
-                'required',
-                'minlength:3',
-            ],
-        ],
-        'created' => [
-            'ad' => true,
-        ],
-        'deleted' => [
-            'sd' => true,
-        ],
-        'person' => [
-            'computed' => 'person',
-        ],
-    ];
     protected $dbIdentity = 'mysql';
     protected $abortOnEmptyFilter = false;
 
@@ -235,18 +212,5 @@ class TestSpf extends Model
 class EmbedModel extends Model
 {
     protected $table = 'test_embed';
-    protected $columns = [
-        'id' => [
-            'pk' => true,
-            'readonly' => true,
-        ],
-        'surname' => [
-            'type' => 'string',
-            'validation' => [
-                'required',
-                'minlength:3',
-            ],
-        ],
-    ];
     protected $dbIdentity = 'mysql';
 }

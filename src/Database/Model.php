@@ -13,6 +13,7 @@
 namespace Springy\Database;
 
 use DateTime;
+use Springy\Core\Configuration;
 use Springy\Database\Query\Conditions;
 use Springy\Database\Query\Delete;
 use Springy\Database\Query\Embed;
@@ -82,7 +83,11 @@ class Model extends RowsIterator
      */
     public function __construct($filter = null, string $dbIdentity = null)
     {
-        parent::__construct();
+        $strucPath = Configuration::getInstance()->get(
+            'database.model_structures',
+            __DIR__.DS.'structures'
+        ).DS.preg_replace('/[^\\w_-]/', '', $this->table).'.json';
+        parent::__construct($strucPath);
 
         $this->embeds = [];
         $this->dbIdentity = $dbIdentity ?? $this->dbIdentity;
@@ -220,7 +225,7 @@ class Model extends RowsIterator
 
         $columns = [];
         foreach ($this->columns as $name => $data) {
-            if ($data['computed'] ?? false) {
+            if ($data->computed ?? false) {
                 continue;
             }
 
@@ -354,7 +359,7 @@ class Model extends RowsIterator
     protected function setCmdValues($command)
     {
         foreach ($this->columns as $column => $properties) {
-            if ($properties['computed'] ?? false) {
+            if ($properties->computed ?? false) {
                 continue;
             }
 
@@ -654,11 +659,11 @@ class Model extends RowsIterator
         $this->selectColumns = [];
 
         foreach ($columns as $name) {
-            $column = $this->columns[$name] ?? null;
+            $column = $this->columns->$name ?? null;
 
-            if ($column === null) {
+            if (null === $column) {
                 throw new SpringyException('Column "'.$name.'" does not defined in model.');
-            } elseif ($column['computed'] ?? false) {
+            } elseif ($column->computed ?? false) {
                 throw new SpringyException('Column "'.$name.'" is computed.');
             }
 

@@ -1,0 +1,13 @@
+{
+    "id": {
+        "primaryKey": true,
+        "readonly": true
+    },
+    "surname": {
+        "type": "string",
+        "validation": [
+            "required",
+            "minlength:3"
+        ]
+    }
+}

@@ -22,17 +22,17 @@ class RowsIterator implements Iterator
     /**
      * The columns structure.
      *
-     * Must be defined in the heir class.
+     * Will be loaded from JSON file.
      *
-     * @var array
+     * @var object
      */
-    protected $columns = [];
+    protected $columns;
 
     /**
      * The name of column used as soft delete control.
      *
      * If undefined the model will catch them from columns list
-     * searching for column where property 'sd' => true.
+     * searching for column where property "softDelete": true.
      *
      * @var string
      */
@@ -62,7 +62,7 @@ class RowsIterator implements Iterator
      * The name of column used as date when row was created.
      *
      * If undefined the model will catch them from columns list
-     * searching for column where property 'ad' => true.
+     * searching for column where property "insertedAt": true.
      *
      * @var string
      */
@@ -72,7 +72,7 @@ class RowsIterator implements Iterator
      * The primary key columns list.
      *
      * If empty the model will catch them from columns list
-     * searching for columns where property 'pk' => true.
+     * searching for columns where property "primaryKey": true.
      *
      * @var array
      */
@@ -109,10 +109,11 @@ class RowsIterator implements Iterator
     /**
      * Constructor.
      */
-    public function __construct()
+    public function __construct(string $structure)
     {
         $this->bypassTriggers = false;
         $this->changed = [];
+        $this->columns = json_decode(file_get_contents($structure));
         $this->foundRows = 0;
         $this->newRecord = false;
         $this->rows = [];
@@ -166,16 +167,22 @@ class RowsIterator implements Iterator
 
         $key = key($this->rows);
 
-        foreach ($this->computedCols as $column) {
-            $callable = $this->columns[$column]['computed'] ?? '*';
-
-            if (!is_callable([$this, $callable])) {
-                $this->rows[$key][$column] = null;
+        foreach ($this->computedCols as $colName) {
+            $column = $this->columns->$colName ?? null;
+            if (null === $column) {
+                $this->rows[$key][$colName] = null;
 
                 continue;
             }
 
-            $this->rows[$key][$column] = call_user_func([$this, $callable], $this->rows[$key]);
+            $callable = $column->computed ?? null;
+            if (null === $callable || !is_callable([$this, $callable])) {
+                $this->rows[$key][$colName] = null;
+
+                continue;
+            }
+
+            $this->rows[$key][$colName] = call_user_func([$this, $callable], $this->rows[$key]);
         }
     }
 
@@ -227,14 +234,13 @@ class RowsIterator implements Iterator
     {
         $rules = [];
 
-        foreach ($this->columns as $column => $properties) {
-            $validation = $properties['validation'] ?? null;
-
+        foreach ($this->columns as $name => $properties) {
+            $validation = $properties->validation ?? null;
             if (!$validation) {
                 continue;
             }
 
-            $rules[$column] = $validation;
+            $rules[$name] = $validation;
         }
 
         if (is_callable([$this, 'validationRules'])) {
@@ -270,8 +276,8 @@ class RowsIterator implements Iterator
      */
     protected function hook(string $column, $value)
     {
-        $column = $this->columns[$column];
-        $hook = $column['hook'] ?? false;
+        $column = $this->columns->$column;
+        $hook = $column->hook ?? false;
 
         if ($hook && is_callable([$this, $hook])) {
             return call_user_func([$this, $hook], $value);
@@ -320,7 +326,7 @@ class RowsIterator implements Iterator
         }
 
         foreach ($this->columns as $name => $properties) {
-            if ($properties['pk'] ?? false) {
+            if ($properties->primaryKey ?? false) {
                 $this->primaryKey[] = $name;
             }
         }
@@ -338,7 +344,7 @@ class RowsIterator implements Iterator
         }
 
         foreach ($this->columns as $name => $properties) {
-            if ($properties['sd'] ?? false) {
+            if ($properties->softDelete ?? false) {
                 $this->deletedColumn = $name;
 
                 return;
@@ -360,7 +366,7 @@ class RowsIterator implements Iterator
         $this->computedCols = [];
 
         foreach ($this->columns as $name => $properties) {
-            if ($properties['computed'] ?? false) {
+            if ($properties->computed ?? false) {
                 $this->computedCols[] = $name;
             }
         }
@@ -378,7 +384,7 @@ class RowsIterator implements Iterator
         }
 
         foreach ($this->columns as $name => $properties) {
-            if ($properties['ad'] ?? false) {
+            if ($properties->insertedAt ?? false) {
                 $this->addedDateColumn = $name;
 
                 return;
@@ -398,7 +404,7 @@ class RowsIterator implements Iterator
         }
 
         foreach ($this->columns as $name => $properties) {
-            if (($properties['readonly'] ?? false) || ($properties['computed'] ?? false)) {
+            if (($properties->readonly ?? false) || ($properties->computed ?? false)) {
                 continue;
             }
 
@@ -500,7 +506,7 @@ class RowsIterator implements Iterator
      */
     public function set(string $column, $value = null)
     {
-        if (!isset($this->columns[$column])) {
+        if (!isset($this->columns->$column)) {
             throw new SpringyException('Column "'.$column.'" does not exists.');
         } elseif (!in_array($column, $this->writableColumns)) {
             throw new SpringyException('Column "'.$column.'" is not writable.');

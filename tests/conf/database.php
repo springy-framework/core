@@ -2,6 +2,7 @@
 
 return [
     'default' => 'mysql',
+    'model_structures' => __DIR__.'/../mocks',
     'connections' => [
         'mysql' => [
             'driver' => 'mysql',

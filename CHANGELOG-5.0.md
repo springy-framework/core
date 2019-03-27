@@ -348,17 +348,50 @@ The dbms.php file in configuration directories is used by Springy\DBMS\Connectio
 -   `'port'` : TCP port of the Memcached server for 'memcached' driver.
 -   `'key'` : round robin item key in the Memcached server for 'memcached' driver.
 
-### RowsIterator Columns Array
+### RowsIterator Columns Object
 
-#### The Property Array Structure
+The RowsIterator columns object will be loaded from a JSON file informed to the constructor.
 
--   'pk' : `bool` - defines the column as a primary key
--   'computed' : `string` - if its value is a callable function name defines the column as computed
--   'hook' : `string` - defines a callable hook function to process column value when setting data to it
--   'readonly' : `bool` - defines the column as read only
--   'ad' : `bool` - defines the column as the added date controller
--   'sd' : `bool` - defines the column as a soft delete controller int(0|1)
--   'validation' : `array` - an array of validation rules and error messages
+Example:
+
+```php
+$rowsIterator = new RowsIterator('/path/to/my/structure.json');
+```
+
+#### The JSON File With Columns Structure
+
+The JSON file with the columns structure must contains keys with columns names and at last one of the following properties:
+
+-   "primaryKey": `bool` - defines the column as a primary key
+-   "computed": `string` - if its value is a callable function name defines the column as computed
+-   "hook": `string` - defines a callable hook function to process column value when setting data to it
+-   "readonly": `bool` - defines the column as read only
+-   "insertedAt": `bool` - defines the column as the added date controller
+-   "softDelete": `bool` - defines the column as a soft delete controller int(0|1)
+-   "validation": `array` - an array of validation rules and error messages
+
+Example:
+
+```json
+{
+  "id": {
+    "pk": true,
+    "readyOnly": true
+  },
+  "name": {
+    "validation": [
+      "required",
+      "minlength:3"
+    ]
+  },
+  "created_at": {
+    "insertedAt": true,
+    "readyOnly": true
+  }
+}
+```
+
+Observations:
 
 All computed columns are read only.
 
