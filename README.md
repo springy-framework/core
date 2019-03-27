@@ -3,6 +3,7 @@
 [![Latest Stable Version](https://poser.pugx.org/springy-framework/core/v/stable)](https://packagist.org/packages/springy-framework/core)
 [![Total Downloads](https://poser.pugx.org/springy-framework/core/downloads)](https://packagist.org/packages/springy-framework/core)
 [![License](https://poser.pugx.org/springy-framework/core/license)](https://packagist.org/packages/springy-framework/core)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/36715043bebe436985adf9c41db56178)](https://www.codacy.com/app/fval/core?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=springy-framework/core&amp;utm_campaign=Badge_Grade)
 
 [![Latest Unstable Version](https://poser.pugx.org/springy-framework/core/v/unstable)](https://packagist.org/packages/springy-framework/core)
 
