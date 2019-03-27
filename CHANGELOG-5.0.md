@@ -6,6 +6,7 @@
 
 -   Alternative routes
 -   Automatic URL redirections
+-   Data validation on `RowsIterator->set()` method
 
 #### Test cases to do
 
@@ -339,6 +340,7 @@ The dbms.php file in configuration directories is used by Springy\DBMS\Connectio
 
 -   `'mysql'` : MySQL server.
 -   `'sqlite'` : SQLite3 database.
+-   `'pgsql'` : PostgreSQL server.
 
 ###### The `'connections.*.round_robin'` Configuration Structure
 
