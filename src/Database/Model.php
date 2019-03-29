@@ -312,6 +312,11 @@ class Model extends RowsIterator
         return false;
     }
 
+    /**
+     * Inserts current row data as new record.
+     *
+     * @return int
+     */
     protected function insertRow(): int
     {
         if (!$this->checkTrigger(static::TG_BEF_INS)) {
@@ -340,6 +345,14 @@ class Model extends RowsIterator
         return $res;
     }
 
+    /**
+     * Adds a value to SQL command.
+     *
+     * @param object $command
+     * @param string $column
+     *
+     * @return void
+     */
     protected function setCmdColVal($command, string $column)
     {
         $key = key($this->rows);
@@ -356,6 +369,13 @@ class Model extends RowsIterator
         }
     }
 
+    /**
+     * Sets SQL command values.
+     *
+     * @param object $command
+     *
+     * @return void
+     */
     protected function setCmdValues($command)
     {
         foreach ($this->columns as $column => $properties) {
@@ -406,6 +426,11 @@ class Model extends RowsIterator
         }
     }
 
+    /**
+     * Updates current row data to database record.
+     *
+     * @return int
+     */
     protected function updateRow(): int
     {
         if (!$this->checkTrigger(static::TG_BEF_UPD)) {
@@ -590,6 +615,11 @@ class Model extends RowsIterator
         return $this->loaded;
     }
 
+    /**
+     * Saves current row changes.
+     *
+     * @return int
+     */
     public function save(): int
     {
         if (!$this->valid() || !isset($this->changed[key($this->rows)])) {
