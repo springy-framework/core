@@ -4,8 +4,8 @@
 
 ### To do
 
--   Alternative routes
 -   Automatic URL redirections
+-   RESTful controller
 -   Data validation on `RowsIterator->set()` method
 
 #### Test cases to do
@@ -14,6 +14,8 @@
 -   Springy\Exceptions\Handler->setUnreportable()
 -   Springy\Exceptions\Handler->addWebmaster()
 -   Springy\Exceptions\Handler->setWebmaster()
+-   Springy\HTTP\Request->getHeaders()
+-   Springy\HTTP\Routing
 -   Springy\Utils\NetworkUtils
 -   Helper functions
 -   All console classes
@@ -295,6 +297,7 @@
 -   Removed support to configuration `'template.errors'`
 -   Removed support to configuration `'template.escape_html'` see `'template.auto_escape'`
 -   Removed support to configuration `'system.system_error.save_in_database'`
+-   Removed support to hook controller `_global.php`
 -   Removed support to Manuel Lemos' MIME Mail Message classes. Thanks a lot!
 -   Removed template variable `HOST`
 -   Removed template variable `CURRENT_PAGE_URI`
@@ -349,6 +352,43 @@ The dbms.php file in configuration directories is used by Springy\DBMS\Connectio
 -   `'address'` : address of the Memcached server for 'memcached' driver.
 -   `'port'` : TCP port of the Memcached server for 'memcached' driver.
 -   `'key'` : round robin item key in the Memcached server for 'memcached' driver.
+
+#### The Routing configuration: routing.php
+
+The configuration file `routing.php` has to key pair arrays.
+
+The 'routes' array with the structure *pattern => handling*.
+
+And the 'namespaces' array that changes the default namespace for controllers.
+
+##### The Pattern
+
+The pattern is a string with two parts separated by **@** char.
+
+The first part is the request methods and you can set as one or several separated by the **|** char.
+You can also use the wildcard __*__ to represent all the methods (GET, POST, PUT, DELETE, OPTIONS, PATCH and HEAD).
+
+Example: 'GET|POST'
+
+The second part of the pattern is the URI-Pattern and can be static or dynamic with PCRE regular expression or placeholder expression.
+
+###### Static URI-Patterns
+
+Example: '/user'
+
+###### Dynamic PCRE URI-Patterns
+
+Example: '/user/(\d+)'
+
+###### Dynamic Placeholder URI-Patterns
+
+Example: '/user/{id}'
+
+##### The Handling
+
+###### Array Handling
+
+The array handlings must be a key pair where the key is a pattern to be appended to the parent pattern and the value as the handling.
 
 ### RowsIterator Columns Object
 

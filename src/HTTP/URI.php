@@ -108,7 +108,7 @@ class URI
             return;
         }
 
-        $this->uriString = explode('?', $_SERVER['REQUEST_URI'])[0];
+        $this->uriString = explode('?', rawurldecode($_SERVER['REQUEST_URI']))[0];
     }
 
     /**

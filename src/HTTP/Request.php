@@ -18,6 +18,8 @@ class Request
 
     /** @var object|null HTTP request body */
     protected $body;
+    /** @var array HTTP request headers */
+    protected $headers;
     /** @var string HTTP request method */
     protected $method;
     /** @var string the received body in raw format */
@@ -33,6 +35,7 @@ class Request
     private function __construct()
     {
         $this->method = $_SERVER['REQUEST_METHOD'] ?? null;
+        $this->headers = $this->parseHeaders();
         $this->rawBody = $this->getRawData();
         $this->body = $this->parseRawData();
         $this->requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
@@ -53,6 +56,39 @@ class Request
      */
     private function __wakeup()
     {
+    }
+
+    /**
+     * Gets all request headers.
+     *
+     * @return array
+     */
+    protected function parseHeaders()
+    {
+        $headers = [];
+
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            if ($headers !== false) {
+                return $headers;
+            }
+        }
+
+        foreach ($_SERVER as $name => $value) {
+            if ((substr($name, 0, 5) == 'HTTP_')
+                || ($name == 'CONTENT_TYPE')
+                || ($name == 'CONTENT_LENGTH')) {
+                $headers[
+                    str_replace(
+                        [' ', 'Http'],
+                        ['-', 'HTTP'],
+                        ucwords(strtolower(str_replace('_', ' ', substr($name, 5))))
+                    )
+                ] = $value;
+            }
+        }
+
+        return $headers;
     }
 
     /**
@@ -97,6 +133,16 @@ class Request
     }
 
     /**
+     * Returns all request headers.
+     *
+     * @return array
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    /**
      * Returns the request method.
      *
      * @return string
@@ -104,6 +150,22 @@ class Request
     public function getMethod(): string
     {
         return $this->method ?? '';
+    }
+
+    /**
+     * Returns the request method checking if has Method Override.
+     *
+     * @return string
+     */
+    public function getMethodOverride(): string
+    {
+        if ($this->isPost()
+            && isset($this->headers['X-HTTP-Method-Override'])
+            && in_array($this->headers['X-HTTP-Method-Override'], ['PUT', 'DELETE', 'PATCH'])) {
+            return $this->headers['X-HTTP-Method-Override'];
+        }
+
+        return $this->getMethod();
     }
 
     /**

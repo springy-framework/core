@@ -43,8 +43,8 @@ class Kernel extends MainKernel
         }
 
         $command = $input->getFirstArgument();
-        $segment = $this->findController('App\\Console\\', [$command ?? '']);
-        if ($segment < 0 && !$this->discoverInternals($command)) {
+        if (!$this->loadController('App\\Console\\'.$this->normalizeNamePath([$command]), [])
+            && !$this->discoverInternals($command)) {
             return false;
         }
 

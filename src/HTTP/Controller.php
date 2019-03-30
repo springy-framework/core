@@ -30,6 +30,8 @@ class Controller implements ControllerInterface
     protected $redirectUnsigned = false;
     /** @var \Springy\Security\AclUserInterface the current user object */
     protected $user;
+    /** @var array */
+    protected $uriSegments;
 
     /**
      * The constructor method.
@@ -39,6 +41,7 @@ class Controller implements ControllerInterface
         $this->user = $this->_getAuthManager();
         $this->aclManager = new AclManager($this->user, $this, $segments);
         $this->hasPermission = $this->_hasAuthorization();
+        $this->uriSegments = $segments;
     }
 
     /**
