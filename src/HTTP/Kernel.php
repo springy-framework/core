@@ -174,7 +174,7 @@ class Kernel extends MainKernel
         $config = Configuration::getInstance();
         $uri = '/'.implode('/', $segments);
         foreach ($config->get('routing.namespaces', []) as $route => $namespace) {
-            $pattern = sprintf('#^%s/(.+)$#', $route);
+            $pattern = sprintf('#^%s(/(.+))?$#', $route);
             if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
                 $segments = explode('/', trim($matches[1][0], '/'));
 
