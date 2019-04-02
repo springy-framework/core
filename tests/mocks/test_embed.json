@@ -1,7 +1,7 @@
 {
     "id": {
         "primaryKey": true,
-        "readonly": true
+        "readOnly": true
     },
     "surname": {
         "type": "string",

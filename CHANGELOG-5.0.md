@@ -210,6 +210,7 @@
 -   Removed `Springy\Controller->_pageNotFound()` method. Throws a `Springy\Exceptions\Http404Error` exception to returns a '404-page not found' HTTP error.
 -   Removed `Springy\Cookie::contents()` method
 -   Removed `Springy\Cookie::del()` method
+-   Removed `Springy\Controller->_template()` method
 -   Removed `Springy\CreditCardValidation` class
 -   Removed `Springy\DB::castDateBrToDb()` method
 -   Removed `Springy\DB::castDateDbToBr()` method
@@ -366,7 +367,7 @@ And the 'namespaces' array that changes the default namespace for controllers.
 The pattern is a string with two parts separated by **@** char.
 
 The first part is the request methods and you can set as one or several separated by the **|** char.
-You can also use the wildcard __*__ to represent all the methods (GET, POST, PUT, DELETE, OPTIONS, PATCH and HEAD).
+You can also use the wildcard "*" to represent all the methods (GET, POST, PUT, DELETE, OPTIONS, PATCH and HEAD).
 
 Example: 'GET|POST'
 
@@ -407,18 +408,18 @@ The JSON file with the columns structure must contains keys with columns names a
 -   "primaryKey": `bool` - defines the column as a primary key
 -   "computed": `string` - if its value is a callable function name defines the column as computed
 -   "hook": `string` - defines a callable hook function to process column value when setting data to it
--   "readonly": `bool` - defines the column as read only
+-   "readOnly": `bool` - defines the column as read only
 -   "insertedAt": `bool` - defines the column as the added date controller
 -   "softDelete": `bool` - defines the column as a soft delete controller int(0|1)
--   "validation": `array` - an array of validation rules and error messages
+-   "validation": `array` - an array or object of validation rules and error messages
 
 Example:
 
 ```json
 {
   "id": {
-    "pk": true,
-    "readyOnly": true
+    "primaryKey": true,
+    "readOnly": true
   },
   "name": {
     "validation": [
@@ -428,7 +429,7 @@ Example:
   },
   "created_at": {
     "insertedAt": true,
-    "readyOnly": true
+    "readOnly": true
   }
 }
 ```

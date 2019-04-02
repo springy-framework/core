@@ -1,7 +1,7 @@
 {
     "id": {
         "primaryKey": true,
-        "readonly": true
+        "readOnly": true
     },
     "name": {
         "type": "string",
@@ -13,7 +13,7 @@
     },
     "created": {
         "insertedAt": true,
-        "readonly": true
+        "readOnly": true
     },
     "deleted": {
         "softDelete": true

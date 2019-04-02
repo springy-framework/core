@@ -82,7 +82,7 @@ class RowsIterator implements Iterator
      * The list of writable columns.
      *
      * If undefined the model will catch them from columns list
-     * searching for column where properties 'readonly' and 'computed'
+     * searching for column where properties 'readOnly' and 'computed'
      * are false or undefined.
      *
      * @var array
@@ -404,7 +404,7 @@ class RowsIterator implements Iterator
         }
 
         foreach ($this->columns as $name => $properties) {
-            if (($properties->readonly ?? false) || ($properties->computed ?? false)) {
+            if (($properties->readOnly ?? false) || ($properties->computed ?? false)) {
                 continue;
             }
 
