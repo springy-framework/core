@@ -16,6 +16,7 @@
 namespace Springy\Template\Drivers;
 
 use Smarty as SmartyTemplate;
+use Springy\Core\Kernel;
 
 class Smarty implements TemplateDriverInterface
 {
@@ -128,13 +129,21 @@ class Smarty implements TemplateDriverInterface
             );
         }
 
-        if ($this->strict) {
+        $kernel = Kernel::getInstance();
+        $ignoredErrros = $kernel->errorHandler()->getIgnoredErrors();
+
+        if (!$this->strict) {
+            $kernel->errorHandler()->addIgnoredError(E_NOTICE);
             $this->tplObj->error_reporting = E_ALL & ~E_NOTICE;
+            SmartyTemplate::muteExpectedErrors();
         }
 
-        SmartyTemplate::muteExpectedErrors();
+        $parsed = $this->tplObj->fetch($this->templateFile, $this->cacheId, $this->compileId);
 
-        return $this->tplObj->fetch($this->templateFile, $this->cacheId, $this->compileId);
+        $kernel->errorHandler()->delIgnoredError(E_NOTICE);
+        $kernel->errorHandler()->addIgnoredError($ignoredErrros);
+
+        return $parsed;
     }
 
     /**
