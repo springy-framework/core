@@ -182,7 +182,7 @@ class Kernel extends MainKernel
             }
         }
 
-        return 'App\\Controllers\\Web\\';
+        return $config->get('routing.namespace', 'App\\Controllers\\Web\\');
     }
 
     /**
