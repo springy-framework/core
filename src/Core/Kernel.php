@@ -323,7 +323,7 @@ class Kernel
 
         $this->setEnvironment(
             $conf['environment'] ?? '',
-            $conf['ENVIRONMENT_ALIAS'] ?? []
+            $conf['environments'] ?? []
         );
 
         $this->errorHandler->setLogDir($conf['errors_log'] ?? '');

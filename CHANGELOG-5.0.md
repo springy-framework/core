@@ -4,6 +4,7 @@
 
 ### To do
 
+-   Controller namespace by host
 -   Automatic URL redirections
 -   RESTful controller
 -   Data validation on `RowsIterator->set()` method
@@ -194,10 +195,11 @@
 -   Configuration `'template.default_template_path'` renamed to `'template.paths.alternative'`
 -   Configuration `'template.template_engine'` renamed to `'template.driver'`
 -   Configuration `'template.template_path'` renamed to `'template.paths.templates'`
--   Template variable `ACTIVE_ENVIRONMENT` renamed to `ENVIRONMENT`
--   Template variable `PROJECT_CODE_NAME` renamed to `APP_CODE_NAME`
--   Template variable `SYSTEM_NAME` renamed to `APP_NAME`
--   Template variable `SYSTEM_VERSION` renamed to `APP_VERSION`
+-   General system configuration `ACTIVE_ENVIRONMENT` moved to `main.environment`
+-   General system configuration `ENVIRONMENT_ALIAS` moved to `main.environments`
+-   General system configuration `PROJECT_CODE_NAME` moved to `main.app.code_name`
+-   General system configuration `SYSTEM_NAME` moved to `main.app.name`
+-   General system configuration `SYSTEM_VERSION` moved to `main.app.version`
 -   The trigger function was removed from `Springy\Database\Model` but will be called if exists in heir class
 -   The structure of array os rules for `Springy\Validation\Validator` class was changed to receive the custom error messages
 
@@ -303,6 +305,7 @@
 -   Removed template variable `HOST`
 -   Removed template variable `CURRENT_PAGE_URI`
 -   Removed `assetFile` pre-defined template function. The application must implements by it self using `Springy\Template\Template->addFunction()` method.
+-   Removed support to `sysconf.php` file inside public root folder
 
 ### Configuration files
 
@@ -403,15 +406,15 @@ $rowsIterator = new RowsIterator('/path/to/my/structure.json');
 
 #### The JSON File With Columns Structure
 
-The JSON file with the columns structure must contains keys with columns names and at last one of the following properties:
+The JSON file with the columns structure must contains keys with column names and at last one of the following properties:
 
 -   "primaryKey": `bool` - defines the column as a primary key
--   "computed": `string` - if its value is a callable function name defines the column as computed
--   "hook": `string` - defines a callable hook function to process column value when setting data to it
--   "readOnly": `bool` - defines the column as read only
--   "insertedAt": `bool` - defines the column as the added date controller
--   "softDelete": `bool` - defines the column as a soft delete controller int(0|1)
--   "validation": `array` - an array or object of validation rules and error messages
+-   "computed": `string` - if its value is a function name that can be called it defines the column as computed
+-   "hook": `string` - defines a hook function to process the column value by defining data for it
+-   "readOnly": `bool` - sets the column to read-only
+-   "insertedAt": `bool` - it sets column as date-added controller
+-   "softDelete": `bool` - it defines the column as a soft delete controller int(0|1)
+-   "validation": `array` - an array or object validation rules and error messages
 
 Example:
 
@@ -438,20 +441,20 @@ Observations:
 
 All computed columns are read only.
 
-Can have only one collumn with added date controller attribute. If more than one column has this attribute, only the first will be defined.
+May only have one column with added date controller attribute. If more than one column has this attribute, only the first one is set.
 
-Can have only one soft delete controller column. Then only the first column with this attribute will be considered.
+You can have only one exclusion control column. So only the first column with this attribute will be considered.
 
 ### Validation Rules Array
 
-The array of validation rules used by the class `Springy\Validation\Validator` must be in a structure where the name of the fields stays in each index of the array and the rule set in its value.
+The validation rule array used by the `Springy\Validation\Validator` class must be in a structure where the field name remains in each array index and the rule set in their value.
 
-Each rule set can be a string of rules concatenated by pipe "|" or an array of validation rules.
+Each set of rules can be a sequence of rules concatenated by pipe "|" or an array of validation rules.
 
 Each validation rule can be a string in the format "rule_name:param1,param2,paramN:custom error message" or an array with the following indexes:
 
--   'params' => an array of parameters or a string with parameters separated by comma ","
--   'message' => the string for the custom message. See messages tag section.
+-   'params' => an array of parameters or a string with parameters separated by commas ","
+-   'message' => the custom message string. See messages tag section.
 
 #### Messages tag
 
