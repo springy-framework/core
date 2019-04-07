@@ -182,6 +182,14 @@ class Kernel extends MainKernel
             }
         }
 
+        $host = current_host();
+        foreach ($config->get('routing.hostings', []) as $route => $namespace) {
+            $pattern = sprintf('#^%s$#', $route);
+            if (preg_match_all($pattern, $host, $matches, PREG_PATTERN_ORDER)) {
+                return $namespace.'\\';
+            }
+        }
+
         return $config->get('routing.namespace', 'App\\Controllers\\Web\\');
     }
 

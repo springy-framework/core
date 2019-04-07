@@ -4,7 +4,6 @@
 
 ### To do
 
--   Controller namespace by host
 -   Automatic URL redirections
 -   RESTful controller
 -   Data validation on `RowsIterator->set()` method
