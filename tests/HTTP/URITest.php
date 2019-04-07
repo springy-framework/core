@@ -34,4 +34,9 @@ class URITest extends TestCase
     {
         $this->assertEquals('$', $this->uri->getHost());
     }
+
+    public function testGetUrl()
+    {
+        $this->assertEquals('http://$', $this->uri->getUrl());
+    }
 }
