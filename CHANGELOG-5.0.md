@@ -8,6 +8,7 @@
 -   Automatic URL redirections
 -   RESTful controller
 -   Data validation on `RowsIterator->set()` method
+-   Application errors page customization
 
 #### Test cases to do
 
@@ -90,6 +91,8 @@
 -   Added `Springy\Validation\Rule` class
 -   Added configuration file `dbms.php` (see bellow)
 -   Added configuration entry `'application.authentication'` (see bellow)
+-   Added configuration entry `'database.default'`
+-   Added configuration entry `'database.model_structures'`
 -   Added configuration entry `'template.auto_escape'`
 -   Added configuration entry `'template.file_sufix'`
 -   Added property `$dbIdentity` into `Springy\Database\Model` class
@@ -187,14 +190,26 @@
 -   Main system configuration `PROJECT_CODE_NAME` renamed to `main.app.code_name`
 -   Main system configuration `CHARSET` renamed to `main.charset`
 -   Main system configuration `ENVIRONMENT` renamed to `main.environment`
+-   Configuration `'db'` moved to `'database.connections'`
 -   Configuration `'mail.default_driver'` renamed to `'mail.driver'`
 -   Configuration `'mail.mails_go_to'` renamed to `'mail.fake_to'`
--   Configuration `'system'` renamed to `'application'`
+-   Configuration `'system.debug'` renamed to `'application.debug'`
+-   Configuration `'system.session.domain'` renamed to `'session.domain'`
+-   Configuration `'system.session.expires'` renamed to `'session.expires'`
+-   Configuration `'system.session.memcached.address'` renamed to `'session.host'`
+-   Configuration `'system.session.memcached.port'` renamed to `'session.port'`
+-   Configuration `'system.session.name'` renamed to `'session.name'`
+-   Configuration `'system.session.type'` renamed to `'session.engine'`
 -   Configuration `'template.auto_reload'` renamed to `'template.force_compile'`
+-   Configuration `'template.autoescape'` renamed to `'template.auto_escape'`
+-   Configuration `'template.template_cached_path'` renamed to `'template.paths.cache'`
 -   Configuration `'template.compiled_template_path'` renamed to `'template.paths.compiled'`
 -   Configuration `'template.default_template_path'` renamed to `'template.paths.alternative'`
+-   Configuration `'template.strict_variables'` renamed to `'template.strict'`
 -   Configuration `'template.template_engine'` renamed to `'template.driver'`
 -   Configuration `'template.template_path'` renamed to `'template.paths.templates'`
+-   Configuration `'uri.host_controller_path'` moved to `'routing.hostings'`
+-   Configuration `'uri.routes'` moved to `'routing.routes'`
 -   General system configuration `ACTIVE_ENVIRONMENT` moved to `main.environment`
 -   General system configuration `ENVIRONMENT_ALIAS` moved to `main.environments`
 -   General system configuration `PROJECT_CODE_NAME` moved to `main.app.code_name`
@@ -292,14 +307,41 @@
 -   Removed `Springy\Validation\Validator->setMessages()` method
 -   Removed `$cacheLifeTime` parameters from `Springy\Database\Connection::__construct`
 -   Removed comparison constants aliases from `Springy\Database\Conditions` class
--   Removed support to configuration `db` configuration files
--   Removed support to configuration `'uri.common_urls'`
--   Removed support to configuration `'uri.redirect_last_slash'`
--   Removed support to configuration `'uri.force_slash_on_index'`
+-   Removed support to configuration `'system.assets_path'`
+-   Removed support to configuration `'system.assets_source_path'`
+-   Removed support to configuration `'system.authentication'`
+-   Removed support to configuration `'system.bug_authentication'`
+-   Removed support to configuration `'system.cache-control'`
+-   Removed support to configuration `'system.dba_user'`
+-   Removed support to configuration `'system.developer_pass'`
+-   Removed support to configuration `'system.developer_user'`
+-   Removed support to configuration `'system.rewrite_url'`
+-   Removed support to configuration `'system.session.database'`
+-   Removed support to configuration `'system.system_error.create_table'`
+-   Removed support to configuration `'system.system_error.db_server'`
+-   Removed support to configuration `'system.system_error.reported_errors'`
+-   Removed support to configuration `'system.system_error.save_in_database'`
+-   Removed support to configuration `'system.system_error.table_name'`
+-   Removed support to configuration `'template.template_config_path'`
 -   Removed support to configuration `'template.debugging_ctrl'`
 -   Removed support to configuration `'template.errors'`
 -   Removed support to configuration `'template.escape_html'` see `'template.auto_escape'`
+-   Removed support to configuration `'uri.assets_dir'`
+-   Removed support to configuration `'uri.common_urls'`
+-   Removed support to configuration `'uri.css_dir'`
+-   Removed support to configuration `'uri.dynamic'`
+-   Removed support to configuration `'uri.force_slash_on_index'`
+-   Removed support to configuration `'uri.ignored_segments'`
+-   Removed support to configuration `'uri.images_dir'`
+-   Removed support to configuration `'uri.js_dir'`
+-   Removed support to configuration `'uri.prevalidate_controller'`
+-   Removed support to configuration `'uri.redirect_last_slash'`
+-   Removed support to configuration `'uri.register_method_set_common_urls'`
+-   Removed support to configuration `'uri.secure'`
+-   Removed support to configuration `'uri.static'`
+-   Removed support to configuration `'uri.swf_dir'`
 -   Removed support to configuration `'system.system_error.save_in_database'`
+-   Removed support to `$over_conf` variable in configuration files
 -   Removed support to hook controller `_global.php`
 -   Removed support to Manuel Lemos' MIME Mail Message classes. Thanks a lot!
 -   Removed template variable `HOST`
