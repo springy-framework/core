@@ -166,7 +166,7 @@ class Routing
     public function parse()
     {
         $method = Request::getInstance()->getMethod();
-        $uri = URI::getInstance()->getURIString();
+        $uri = URI::getInstance()->getUriString();
 
         foreach ($this->routes[$method] as $route) {
             $route['pattern'] = preg_replace('/\/{(.*?)}/', '/(.*?)', $route['pattern']);

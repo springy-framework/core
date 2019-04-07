@@ -71,13 +71,12 @@ class URI
             return '$';
         }
 
-        return trim(
-            preg_replace(
-                '/([^:]+)(:\\d+)?/',
-                '$1$2',
-                $_SERVER['HTTP_HOST'] ?? ''
-            ), ' ..@'
-        );
+        return preg_replace(
+            '/([^:]+)(:\\d+)?/',
+            '$1',
+            $_SERVER['HTTP_HOST'] ?? ''
+        )
+        .(($_SERVER['SERVER_PORT'] ?? 80) != 80 ? ':'.$_SERVER['SERVER_PORT'] : '');
     }
 
     /**
@@ -130,7 +129,7 @@ class URI
     }
 
     /**
-     * Return the current host with protocol.
+     * Returns the current host with port number but without protocol.
      *
      * @return string
      */
@@ -154,9 +153,24 @@ class URI
      *
      * @return string
      */
-    public function getURIString(): string
+    public function getUriString(): string
     {
         return $this->uriString ?? '';
+    }
+
+    /**
+     * Returns the current URL with protocol and port number.
+     *
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return sprintf(
+            'http%s://%s%s',
+            ($_SERVER['HTTPS'] ?? '') == 'on' ? 's' : '',
+            $this->httpHost,
+            rtrim($this->uriString, '/')
+        );
     }
 
     /**

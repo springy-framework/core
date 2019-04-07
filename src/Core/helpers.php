@@ -102,8 +102,7 @@ function config_set(string $key, $val)
  */
 function current_host(): string
 {
-    return ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_PORT'] ?? '')
-        .(($_SERVER['SERVER_PORT'] ?? '80') != 80 ? ':'.$_SERVER['SERVER_PORT'] : '');
+    return Springy\HTTP\URI::getInstance()->getHost();
 }
 
 /**
@@ -113,11 +112,7 @@ function current_host(): string
  */
 function current_url(): string
 {
-    return 'http'.(($_SERVER['HTTPS'] ?? '') == 'on' ? 's' : '')
-        .'://'
-        .($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_PORT'] ?? '')
-        .(($_SERVER['SERVER_PORT'] ?? '80') != 80 ? ':'.$_SERVER['SERVER_PORT'] : '')
-        .($_SERVER['REQUEST_URI'] ?? '');
+    return Springy\HTTP\URI::getInstance()->getUrl();
 }
 
 /**
