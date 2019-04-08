@@ -17,6 +17,7 @@ use Springy\Core\ControllerInterface;
 use Springy\Exceptions\Http403Error;
 use Springy\Exceptions\SpringyException;
 use Springy\Security\AclManager;
+use Throwable;
 
 class Controller implements ControllerInterface
 {
@@ -66,7 +67,7 @@ class Controller implements ControllerInterface
      *
      * @throws SpringyException
      *
-     * @return AclUserInterface
+     * @return \Springy\Security\AclUserInterface
      */
     protected function _getAuthManager()
     {
@@ -75,12 +76,12 @@ class Controller implements ControllerInterface
             if ($authManager->check()) {
                 return $authManager->user();
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
         }
 
         try {
             $authIdentity = app('user.auth.identity');
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw new SpringyException('Authentication driver not configured');
         }
 
