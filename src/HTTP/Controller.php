@@ -14,7 +14,6 @@
 namespace Springy\HTTP;
 
 use Springy\Core\ControllerInterface;
-use Springy\Exceptions\Http403Error;
 use Springy\Exceptions\SpringyException;
 use Springy\Security\AclManager;
 use Throwable;
@@ -102,18 +101,6 @@ class Controller implements ControllerInterface
     protected function _userSpecialVerifications()
     {
         return true;
-    }
-
-    /**
-     * Throws a HTTP "403 - Forbidden" error or redirects the user to another page.
-     *
-     * @throws Http403Error
-     *
-     * @return void
-     */
-    public function _forbidden()
-    {
-        throw new Http403Error();
     }
 
     /**

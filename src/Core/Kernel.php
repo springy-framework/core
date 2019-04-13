@@ -236,6 +236,13 @@ class Kernel
         return self::$paths[$component] ?? '';
     }
 
+    /**
+     * Runs the application.
+     *
+     * @param float $startime
+     *
+     * @return self
+     */
     public function run(float $startime = null): self
     {
         // Can be executed once

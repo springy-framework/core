@@ -75,18 +75,6 @@ class Controller extends Command implements ControllerInterface
     }
 
     /**
-     * Throws a "Forbidden" error.
-     *
-     * @throws SpringyException
-     *
-     * @return void
-     */
-    public function _forbidden()
-    {
-        throw new SpringyException('Forbidden.');
-    }
-
-    /**
      * Checks whether the user has permission to the resource.
      *
      * @return bool

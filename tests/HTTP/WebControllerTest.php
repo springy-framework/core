@@ -10,7 +10,6 @@
  */
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Configuration;
-use Springy\Exceptions\Http403Error;
 use Springy\HTTP\Controller;
 use Springy\HTTP\Kernel;
 use Springy\HTTP\Session;
@@ -58,12 +57,6 @@ class WebControllerTest extends TestCase
     public function testHasPermission()
     {
         $this->assertTrue($this->controller->_hasPermission());
-    }
-
-    public function testPageNotFound()
-    {
-        $this->expectException(Http403Error::class);
-        $this->controller->_forbidden();
     }
 }
 

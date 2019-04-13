@@ -16,14 +16,15 @@ class Http503Error extends HttpError
     /**
      * Constructor.
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     *
      * @param string    $message
-     * @param int       $code     the code will be replaced by 403 HTTP forbidden error.
      * @param Throwable $previous
+     * @param int       $code
+     * @param int|null  $code
+     * @param string    $file
+     * @param int       $line
      */
-    public function __construct(string $message = 'Service Unavailable', int $code = 0, Throwable $previous = null)
+    public function __construct(string $message = 'Service Unavailable', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
     {
-        parent::__construct($message, 503, $previous);
+        parent::__construct(503, $message, $previous, $code, $file, $line);
     }
 }

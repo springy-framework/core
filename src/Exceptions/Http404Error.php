@@ -16,14 +16,15 @@ class Http404Error extends HttpError
     /**
      * Constructor.
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     *
      * @param string    $message
-     * @param int       $code     the code will be replaced by 403 HTTP forbidden error.
      * @param Throwable $previous
+     * @param int       $code
+     * @param int|null  $code
+     * @param string    $file
+     * @param int       $line
      */
-    public function __construct(string $message = 'Not Found', int $code = 0, Throwable $previous = null)
+    public function __construct(string $message = 'Not Found', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
     {
-        parent::__construct($message, 404, $previous);
+        parent::__construct(404, $message, $previous, $code, $file, $line);
     }
 }

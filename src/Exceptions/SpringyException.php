@@ -27,26 +27,17 @@ class SpringyException extends RuntimeException
      * @param int        $line
      * @param array|null $context
      */
-    public function __construct(
-        string $message = null,
-        int $code = E_USER_ERROR,
-        string $file = '',
-        int $line = 0,
-        array $context = null
-    ) {
-        parent::__construct($message, $code);
+    public function __construct(string $message = null, int $code = E_USER_ERROR, \Throwable $previous = null, string $file = null, int $line = null)
+    {
+        if (null === $file || null === $line) {
+            $dbt =  debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
+            $file = $dbt[0]['file'];
+            $line = $dbt[0]['line'];
+        }
+
         $this->file = $file;
         $this->line = $line;
-        $this->context = $context;
-    }
 
-    /**
-     * Returns the error context.
-     *
-     * @return array|null
-     */
-    public function getContext()
-    {
-        return $this->context;
+        parent::__construct($message, $code, $previous);
     }
 }

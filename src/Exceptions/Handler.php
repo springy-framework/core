@@ -108,9 +108,11 @@ class Handler
      *
      * @SuppressWarnings(PHPMD.ExitExpression)
      *
+     * @param mixed $errCode
+     *
      * @return void
      */
-    protected function displayError()
+    protected function displayError($errCode)
     {
         $this->save2Log();
 
@@ -130,7 +132,7 @@ class Handler
         $config = Configuration::getInstance();
         $path = $config->get('template.paths.errors').DS.'http'.$response->header()->httpResponseCode().'error.html';
 
-        $body = $this->getErrorName($this->exception->getCode())
+        $body = $this->getErrorName($errCode)
             .' - '.$this->exception->getMessage()
             .' on ['.$this->exception->getLine().'] '
             .$this->exception->getFile();
@@ -248,18 +250,6 @@ class Handler
         ];
 
         return $error;
-    }
-
-    /**
-     * Shows a 4xx error.
-     *
-     * @return void
-     */
-    protected function httpError()
-    {
-        Response::getInstance()->header()->httpResponseCode($this->exception->getCode());
-
-        $this->displayError();
     }
 
     /**
@@ -446,23 +436,21 @@ class Handler
     /**
      * Error handler method.
      *
-     * @param int    $errNo
-     * @param string $errStr
-     * @param string $errFile
-     * @param int    $errLine
-     * @param array  $errContext
+     * @param int    $errno
+     * @param string $errstr
+     * @param string $errfile
+     * @param int    $errline
      *
      * @return void
      */
     public function errorHandler(
-        int $errNo,
-        string $errStr,
-        string $errFile = '',
-        int $errLine = 0,
-        array $errContext = []
+        int $errno,
+        string $errstr,
+        string $errfile = '',
+        int $errline = 0
     ) {
         $this->handlerType = self::HT_ERROR;
-        $this->exception = new SpringyException($errStr, $errNo, $errFile, $errLine, $errContext);
+        $this->exception = new SpringyException($errstr, $errno, $this->exception, $errfile, $errline);
 
         return $this->trigger();
     }
@@ -587,7 +575,9 @@ class Handler
         $this->restoreHandlers();
 
         if ($this->exception instanceof HttpError) {
-            $this->httpError();
+            Response::getInstance()->header()->httpResponseCode($this->exception->getStatusCode());
+
+            $this->displayError($this->exception->getStatusCode());
 
             return true;
         }
@@ -595,7 +585,7 @@ class Handler
         // Sets HTTP 500 error.
         Response::getInstance()->header()->httpResponseCode(500);
 
-        $this->displayError();
+        $this->displayError($errCode);
 
         return true;
     }

@@ -13,10 +13,16 @@ use Springy\Exceptions\SpringyException;
 
 class SpringyExceptionTest extends TestCase
 {
-    public function testContext()
+    public function testException()
     {
-        $err = new SpringyException('test case', E_USER_ERROR, __FILE__, __LINE__, ['test']);
+        $line = __LINE__ + 1;
+        $err = new SpringyException('test case', E_USER_ERROR);
+        $err->setLine($line);
+        $err->setFile(__FILE__);
 
-        $this->assertCount(1, $err->getContext());
+        $this->assertEquals(E_USER_ERROR, $err->getCode());
+        $this->assertEquals(__FILE__, $err->getFile());
+        $this->assertEquals($line, $err->getLine());
+        $this->assertEquals('test case', $err->getMessage());
     }
 }

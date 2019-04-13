@@ -65,10 +65,6 @@ class AclManagerTest extends TestCase
 
 class Controller implements ControllerInterface
 {
-    public function _forbidden()
-    {
-    }
-
     public function _hasPermission(): bool
     {
         return true;
