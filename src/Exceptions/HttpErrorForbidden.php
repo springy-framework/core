@@ -11,7 +11,7 @@
 
 namespace Springy\Exceptions;
 
-class Http403Error extends HttpError
+class HttpErrorForbidden extends HttpError
 {
     /**
      * Constructor.

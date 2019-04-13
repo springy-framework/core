@@ -14,7 +14,7 @@ namespace Springy\HTTP;
 use Springy\Core\Configuration;
 use Springy\Core\Copyright;
 use Springy\Core\Kernel as MainKernel;
-use Springy\Exceptions\Http403Error;
+use Springy\Exceptions\HttpErrorForbidden;
 use Springy\Exceptions\HttpErrorNotFound;
 use Springy\Security\AuthDriver;
 use Springy\Security\Authentication;
@@ -72,7 +72,7 @@ class Kernel extends MainKernel
         } elseif (!is_callable([$this->controller, $this->endpoint])) {
             return false;
         } elseif (!$this->controller->_hasPermission()) {
-            throw new Http403Error();
+            throw new HttpErrorForbidden();
         }
 
         call_user_func([$this->controller, $this->endpoint], $this->params);
