@@ -1,6 +1,6 @@
 <?php
 /**
- * Springy HTTP 404 Not Found error class.
+ * Springy HTTP 400 Bad Request error class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,7 +11,7 @@
 
 namespace Springy\Exceptions;
 
-class Http404Error extends HttpError
+class BadRequestHttpError extends HttpError
 {
     /**
      * Constructor.
@@ -23,8 +23,8 @@ class Http404Error extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Not Found', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
+    public function __construct(string $message = 'Bad Request', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
     {
-        parent::__construct(404, $message, $previous, $code, $file, $line);
+        parent::__construct(400, $message, $previous, $code, $file, $line);
     }
 }

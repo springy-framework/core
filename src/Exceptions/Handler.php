@@ -109,10 +109,11 @@ class Handler
      * @SuppressWarnings(PHPMD.ExitExpression)
      *
      * @param mixed $errCode
+     * @param mixed $responseCode
      *
      * @return void
      */
-    protected function displayError($errCode)
+    protected function displayError($errCode, $responseCode)
     {
         $this->save2Log();
 
@@ -123,6 +124,7 @@ class Handler
         $response = Response::getInstance();
 
         $response->header()->clear();
+        $response->header()->httpResponseCode($responseCode);
         $response->header()->contentType('text/html', 'UTF-8', true);
         $response->header()->pragma('no-cache');
         $response->header()->expires('0');
@@ -130,7 +132,7 @@ class Handler
         $response->header()->cacheControl('private', false);
 
         $config = Configuration::getInstance();
-        $path = $config->get('template.paths.errors').DS.'http'.$response->header()->httpResponseCode().'error.html';
+        $path = __DIR__.DS.'assets'.DS.'http'.$response->header()->httpResponseCode().'error.html';
 
         $body = $this->getErrorName($errCode)
             .' - '.$this->exception->getMessage()
@@ -566,6 +568,7 @@ class Handler
             return;
         }
 
+        $responseCode = 500;
         $errCode = $this->exception->getCode();
         // Is a deprecated warning and is configured to ignore deprecations?
         if (in_array($errCode, [E_DEPRECATED, E_USER_DEPRECATED])) {
@@ -575,17 +578,11 @@ class Handler
         $this->restoreHandlers();
 
         if ($this->exception instanceof HttpError) {
-            Response::getInstance()->header()->httpResponseCode($this->exception->getStatusCode());
-
-            $this->displayError($this->exception->getStatusCode());
-
-            return true;
+            $responseCode = $this->exception->getStatusCode();
+            $errCode = $this->exception->getStatusCode();
         }
 
-        // Sets HTTP 500 error.
-        Response::getInstance()->header()->httpResponseCode(500);
-
-        $this->displayError($errCode);
+        $this->displayError($errCode, $responseCode);
 
         return true;
     }
