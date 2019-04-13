@@ -32,7 +32,7 @@ class HttpError extends Error
     public function __construct(int $statusCode, string $message = null, Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
     {
         if (null === $file || null === $line) {
-            $dbt =  debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
+            $dbt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
             $file = $dbt[0]['file'];
             $line = $dbt[0]['line'];
         }

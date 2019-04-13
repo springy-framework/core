@@ -14,7 +14,6 @@
 namespace Springy\Console;
 
 use Springy\Core\ControllerInterface;
-use Springy\Exceptions\SpringyException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

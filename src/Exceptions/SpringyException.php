@@ -30,7 +30,7 @@ class SpringyException extends RuntimeException
     public function __construct(string $message = null, int $code = E_USER_ERROR, \Throwable $previous = null, string $file = null, int $line = null)
     {
         if (null === $file || null === $line) {
-            $dbt =  debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
+            $dbt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
             $file = $dbt[0]['file'];
             $line = $dbt[0]['line'];
         }
