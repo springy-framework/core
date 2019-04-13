@@ -17,6 +17,7 @@ use Springy\Core\Configuration;
 use Springy\Core\Debug;
 use Springy\HTTP\Response;
 use Springy\Mail\Mailer;
+use Springy\Template\Template;
 use Springy\Utils\NetworkUtils;
 use Springy\Utils\StringUtils;
 use Symfony\Component\Yaml\Yaml;
@@ -122,7 +123,6 @@ class Handler
         }
 
         $response = Response::getInstance();
-
         $response->header()->clear();
         $response->header()->httpResponseCode($responseCode);
         $response->header()->contentType('text/html', 'UTF-8', true);
@@ -130,22 +130,7 @@ class Handler
         $response->header()->expires('0');
         $response->header()->cacheControl('must-revalidate, post-check=0, pre-check=0');
         $response->header()->cacheControl('private', false);
-
-        $config = Configuration::getInstance();
-        $path = __DIR__.DS.'assets'.DS.'http'.$response->header()->httpResponseCode().'error.html';
-
-        $body = $this->getErrorName($errCode)
-            .' - '.$this->exception->getMessage()
-            .' on ['.$this->exception->getLine().'] '
-            .$this->exception->getFile();
-
-        debug($body);
-
-        if (is_file($path)) {
-            $body = file_get_contents($path);
-        }
-
-        $response->body($body);
+        $response->body($this->getErrorView($errCode, $responseCode));
         $response->send();
 
         exit(1);
@@ -194,6 +179,41 @@ class Handler
             ? 'Database error ('.$errNo.')'
             : 'Unknown Error ('.$errNo.')'
         );
+    }
+
+    /**
+     * Returns the HTML error content.
+     *
+     * @param mixed $errCode
+     * @param mixed $responseCode
+     *
+     * @return string
+     */
+    protected function getErrorView($errCode, $responseCode): string
+    {
+        $config = Configuration::getInstance();
+        $sufix = $config->get('template.file_sufix');
+        $path = $config->get('template.paths.errors').DS.'http'.$responseCode.'error'.$sufix;
+        if (is_file($path)) {
+            $template = new Template();
+            $template->setTemplateDir($config->get('template.paths.errors'));
+            $template->setTemplate('http'.$responseCode.'error');
+            $template->assign('errorCode', $errCode);
+            $template->assign('responseCode', $responseCode);
+            $template->assign('exception', $this->exception);
+
+            return $template->fetch();
+        }
+
+        $path = __DIR__.DS.'assets'.DS.'http'.$responseCode.'error.html';
+        if (is_file($path)) {
+            return file_get_contents($path);
+        }
+
+        return $this->getErrorName($errCode)
+            .' - '.$this->exception->getMessage()
+            .' on ['.$this->exception->getLine().'] '
+            .$this->exception->getFile();
     }
 
     /**
