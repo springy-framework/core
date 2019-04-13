@@ -59,10 +59,11 @@
 -   Added `Springy\Database\Query\Update` class
 -   Added `Springy\Database\Query\Value` class
 -   Added `Springy\Database\RowsIterator` class
+-   Added `Springy\Exceptions\BadRequestHttpError` class
 -   Added `Springy\Exceptions\Handler` class
 -   Added `Springy\Exceptions\Http403Error` class
--   Added `Springy\Exceptions\Http404Error` class
 -   Added `Springy\Exceptions\HttpError` class
+-   Added `Springy\Exceptions\NotFoundHttpError` class
 -   Added `Springy\Exceptions\SpringyException` class
 -   Added `Springy\HTTP\Controller` class
 -   Added `Springy\HTTP\Cookie::getInstance()` method
@@ -223,7 +224,7 @@
 -   Removed `$controller` property from `Springy\Security\AclManager`
 -   Removed `$defaultModule` property from `Springy\Security\AclManager`
 -   Removed `$modulePrefix` property from `Springy\Security\AclManager`
--   Removed `Springy\Controller->_pageNotFound()` method. Throws a `Springy\Exceptions\Http404Error` exception to returns a '404-page not found' HTTP error.
+-   Removed `Springy\Controller->_pageNotFound()` method. Throws a `Springy\Exceptions\NotFoundHttpError` exception to returns a '404-page not found' HTTP error.
 -   Removed `Springy\Cookie::contents()` method
 -   Removed `Springy\Cookie::del()` method
 -   Removed `Springy\Controller->_template()` method
