@@ -11,7 +11,7 @@
 
 namespace Springy\Exceptions;
 
-class BadRequestHttpError extends HttpError
+class HttpErrorBadRequest extends HttpError
 {
     /**
      * Constructor.
