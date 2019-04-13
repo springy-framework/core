@@ -11,7 +11,7 @@
 
 namespace Springy\Exceptions;
 
-class NotFoundHttpError extends HttpError
+class HttpErrorNotFound extends HttpError
 {
     /**
      * Constructor.

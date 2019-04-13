@@ -15,7 +15,7 @@ use Springy\Core\Configuration;
 use Springy\Core\Copyright;
 use Springy\Core\Kernel as MainKernel;
 use Springy\Exceptions\Http403Error;
-use Springy\Exceptions\NotFoundHttpError;
+use Springy\Exceptions\HttpErrorNotFound;
 use Springy\Security\AuthDriver;
 use Springy\Security\Authentication;
 
@@ -195,13 +195,13 @@ class Kernel extends MainKernel
     /**
      * Throws a 404 Page Not Found error.
      *
-     * @throws NotFoundHttpError
+     * @throws HttpErrorNotFound
      *
      * @return void
      */
     protected function notFound()
     {
-        throw new NotFoundHttpError();
+        throw new HttpErrorNotFound();
     }
 
     /**
