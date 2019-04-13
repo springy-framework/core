@@ -17,8 +17,6 @@ class SpringyExceptionTest extends TestCase
     {
         $line = __LINE__ + 1;
         $err = new SpringyException('test case', E_USER_ERROR);
-        $err->setLine($line);
-        $err->setFile(__FILE__);
 
         $this->assertEquals(E_USER_ERROR, $err->getCode());
         $this->assertEquals(__FILE__, $err->getFile());
