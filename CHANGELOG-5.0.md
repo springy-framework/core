@@ -7,7 +7,6 @@
 -   Automatic URL redirections
 -   RESTful controller
 -   Data validation on `RowsIterator->set()` method
--   Application errors page customization
 
 #### Test cases to do
 
