@@ -42,7 +42,7 @@ class Kernel extends MainKernel
             return true;
         }
 
-        $command = $input->getFirstArgument();
+        $command = $input->getFirstArgument() ?? '';
         if (!$this->loadController('App\\Console\\'.$this->normalizeNamePath([$command]), [])
             && !$this->discoverInternals($command)) {
             return false;
