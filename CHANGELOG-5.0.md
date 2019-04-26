@@ -4,6 +4,7 @@
 
 ### To do
 
+-   Count method for models
 -   Automatic URL redirections
 -   RESTful controller
 -   Data validation on `RowsIterator->set()` method
@@ -538,3 +539,7 @@ Must be in namespace `App\Migrations\Rev#` where **#** is the version number and
 If there is no method called `rollback()` no rollback can be applied to the migration.
 
 Both methods `migrate()` and `rollback()` will receives a `Springy\Database\Connection` object as parameter.
+
+### Custom Error Pages
+
+To create custom error pages ...
