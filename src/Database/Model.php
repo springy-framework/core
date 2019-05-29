@@ -69,7 +69,7 @@ class Model extends RowsIterator
     protected $selectColumns = [];
 
     /** @var static instance for prevent more than one parse */
-    private static $instance;
+    protected static $instance;
 
     // Trigger names
     const TG_AFT_DEL = 'triggerAfterDelete';
