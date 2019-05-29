@@ -106,14 +106,21 @@ class RowsIterator implements Iterator
     /** @var MessageContainer the last validation errors */
     protected $validationErrors;
 
+    /** @var array persistence of Json structures */
+    protected static $strucs = [];
+
     /**
      * Constructor.
      */
     public function __construct(string $structure)
     {
+        if (!isset(static::$strucs[$structure])) {
+            static::$strucs[$structure] = json_decode(file_get_contents($structure));
+        }
+
         $this->bypassTriggers = false;
         $this->changed = [];
-        $this->columns = json_decode(file_get_contents($structure));
+        $this->columns = static::$strucs[$structure];
         $this->foundRows = 0;
         $this->newRecord = false;
         $this->rows = [];
