@@ -68,6 +68,9 @@ class Model extends RowsIterator
     /** @var array the list of columns to the select query */
     protected $selectColumns = [];
 
+    /** @var static instance for prevent more than one parse */
+    private static $instance;
+
     // Trigger names
     const TG_AFT_DEL = 'triggerAfterDelete';
     const TG_AFT_INS = 'triggerAfterInsert';
@@ -83,18 +86,25 @@ class Model extends RowsIterator
      */
     public function __construct($filter = null, string $dbIdentity = null)
     {
-        $strucPath = Configuration::getInstance()->get(
-            'database.model_structures',
-            __DIR__.DS.'structures'
-        ).DS.preg_replace('/[^\\w_-]/', '', $this->table).'.json';
-        parent::__construct($strucPath);
+        if (static::$instance === null) {
+            $strucPath = Configuration::getInstance()->get(
+                'database.model_structures',
+                __DIR__.DS.'structures'
+            ).DS.preg_replace('/[^\\w_-]/', '', $this->table).'.json';
+            parent::__construct($strucPath);
 
-        $this->embeds = [];
-        $this->dbIdentity = $dbIdentity ?? $this->dbIdentity;
-        $this->groupBy = [];
-        $this->having = new Conditions();
-        $this->joins = [];
-        $this->loaded = false;
+            $this->embeds = [];
+            $this->dbIdentity = $dbIdentity ?? $this->dbIdentity;
+            $this->groupBy = [];
+            $this->having = new Conditions();
+            $this->joins = [];
+            $this->loaded = false;
+
+            static::$instance = clone $this;
+        }
+
+        $thisRef = &$this;
+        $thisRef = clone static::$instance;
 
         if ($filter === null) {
             return;
