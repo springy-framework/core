@@ -126,7 +126,7 @@ class Request
 
         return $request;
     }
-    
+
     protected function parseBearerToken(): ?string
     {
         $headers = $this->getHeaders();
