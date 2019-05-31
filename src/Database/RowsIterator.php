@@ -117,6 +117,10 @@ class RowsIterator implements Iterator
         if (!isset(static::$strucs[$structure])) {
             static::$strucs[$structure] = json_decode(file_get_contents($structure));
         }
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new SpringyException('trouble.json.structure.decoding.error.' . json_last_error());
+        }
 
         $this->bypassTriggers = false;
         $this->changed = [];
