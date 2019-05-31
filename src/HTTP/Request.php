@@ -26,6 +26,8 @@ class Request
     protected $rawBody;
     /** @var string HTTP_X_REQUESTED_WITH value */
     protected $requestedWith;
+    /** @var string Bearer Token value */
+    protected $bearerToken;
 
     /**
      * Constructor.
@@ -39,6 +41,8 @@ class Request
         $this->rawBody = $this->getRawData();
         $this->body = $this->parseRawData();
         $this->requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+        $this->bearerToken = $this->parseBearerToken();
+
         self::$instance = $this;
     }
 
@@ -77,7 +81,8 @@ class Request
         foreach ($_SERVER as $name => $value) {
             if ((substr($name, 0, 5) == 'HTTP_')
                 || ($name == 'CONTENT_TYPE')
-                || ($name == 'CONTENT_LENGTH')) {
+                || ($name == 'CONTENT_LENGTH')
+                || ($name == 'AUTHORIZATION')) {
                 $headers[
                     str_replace(
                         [' ', 'Http'],
@@ -120,6 +125,17 @@ class Request
         $request = json_decode($this->rawBody);
 
         return $request;
+    }
+
+    protected function parseBearerToken(): ?string
+    {
+        $headers = $this->getHeaders();
+
+        if (!isset($headers['Authorization'])) {
+            return null;
+        }
+
+        return trim(str_replace('Bearer', '', $headers['Authorization']));
     }
 
     /**
