@@ -138,6 +138,11 @@ class Request
         return trim(str_replace('Bearer', '', $headers['Authorization']));
     }
 
+    public function getBearerToken(): ?string
+    {
+        return $this->bearerToken ?? null;
+    }
+
     /**
      * Returns received body.
      *
