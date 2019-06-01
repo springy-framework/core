@@ -4,6 +4,7 @@
 
 ### To do
 
+-   Implement parse error message for migration in YAML formats
 -   Count method for models
 -   Automatic URL redirections
 -   RESTful controller
