@@ -39,7 +39,8 @@ class Migrator
     public function __construct(string $dbIdentity = null)
     {
         $identity = $dbIdentity ?? config_get('database.default');
-        $path = config_get('database.connections.'.$identity.'.migration_dir');
+        $path = config_get('database.connections.'.$identity.'.migration.dir');
+        $namespace = config_get('database.connections.'.$identity.'.migration.namespace', 'App');
 
         if ($path === null) {
             throw new SpringyException('Migration path configuration missing for "'.$identity.'"');
@@ -48,7 +49,7 @@ class Migrator
         $this->applied = [];
         $this->notApplied = [];
         $this->connection = new Connection($identity);
-        $this->revisions = new Revisions($path);
+        $this->revisions = new Revisions($path, $namespace);
         $this->controlTable = config_get(
             'database.connections.'.$identity.'.migration_table',
             '_migration_control'

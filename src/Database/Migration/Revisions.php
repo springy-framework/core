@@ -21,6 +21,8 @@ class Revisions implements Iterator
     protected $applied;
     /** @var array the list of not applied revision scripts */
     protected $notApplied;
+    /** @var string the revisions namespace */
+    protected $revNamespace;
     /** @var string the revisions path */
     protected $revPath;
     /** @var array the list of revisions */
@@ -30,8 +32,9 @@ class Revisions implements Iterator
      * Constructor.
      *
      * @param string $path
+     * @param string $namespace
      */
-    public function __construct(string $path)
+    public function __construct(string $path, string $namespace)
     {
         if (!is_dir($path)) {
             throw new SpringyException('"'.$path.'" is not a directory.');
@@ -39,6 +42,7 @@ class Revisions implements Iterator
 
         $this->applied = [];
         $this->notApplied = [];
+        $this->revNamespace = $namespace;
         $this->revPath = $path;
         $this->revs = [];
 
@@ -71,7 +75,12 @@ class Revisions implements Iterator
                 continue;
             }
 
-            $this->revs[] = new MigrationScript($this->revPath, $version, $file->getBasename());
+            $this->revs[] = new MigrationScript(
+                $this->revPath,
+                $this->revNamespace,
+                $version,
+                $file->getBasename()
+            );
         }
     }
 

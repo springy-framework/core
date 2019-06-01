@@ -10,7 +10,10 @@ return [
             'username' => 'travis',
             'password' => '',
             'database' => 'test',
-            'migration_dir' => __DIR__.'/../migration/mysql',
+            'migration' => [
+                'dir' => __DIR__.'/../migration/mysql',
+                'namespace' => 'App',
+            ],
         ],
         'mysql_file' => [
             'driver' => 'mysql',

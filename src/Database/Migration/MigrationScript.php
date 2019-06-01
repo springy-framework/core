@@ -21,6 +21,8 @@ class MigrationScript
 {
     /** @var string error message */
     private $error;
+    /** @var string namespace for PHP scripts */
+    private $namespace;
     /** @var string the name of the script */
     private $script;
     /** @var mixed the migration script */
@@ -34,11 +36,13 @@ class MigrationScript
      * Constructor.
      *
      * @param string $path
+     * @param string $namespace
      * @param string $version
      * @param string $script
      */
-    public function __construct(string $path, string $version, string $script)
+    public function __construct(string $path, string $namespace, string $version, string $script)
     {
+        $this->namespace = $namespace;
         $this->script = $script;
         $this->version = $version;
 
@@ -83,7 +87,7 @@ class MigrationScript
      */
     private function loadScript()
     {
-        $namespace = 'App\\Migrations\\Rev'.$this->version.'\\'.pathinfo($this->script, PATHINFO_FILENAME);
+        $namespace = $this->namespace.'\\Migrations\\Rev'.$this->version.'\\'.pathinfo($this->script, PATHINFO_FILENAME);
 
         $script = new $namespace();
 
