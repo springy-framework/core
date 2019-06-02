@@ -16,7 +16,10 @@
 -   Springy\Exceptions\Handler->setUnreportable()
 -   Springy\Exceptions\Handler->addWebmaster()
 -   Springy\Exceptions\Handler->setWebmaster()
+-   Springy\HTTP\Request->getBody()
 -   Springy\HTTP\Request->getHeaders()
+-   Springy\HTTP\Request->getJsonError()
+-   Springy\HTTP\Request->getJsonErrorMsg()
 -   Springy\HTTP\Routing
 -   Springy\Utils\NetworkUtils
 -   Helper functions

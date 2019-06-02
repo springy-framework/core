@@ -112,7 +112,7 @@ class Terminal
      */
     protected function parseRpc()
     {
-        $body = $this->request->getBody();
+        $body = $this->request->getJsonBody();
         if ($body === null) {
             return $this->sendError(400, 'Bad request');
         }
@@ -234,7 +234,7 @@ class Terminal
      */
     protected function serviceLogin()
     {
-        $body = $this->request->getBody();
+        $body = $this->request->getJsonBody();
         $params = $body->params ?? [];
 
         if (count($params) != 2 || $params[0] !== $this->credential[0] || $params[1] !== $this->credential[1]) {

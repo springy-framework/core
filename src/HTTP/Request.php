@@ -16,10 +16,14 @@ class Request
     /** @var self Request globally instance */
     protected static $instance;
 
-    /** @var object|null HTTP request body */
-    protected $body;
     /** @var array HTTP request headers */
     protected $headers;
+    /** @var object|null HTTP request body in Json format */
+    protected $jsonBody;
+    /** @var int the code of error occurred during parse body */
+    protected $jsonError;
+    /** @var string the message of error occurred during parse body */
+    protected $jsonErrorMsg;
     /** @var string HTTP request method */
     protected $method;
     /** @var string the received body in raw format */
@@ -39,7 +43,9 @@ class Request
         $this->method = $_SERVER['REQUEST_METHOD'] ?? null;
         $this->headers = $this->parseHeaders();
         $this->rawBody = $this->getRawData();
-        $this->body = $this->parseRawData();
+        $this->jsonBody = $this->parseRawData();
+        $this->jsonError = json_last_error();
+        $this->jsonErrorMsg = json_last_error_msg();
         $this->requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
         $this->bearerToken = $this->parseBearerToken();
 
@@ -122,11 +128,14 @@ class Request
             $this->rawBody = iconv($encoding, 'UTF-8', $this->rawBody);
         }
 
-        $request = json_decode($this->rawBody);
-
-        return $request;
+        return json_decode($this->rawBody);
     }
 
+    /**
+     * Parses the bearer token authorization header.
+     *
+     * @return string|null
+     */
     protected function parseBearerToken(): ?string
     {
         $headers = $this->getHeaders();
@@ -138,6 +147,11 @@ class Request
         return trim(str_replace('Bearer', '', $headers['Authorization']));
     }
 
+    /**
+     * Returns the bearer token.
+     *
+     * @return string|null
+     */
     public function getBearerToken(): ?string
     {
         return $this->bearerToken ?? null;
@@ -146,11 +160,11 @@ class Request
     /**
      * Returns received body.
      *
-     * @return object|null
+     * @return string|null
      */
-    public function getBody()
+    public function getBody(): ?string
     {
-        return $this->body;
+        return $this->rawBody;
     }
 
     /**
@@ -161,6 +175,36 @@ class Request
     public function getHeaders(): array
     {
         return $this->headers;
+    }
+
+    /**
+     * Returns received body.
+     *
+     * @return object|null
+     */
+    public function getJsonBody(): ?object
+    {
+        return $this->jsonBody;
+    }
+
+    /**
+     * Returns the code of the error occurred during body encoding.
+     *
+     * @return int
+     */
+    public function getJsonError(): int
+    {
+        return $this->jsonError;
+    }
+
+    /**
+     * Returns the message of the error occurred during body encoding.
+     *
+     * @return string
+     */
+    public function getJsonErrorMsg(): string
+    {
+        return $this->jsonErrorMsg;
     }
 
     /**
