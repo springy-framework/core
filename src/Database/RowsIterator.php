@@ -496,6 +496,16 @@ class RowsIterator implements Iterator
     }
 
     /**
+     * Returns the array of writable columns.
+     *
+     * @return array
+     */
+    public function getWritableColumns(): array
+    {
+        return $this->writableColumns;
+    }
+
+    /**
      * Returns the number of rows.
      *
      * @return int
