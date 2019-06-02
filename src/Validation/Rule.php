@@ -111,6 +111,18 @@ class Rule
     }
 
     /**
+     * Validates whether the value is an array
+     *
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    protected function validateArray($value): bool
+    {
+        return is_array($value);
+    }
+
+    /**
      * Validates if the value is between the minimum and maximum range.
      *
      * @param mixed $value
