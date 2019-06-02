@@ -12,7 +12,7 @@
 
 #### Test cases to do
 
--   Springy\Database\RowsIterator->getWritableColumns()
+-   Springy\Database\RowsIteratPodor->getWritableColumns()
 -   Springy\Exceptions\Handler->setLogDir()
 -   Springy\Exceptions\Handler->setUnreportable()
 -   Springy\Exceptions\Handler->addWebmaster()
