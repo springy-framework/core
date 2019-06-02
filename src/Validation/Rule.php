@@ -111,7 +111,7 @@ class Rule
     }
 
     /**
-     * Validates whether the value is an array
+     * Validates whether the value is an array.
      *
      * @param mixed $value
      *
