@@ -37,7 +37,7 @@ class MySQL extends Connector implements ConnectorInterface
         parent::__construct($config);
 
         $this->charset = $config['charset'] ?? 'utf8mb4';
-        $this->port = $config['port'] ?? '3128';
+        $this->port = $config['port'] ?? '3306';
         $this->retries = $config['retries'] ?? 3;
         $this->retrySleep = $config['retry_sleep'] ?? 1;
         $this->socket = false;
