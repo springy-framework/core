@@ -101,6 +101,17 @@ class Validator
             ];
         }
 
+        // The rule is an object (Json)?
+        if (is_object($rule)) {
+            $params = $rule->params ?? '';
+
+            return [
+                'n' => $name,
+                'p' => is_array($params) ? $params : (array) explode(',', $params),
+                'm' => $rule->message ?? null,
+            ];
+        }
+
         // Converts the rule to an array
         $rule = explode(':', $rule);
         if ($rule === false) {
