@@ -27,6 +27,8 @@ class Kernel extends MainKernel
     protected $endpoint;
     protected $params;
 
+    const DEFAULT_NS = 'App\\Controllers\\Web\\';
+
     /**
      * Checks if endpoint exists.
      *
@@ -123,7 +125,8 @@ class Kernel extends MainKernel
      */
     protected function hasController(array $segments): bool
     {
-        $routing = new Routing();
+        $config = $this->getRouteConfiguration();
+        $routing = new Routing($config['routes']);
         $routing->parse();
         if ($routing->hasFound()) {
             $this->endpoint = $routing->getMethod();
@@ -134,7 +137,7 @@ class Kernel extends MainKernel
 
         $this->params = [];
         $arguments = $segments;
-        $namespace = $this->getNamespace($arguments);
+        $namespace = $this->getNamespace($config, $arguments);
         $endpoint = 'index';
         do {
             // Adds and finds an Index controller in current $arguments path
@@ -168,28 +171,46 @@ class Kernel extends MainKernel
      *
      * @return string
      */
-    protected function getNamespace(array &$segments): string
+    protected function getNamespace(array $config, array &$segments): string
     {
-        $config = Configuration::getInstance();
         $uri = '/'.implode('/', $segments);
-        foreach ($config->get('routing.namespaces', []) as $route => $namespace) {
+        foreach (($config['segments'] ?? []) as $route => $namespace) {
             $pattern = sprintf('#^%s(/(.+))?$#', $route);
             if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
                 $segments = explode('/', trim($matches[1][0], '/'));
 
-                return $namespace.'\\';
+                return trim($namespace, " \t\0\x0B\\").'\\';
             }
         }
 
+        return trim($config['namespace'] ?? self::DEFAULT_NS, " \t\0\x0B\\").'\\';
+    }
+
+    /**
+     * Gets the configuration array for routing.
+     *
+     * @return array
+     */
+    protected function getRouteConfiguration(): array
+    {
+        $config = Configuration::getInstance();
         $host = current_host();
-        foreach ($config->get('routing.hostings', []) as $route => $namespace) {
+        foreach ($config->get('routing.hosts', []) as $route => $data) {
             $pattern = sprintf('#^%s$#', $route);
             if (preg_match_all($pattern, $host, $matches, PREG_PATTERN_ORDER)) {
-                return $namespace.'\\';
+                return [
+                    'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
+                    'routes' => $data['routes'] ?? [],
+                    'segments' => $data['segments'] ?? [],
+                ];
             }
         }
 
-        return $config->get('routing.namespace', 'App\\Controllers\\Web\\');
+        return [
+            'namespace' => $config->get('routing.namespace', self::DEFAULT_NS),
+            'routes' => $config->get('routing.routes', []),
+            'segments' => $config->get('routing.segments', []),
+        ];
     }
 
     /**

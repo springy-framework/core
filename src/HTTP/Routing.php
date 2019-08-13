@@ -11,7 +11,6 @@
 
 namespace Springy\HTTP;
 
-use Springy\Core\Configuration;
 use Springy\Exceptions\SpringyException;
 
 class Routing
@@ -26,7 +25,7 @@ class Routing
     /**
      * Constructor.
      */
-    public function __construct()
+    public function __construct(?array $routes = [])
     {
         $this->params = [];
         $this->routes = [
@@ -39,9 +38,6 @@ class Routing
             'HEAD' => [],
         ];
 
-        $config = Configuration::getInstance();
-
-        $routes = $config->get('routing.routes', []);
         foreach ($routes as $pattern => $handling) {
             $this->addPattern($pattern, $handling);
         }
