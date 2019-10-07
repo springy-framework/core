@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface to standardize the controllers of the application.
  *
@@ -18,5 +19,5 @@ interface ControllerInterface
      *
      * @return bool
      */
-    public function _hasPermission(): bool;
+    public function hasPermission(): bool;
 }

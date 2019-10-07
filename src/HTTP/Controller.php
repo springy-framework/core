@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parent class for web controllers.
  *
@@ -18,6 +19,9 @@ use Springy\Exceptions\SpringyException;
 use Springy\Security\AclManager;
 use Throwable;
 
+/**
+ * Parent class for web controllers.
+ */
 class Controller implements ControllerInterface
 {
     /** @var \Springy\Security\AclManager the ACL manager object */
@@ -108,7 +112,7 @@ class Controller implements ControllerInterface
      *
      * @return bool
      */
-    public function _hasPermission(): bool
+    public function hasPermission(): bool
     {
         return $this->hasPermission;
     }

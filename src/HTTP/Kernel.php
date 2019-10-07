@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Kernel for the web application requisition.
  *
@@ -11,14 +12,13 @@
 
 namespace Springy\HTTP;
 
-use Springy\Core\Configuration;
-use Springy\Core\Copyright;
-use Springy\Core\Kernel as MainKernel;
-use Springy\Exceptions\HttpErrorForbidden;
-use Springy\Exceptions\HttpErrorNotFound;
-use Springy\Security\AuthDriver;
-use Springy\Security\Authentication;
+use Springy\Core\{Configuration, Copyright, Kernel as MainKernel};
+use Springy\Exceptions\{HttpErrorForbidden, HttpErrorNotFound};
+use Springy\Security\{AuthDriver, Authentication};
 
+/**
+ * Kernel for the web application requisition.
+ */
 class Kernel extends MainKernel
 {
     /** @var static Kernel globally instance */
@@ -73,7 +73,7 @@ class Kernel extends MainKernel
             return $this->discoverMagic();
         } elseif (!is_callable([$this->controller, $this->endpoint])) {
             return false;
-        } elseif (!$this->controller->_hasPermission()) {
+        } elseif (!$this->controller->hasPermission()) {
             throw new HttpErrorForbidden();
         }
 

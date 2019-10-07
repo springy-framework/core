@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test case for Springy\HTTP\Controller class.
  *
@@ -8,11 +9,10 @@
  *
  * @version   1.0.0
  */
+
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Configuration;
-use Springy\HTTP\Controller;
-use Springy\HTTP\Kernel;
-use Springy\HTTP\Session;
+use Springy\HTTP\{Controller, Kernel, Session};
 use Springy\Security\AuthDriver;
 
 require_once __DIR__.'/../mocks/mockUser.php';
@@ -56,7 +56,7 @@ class WebControllerTest extends TestCase
 
     public function testHasPermission()
     {
-        $this->assertTrue($this->controller->_hasPermission());
+        $this->assertTrue($this->controller->hasPermission());
     }
 }
 
