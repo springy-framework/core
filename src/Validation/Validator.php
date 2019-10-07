@@ -13,6 +13,7 @@
 
 namespace Springy\Validation;
 
+use BadMethodCallException;
 use Springy\HTTP\Input;
 use Springy\Utils\MessageContainer;
 
@@ -52,7 +53,7 @@ class Validator
     protected function applyRules(string $field, $rules)
     {
         foreach ($this->explodeRules($rules, $field) as $rule) {
-            if (!$rule->validate($this->input)) {
+            if (!$rule->isValid()) {
                 $this->errors->add($field, $rule->getErrorMessage());
             }
         }
@@ -76,7 +77,13 @@ class Validator
 
         foreach ($rules as $index => $rule) {
             $rule = $this->parseRule($index, $rule);
-            $explodedRules[] = new Rule($field, $rule['n'], $rule['p'], $rule['m']);
+            $explodedRules[] = new Rule(
+                $this->input,
+                $field,
+                $rule['n'],
+                $rule['p'],
+                $rule['m']
+            );
         }
 
         return $explodedRules;
@@ -119,7 +126,7 @@ class Validator
         // Converts the rule to an array
         $rule = explode(':', $rule);
         if ($rule === false) {
-            throw new \BadMethodCallException('Validation rule empty.');
+            throw new BadMethodCallException('Validation rule empty.');
         }
 
         return [
