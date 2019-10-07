@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTTP uploaded files handler.
  *
@@ -15,6 +16,9 @@ namespace Springy\HTTP;
 use Springy\Exceptions\SpringyException;
 use Springy\Utils\File;
 
+/**
+ * HTTP uploaded files handler.
+ */
 class UploadedFile extends File
 {
     /** @var string the original name of the uploaded file */
@@ -224,10 +228,17 @@ class UploadedFile extends File
         $max = intval(ltrim($iniMax, '+'));
 
         switch (substr($iniMax, -1)) {
-            case 't': $max *= 1024;
-            case 'g': $max *= 1024;
-            case 'm': $max *= 1024;
-            case 'k': $max *= 1024;
+            case 't':
+                $max *= 1024;
+                // no break to multiply again
+            case 'g':
+                $max *= 1024;
+                // no break to multiply again
+            case 'm':
+                $max *= 1024;
+                // no break to multiply again
+            case 'k':
+                $max *= 1024;
         }
 
         return $max;

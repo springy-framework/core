@@ -1,6 +1,7 @@
 <?php
+
 /**
- * HTTP cookie handler class.
+ * HTTP cookie handler.
  *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\HTTP;
 
+/**
+ * HTTP cookie handler class.
+ */
 class Cookie
 {
     /** @var self globally instance */
@@ -55,7 +59,7 @@ class Cookie
             return (string) $key;
         }
 
-        return key($key).'['.current($key).']';
+        return key($key) . '[' . current($key) . ']';
     }
 
     /**
@@ -67,8 +71,10 @@ class Cookie
      */
     protected function unscrubKey($key)
     {
-        if (!is_array($key)
-            && preg_match('/([\w\d]+)\[([\w\d]+)\]$/i', $key, $matches)) {
+        if (
+            !is_array($key)
+            && preg_match('/([\w\d]+)\[([\w\d]+)\]$/i', $key, $matches)
+        ) {
             $key = [$matches[1] => $matches[2]];
         }
 

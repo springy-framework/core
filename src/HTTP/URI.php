@@ -1,6 +1,7 @@
 <?php
+
 /**
- * URI handler class.
+ * URI handler.
  *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -12,6 +13,9 @@
 
 namespace Springy\HTTP;
 
+/**
+ * URI handler class.
+ */
 class URI
 {
     /** @var self URI globally instance */
@@ -75,8 +79,11 @@ class URI
             '/([^:]+)(:\\d+)?/',
             '$1',
             $_SERVER['HTTP_HOST'] ?? ''
-        )
-        .(($_SERVER['SERVER_PORT'] ?? 80) != 80 ? ':'.$_SERVER['SERVER_PORT'] : '');
+        ) . (
+            ($_SERVER['SERVER_PORT'] ?? 80) != 80
+            ? ':' . $_SERVER['SERVER_PORT']
+            : ''
+        );
     }
 
     /**
@@ -87,7 +94,7 @@ class URI
     protected function parsePathInfo(): string
     {
         $path = $_SERVER['ORIG_PATH_INFO'] ?? @getenv('ORIG_PATH_INFO');
-        if (trim($path, '/') == '' || $path == '/'.pathinfo(__FILE__, PATHINFO_BASENAME)) {
+        if (trim($path, '/') == '' || $path == '/' . pathinfo(__FILE__, PATHINFO_BASENAME)) {
             return '';
         }
 

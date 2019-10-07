@@ -1,6 +1,7 @@
 <?php
+
 /**
- * GET and POST input data header.
+ * GET and FORM-DATA POST input data header.
  *
  * @copyright 2014 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
@@ -14,10 +15,13 @@ namespace Springy\HTTP;
 
 use Springy\Utils\ArrayUtils;
 
+/**
+ * GET and FORM-DATA POST input data header.
+ */
 class Input
 {
     // Constant for old data session key
-    const OLD_DATA_SESSION = '__OLDINPUT__';
+    protected const OLD_DATA_SESSION = '__OLDINPUT__';
 
     /** @var ArrayUtils array handler helper */
     protected $arrUtils;

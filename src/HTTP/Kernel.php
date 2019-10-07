@@ -31,7 +31,7 @@ class Kernel extends MainKernel
     protected $endpoint;
     protected $params;
 
-    const DEFAULT_NS = 'App\\Controllers\\Web\\';
+    public const DEFAULT_NS = 'App\\Controllers\\Web\\';
 
     /**
      * Checks if endpoint exists.
@@ -146,7 +146,9 @@ class Kernel extends MainKernel
         do {
             // Adds and finds an Index controller in current $arguments path
             $arguments[] = 'Index';
-            if ($this->loadController($namespace.$this->normalizeNamePath($arguments), $segments)) {
+            if (
+                $this->loadController($namespace . $this->normalizeNamePath($arguments), $segments)
+            ) {
                 $this->endpoint = $this->checkEndpoint($endpoint);
 
                 return true;
@@ -154,8 +156,10 @@ class Kernel extends MainKernel
 
             // Removes Index and finds the full qualified name controller
             array_pop($arguments);
-            if (count($arguments)
-                && $this->loadController($namespace.$this->normalizeNamePath($arguments), $segments)) {
+            if (
+                count($arguments)
+                && $this->loadController($namespace . $this->normalizeNamePath($arguments), $segments)
+            ) {
                 $this->endpoint = $this->checkEndpoint($endpoint);
 
                 return true;
@@ -177,17 +181,17 @@ class Kernel extends MainKernel
      */
     protected function getNamespace(array $config, array &$segments): string
     {
-        $uri = '/'.implode('/', $segments);
+        $uri = '/' . implode('/', $segments);
         foreach (($config['segments'] ?? []) as $route => $namespace) {
             $pattern = sprintf('#^%s(/(.+))?$#', $route);
             if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
                 $segments = explode('/', trim($matches[1][0], '/'));
 
-                return trim($namespace, " \t\0\x0B\\").'\\';
+                return trim($namespace, " \t\0\x0B\\") . '\\';
             }
         }
 
-        return trim($config['namespace'] ?? self::DEFAULT_NS, " \t\0\x0B\\").'\\';
+        return trim($config['namespace'] ?? self::DEFAULT_NS, " \t\0\x0B\\") . '\\';
     }
 
     /**
@@ -260,14 +264,14 @@ class Kernel extends MainKernel
      */
     protected function setupAuthEvt(string $element, $default = null)
     {
-        $option = Configuration::getInstance()->get('application.authentication.'.$element, $default);
+        $option = Configuration::getInstance()->get('application.authentication.' . $element, $default);
 
         if ($option === null) {
             return;
         } elseif ($option instanceof Closure || is_object($option)) {
-            app()->bind('user.auth.'.$element, $option);
+            app()->bind('user.auth.' . $element, $option);
         } elseif (is_string($option)) {
-            app()->bind('user.auth.'.$element, function () use ($option) {
+            app()->bind('user.auth.' . $element, function () use ($option) {
                 return new $option();
             });
         }

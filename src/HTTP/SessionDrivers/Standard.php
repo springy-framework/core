@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Driver for standard session store handler.
  *
@@ -13,6 +14,9 @@ namespace Springy\HTTP\SessionDrivers;
 
 use Springy\Core\Configuration;
 
+/**
+ * Driver for standard session store handler.
+ */
 class Standard implements SessionDriverInterface
 {
     /** @var array the session data array */

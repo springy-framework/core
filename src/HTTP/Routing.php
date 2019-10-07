@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Routing for the web application requisition.
  *
@@ -13,6 +14,9 @@ namespace Springy\HTTP;
 
 use Springy\Exceptions\SpringyException;
 
+/**
+ * Routing for the web application requisition.
+ */
 class Routing
 {
     /** @var mixed found handling */
@@ -70,7 +74,7 @@ class Routing
 
         if (is_array($handling)) {
             foreach ($handling as $subPattern => $realHandling) {
-                $this->addMethod($method, $pattern.$subPattern, $realHandling);
+                $this->addMethod($method, $pattern . $subPattern, $realHandling);
             }
 
             return;
@@ -167,16 +171,18 @@ class Routing
         foreach ($this->routes[$method] as $route) {
             $route['pattern'] = preg_replace('/\/{(.*?)}/', '/(.*?)', $route['pattern']);
 
-            if (preg_match_all('#^'.$route['pattern'].'$#', $uri, $matches, PREG_OFFSET_CAPTURE)) {
+            if (preg_match_all('#^' . $route['pattern'] . '$#', $uri, $matches, PREG_OFFSET_CAPTURE)) {
                 // Index 0 does not matter to us
                 $matches = array_slice($matches, 1);
 
                 // Extracts only the parameters from the matched URL parameters
                 $this->params = array_map(function ($match, $index) use ($matches) {
                     // The is following parameters?
-                    if (isset($matches[$index + 1])
+                    if (
+                        isset($matches[$index + 1])
                         && isset($matches[$index + 1][0])
-                        && is_array($matches[$index + 1][0])) {
+                        && is_array($matches[$index + 1][0])
+                    ) {
                         // Take the substring from the current param position until the next one's position
                         return trim(substr($match[0][0], 0, $matches[$index + 1][0][1] - $match[0][1]), '/');
                     }

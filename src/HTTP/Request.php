@@ -1,6 +1,7 @@
 <?php
+
 /**
- * HTTP request handler class.
+ * HTTP request handler.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\HTTP;
 
+/**
+ * HTTP request handler class.
+ */
 class Request
 {
     /** @var self Request globally instance */
@@ -85,10 +89,12 @@ class Request
         }
 
         foreach ($_SERVER as $name => $value) {
-            if ((substr($name, 0, 5) == 'HTTP_')
+            if (
+                (substr($name, 0, 5) == 'HTTP_')
                 || ($name == 'CONTENT_TYPE')
                 || ($name == 'CONTENT_LENGTH')
-                || ($name == 'AUTHORIZATION')) {
+                || ($name == 'AUTHORIZATION')
+            ) {
                 $headers[
                     str_replace(
                         [' ', 'Http'],
@@ -224,9 +230,11 @@ class Request
      */
     public function getMethodOverride(): string
     {
-        if ($this->isPost()
+        if (
+            $this->isPost()
             && isset($this->headers['X-HTTP-Method-Override'])
-            && in_array($this->headers['X-HTTP-Method-Override'], ['PUT', 'DELETE', 'PATCH'])) {
+            && in_array($this->headers['X-HTTP-Method-Override'], ['PUT', 'DELETE', 'PATCH'])
+        ) {
             return $this->headers['X-HTTP-Method-Override'];
         }
 
