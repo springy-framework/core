@@ -12,7 +12,9 @@
 
 namespace Springy\HTTP;
 
-use Springy\Core\{Configuration, Copyright, Kernel as MainKernel};
+use Springy\Core\Configuration;
+use Springy\Core\Copyright;
+use Springy\Core\Kernel as MainKernel;
 use Springy\Exceptions\{HttpErrorForbidden, HttpErrorNotFound};
 use Springy\Security\{AuthDriver, Authentication};
 

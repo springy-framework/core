@@ -12,7 +12,9 @@
 
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Configuration;
-use Springy\HTTP\{Controller, Kernel, Session};
+use Springy\HTTP\Controller;
+use Springy\HTTP\Kernel;
+use Springy\HTTP\Session;
 use Springy\Security\AuthDriver;
 
 require_once __DIR__.'/../mocks/mockUser.php';
