@@ -205,7 +205,7 @@ class Kernel extends MainKernel
         $host = current_host();
         foreach ($config->get('routing.hosts', []) as $route => $data) {
             $pattern = sprintf('#^%s$#', $route);
-            if (preg_match_all($pattern, $host, $matches, PREG_PATTERN_ORDER)) {
+            if (preg_match_all($pattern, $host)) {
                 return [
                     'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
                     'routes' => $data['routes'] ?? [],
