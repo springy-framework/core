@@ -18,7 +18,7 @@ class RequestTest extends TestCase
         $request = Request::getInstance();
 
         $this->assertEmpty($request->getMethod());
-        $this->assertNull($request->getBody());
+        $this->assertNull($request->getJsonBody());
         $this->assertFalse($request->isAjax());
         $this->assertFalse($request->isDelete());
         $this->assertFalse($request->isGet());

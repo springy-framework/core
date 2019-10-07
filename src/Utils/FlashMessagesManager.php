@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Session flash data manager.
  *
@@ -14,10 +15,13 @@ namespace Springy\Utils;
 
 use Springy\HTTP\Session;
 
+/**
+ * Session flash data manager.
+ */
 class FlashMessagesManager
 {
     // Flash data session key
-    const FLASH_KEY = '__FLASHDATA__';
+    public const FLASH_KEY = '__FLASHDATA__';
 
     /** @var MessageContainer new error messages to be saved to the next request */
     protected $newErrors;

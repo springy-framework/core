@@ -1,6 +1,7 @@
 <?php
+
 /**
- * HTTP session handler class.
+ * HTTP session handler.
  *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -14,6 +15,9 @@ namespace Springy\HTTP;
 use Springy\Core\Configuration;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * HTTP session handler class.
+ */
 class Session
 {
     /** @var self globally instance */
@@ -108,7 +112,7 @@ class Session
             throw new SpringyException('Undefined session engine.');
         }
 
-        $engine = 'Springy\\HTTP\\SessionDrivers\\'.$engine;
+        $engine = 'Springy\\HTTP\\SessionDrivers\\' . $engine;
         $this->engine = new $engine();
 
         return self::getInstance();

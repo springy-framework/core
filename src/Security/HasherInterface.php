@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hasher interface.
  *
@@ -12,6 +13,9 @@
 
 namespace Springy\Security;
 
+/**
+ * Hasher interface.
+ */
 interface HasherInterface
 {
     /**

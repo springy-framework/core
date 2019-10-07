@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Driver class for use with PHPMailer class.
+ * Driver for use with PHPMailer class.
  *
  * @copyright 2016 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -32,6 +33,9 @@ namespace Springy\Mail\Drivers;
 use PHPMailer\PHPMailer\PHPMailer as PHPMailerDriver;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * Driver class for use with PHPMailer class.
+ */
 class PhpMailer implements MailDriverInterface
 {
     /** @var string last send error message */
@@ -185,7 +189,7 @@ class PhpMailer implements MailDriverInterface
                 $this->lastError = $this->mailObj->ErrorInfo;
             }
         } catch (\Throwable $err) {
-            $this->lastError = $err->getCode().': '.$err->getMessage();
+            $this->lastError = $err->getCode() . ': ' . $err->getMessage();
         }
 
         return empty($this->lastError);

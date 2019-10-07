@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Migration script.
  *
@@ -17,10 +18,15 @@ use Springy\Database\Connection;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
 
+/**
+ * Migration script.
+ */
 class MigrationScript
 {
     /** @var string error message */
     private $error;
+    /** @var string namespace for PHP scripts */
+    private $namespace;
     /** @var string the name of the script */
     private $script;
     /** @var mixed the migration script */
@@ -34,15 +40,17 @@ class MigrationScript
      * Constructor.
      *
      * @param string $path
+     * @param string $namespace
      * @param string $version
      * @param string $script
      */
-    public function __construct(string $path, string $version, string $script)
+    public function __construct(string $path, string $namespace, string $version, string $script)
     {
+        $this->namespace = $namespace;
         $this->script = $script;
         $this->version = $version;
 
-        $this->getScript($path.DS.$version.DS.$script);
+        $this->getScript($path . DS . $version . DS . $script);
     }
 
     /**
@@ -83,7 +91,9 @@ class MigrationScript
      */
     private function loadScript()
     {
-        $namespace = 'App\\Migrations\\Rev'.$this->version.'\\'.pathinfo($this->script, PATHINFO_FILENAME);
+        $namespace = $this->namespace
+            . '\\Migrations\\Rev' . $this->version
+            . '\\' . pathinfo($this->script, PATHINFO_FILENAME);
 
         $script = new $namespace();
 
@@ -144,7 +154,7 @@ class MigrationScript
 
             $this->error = $connection->getError();
         } catch (Throwable $err) {
-            $this->error = '['.$err->getCode().'] '.$err->getMessage();
+            $this->error = '[' . $err->getCode() . '] ' . $err->getMessage();
         }
 
         return false;
@@ -167,7 +177,7 @@ class MigrationScript
      */
     public function getIdentity(): string
     {
-        return $this->version.'/'.$this->script;
+        return $this->version . '/' . $this->script;
     }
 
     /**
@@ -191,7 +201,7 @@ class MigrationScript
     public function migrate(Connection $connection, string $table): bool
     {
         if ($this->mScript === null) {
-            $this->error = 'Migration script "'.$this->getIdentity().'" has no migration method.';
+            $this->error = 'Migration script "' . $this->getIdentity() . '" has no migration method.';
 
             return false;
         }
@@ -200,15 +210,14 @@ class MigrationScript
             return false;
         }
 
-        $command = 'INSERT INTO '.$table
-            .' (migration, done_at, result_message) VALUES (?, ?, ?)';
+        $command = 'INSERT INTO ' . $table . ' (migration, done_at, result_message) VALUES (?, ?, ?)';
 
         $now = new DateTime();
 
         $connection->insert($command, [
             $this->getIdentity(),
             $now->format('Y-m-d H:i:s.u'),
-            $connection->affectedRows().' affected rows',
+            $connection->affectedRows() . ' affected rows',
         ]);
 
         return true;
@@ -225,7 +234,7 @@ class MigrationScript
     public function rollback(Connection $connection, string $table): bool
     {
         if ($this->rScript === null) {
-            $this->error = 'Migration script "'.$this->getIdentity().'" has no rollback method.';
+            $this->error = 'Migration script "' . $this->getIdentity() . '" has no rollback method.';
 
             return false;
         }
@@ -234,8 +243,7 @@ class MigrationScript
             return false;
         }
 
-        $command = 'DELETE FROM '.$table
-            .' WHERE migration = ?';
+        $command = 'DELETE FROM ' . $table . ' WHERE migration = ?';
 
         $connection->delete($command, [
             $this->getIdentity(),

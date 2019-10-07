@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Class driver for Smarty template engine.
+ * Driver for Smarty template engine.
  *
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -16,7 +17,11 @@
 namespace Springy\Template\Drivers;
 
 use Smarty as SmartyTemplate;
+use Springy\Core\Kernel;
 
+/**
+ * Class driver for Smarty template engine.
+ */
 class Smarty implements TemplateDriverInterface
 {
     /** @var string cache id for the template */
@@ -128,13 +133,21 @@ class Smarty implements TemplateDriverInterface
             );
         }
 
-        if ($this->strict) {
+        $kernel = Kernel::getInstance();
+        $ignoredErrros = $kernel->errorHandler()->getIgnoredErrors();
+
+        if (!$this->strict) {
+            $kernel->errorHandler()->addIgnoredError(E_NOTICE);
             $this->tplObj->error_reporting = E_ALL & ~E_NOTICE;
+            SmartyTemplate::muteExpectedErrors();
         }
 
-        SmartyTemplate::muteExpectedErrors();
+        $parsed = $this->tplObj->fetch($this->templateFile, $this->cacheId, $this->compileId);
 
-        return $this->tplObj->fetch($this->templateFile, $this->cacheId, $this->compileId);
+        $kernel->errorHandler()->delIgnoredError(E_NOTICE);
+        $kernel->errorHandler()->addIgnoredError($ignoredErrros);
+
+        return $parsed;
     }
 
     /**

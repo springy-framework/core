@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database conditions clauses constructor class.
  *
@@ -11,6 +12,9 @@
 
 namespace Springy\Database\Query;
 
+/**
+ * Database conditions clauses constructor class.
+ */
 class Conditions implements OperatorComparationInterface, OperatorGroupInterface
 {
     /** @var array the conditions */
@@ -63,22 +67,24 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
             $condStr = '';
 
             if ($condition instanceof Condition) {
-                $condStr = (empty($conditions)
+                $condStr = (
+                    empty($conditions)
                     ? ''
-                    : $condition->expression.' '
-                ).$condition;
+                    : $condition->expression . ' '
+                ) . $condition;
 
                 $this->addParameters($condition);
             } elseif (is_array($condition) && $condition[0] instanceof self) {
-                $condStr = (empty($conditions)
+                $condStr = (
+                    empty($conditions)
                     ? ''
-                    : $condition[1].' '
-                ).'('.$condition[0]->parse().')';
+                    : $condition[1] . ' '
+                ) . '(' . $condition[0]->parse() . ')';
 
                 $this->parameters = array_merge($this->parameters, $condition[0]->params());
             }
 
-            $conditions .= ' '.$condStr;
+            $conditions .= ' ' . $condStr;
         }
 
         return trim($conditions);

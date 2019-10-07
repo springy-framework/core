@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <title>Too Many Requests</title>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet">
+        <style>
+            body {
+                background-image: linear-gradient(to bottom right, rgb(69, 0, 121), rgb(2, 0, 6));
+                font-family: 'Ubuntu Mono', monospace;
+            }
+
+            .back {
+                display: flex;
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                overflow: hidden;
+            }
+            .back > p {
+                margin: auto;
+                color: #552177;
+                text-align: center;
+                font-size: 200px;
+                font-weight: 900;
+                font-family: 'Montserrat', sans-serif;
+            }
+
+            .message {
+                display: flex;
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+            .message > .content {
+                width: 100%;
+                margin: auto 24px;
+                padding: 16px;
+                background-color: rgb(255, 255, 255, 0.1);
+                color: #fff;
+            }
+            .message > .content > p {
+                margin: 0;
+                margin-bottom: 16px;
+            }
+            .message > .content > p:last-child {
+                margin-bottom: 0;
+            }
+
+            .enphasis {
+                color: #74c0b9;
+            }
+
+            .title {
+                color: #f1a96d;
+                text-transform: uppercase;
+            }
+
+            @keyframes blinker {
+                50% {
+                    opacity: 0;
+                }
+            }
+
+            .blink {
+                animation: blinker 1s linear infinite;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="back">
+            <p>
+                429
+            </p>
+
+            <div class="message">
+                <div class="content">
+                    <p>
+                        &gt; <span class="title">ERROR CODE</span>: "<span class="enphasis">HTTP 429 Too Many Requests</span>"
+                    </p>
+
+                    <p>
+                        &gt; <span class="title">ERROR DESCRIPTION</span>: "<span class="enphasis">The origin server requires the request to be conditional.</span>"
+                    </p>
+
+                    <p>
+                        &gt; <span class="blink">_</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

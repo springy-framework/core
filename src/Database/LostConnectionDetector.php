@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database lost connection detector trait.
  *
@@ -11,6 +12,9 @@ namespace Springy\Database;
 
 use Throwable;
 
+/**
+ * Database lost connection detector trait.
+ */
 trait LostConnectionDetector
 {
     /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DBMS connector for PostgreSQL servers.
  *
@@ -13,6 +14,9 @@ namespace Springy\Database\Connectors;
 
 use PDO;
 
+/**
+ * DBMS connector for PostgreSQL servers.
+ */
 class PostgreSQL extends Connector implements ConnectorInterface
 {
     protected $encloseCharOpn = '"';
@@ -53,7 +57,7 @@ class PostgreSQL extends Connector implements ConnectorInterface
 
         foreach (['sslmode', 'sslcert', 'sslkey', 'sslrootcert'] as $option) {
             if (isset($config[$option])) {
-                $this->ssl .= ';'.$option.'='.$config[$option];
+                $this->ssl .= ';' . $option . '=' . $config[$option];
             }
         }
     }
@@ -66,15 +70,15 @@ class PostgreSQL extends Connector implements ConnectorInterface
     protected function afterConnectSettings()
     {
         if ($this->charset) {
-            $this->pdo->prepare('SET NAMES \''.$this->charset.'\'')->execute();
+            $this->pdo->prepare('SET NAMES \'' . $this->charset . '\'')->execute();
         }
 
         if ($this->timezone) {
-            $this->pdo->prepare('SET TIME ZONE \''.$this->timezone.'\'')->execute();
+            $this->pdo->prepare('SET TIME ZONE \'' . $this->timezone . '\'')->execute();
         }
 
         if ($this->schema) {
-            $this->pdo->prepare('SET SCHEMA \''.$this->schema.'\'')->execute();
+            $this->pdo->prepare('SET SCHEMA \'' . $this->schema . '\'')->execute();
         }
     }
 
@@ -130,8 +134,10 @@ class PostgreSQL extends Connector implements ConnectorInterface
      */
     public function getDsn(): string
     {
-        return 'pgsql:'.($this->host ? 'host='.$this->host : '')
-            .';port='.$this->port.';dbname='.$this->database.$this->ssl;
+        return 'pgsql:' . ($this->host ? 'host=' . $this->host : '')
+            . ';port=' . $this->port
+            . ';dbname=' . $this->database
+            . $this->ssl;
     }
 
     /**

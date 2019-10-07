@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DBMS connector basic implementation.
  *
@@ -15,6 +16,9 @@ use Memcached;
 use PDO;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * DBMS connector basic implementation.
+ */
 class Connector
 {
     /** @var string charset configuration */
@@ -208,7 +212,7 @@ class Connector
             return $keyword;
         }
 
-        return $this->encloseCharOpn.$keyword.$this->encloseCharCls;
+        return $this->encloseCharOpn . $keyword . $this->encloseCharCls;
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface for user identity session.
  *
@@ -12,6 +13,9 @@
 
 namespace Springy\Security;
 
+/**
+ * Interface for user identity session.
+ */
 interface IdentityInterface
 {
     /**

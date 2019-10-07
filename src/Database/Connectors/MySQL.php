@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DBMS connector for MySQL servers.
  *
@@ -14,6 +15,9 @@ namespace Springy\Database\Connectors;
 use PDO;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * DBMS connector for MySQL servers.
+ */
 class MySQL extends Connector implements ConnectorInterface
 {
     /** @var string|array the database host server */
@@ -37,13 +41,13 @@ class MySQL extends Connector implements ConnectorInterface
         parent::__construct($config);
 
         $this->charset = $config['charset'] ?? 'utf8mb4';
-        $this->port = $config['port'] ?? '3128';
+        $this->port = $config['port'] ?? '3306';
         $this->retries = $config['retries'] ?? 3;
         $this->retrySleep = $config['retry_sleep'] ?? 1;
         $this->socket = false;
         $this->setHost($config);
 
-        $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \''.$this->charset.'\'';
+        $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES \'' . $this->charset . '\'';
         $this->options[PDO::ATTR_PERSISTENT] = $config['persistent'] ?? true;
     }
 
@@ -55,7 +59,7 @@ class MySQL extends Connector implements ConnectorInterface
     protected function afterConnectSettings()
     {
         if ($this->timezone) {
-            $this->pdo->prepare('SET time_zone="'.$this->timezone.'"')->execute();
+            $this->pdo->prepare('SET time_zone="' . $this->timezone . '"')->execute();
         }
     }
 
@@ -67,8 +71,9 @@ class MySQL extends Connector implements ConnectorInterface
     protected function getHostOrSocket(): string
     {
         return $this->socket
-            ? 'unix_socket='.$this->socket
-            : 'host='.$this->host.';port='.$this->port;
+            ? 'unix_socket=' . $this->socket
+            : 'host=' . $this->host
+            . ';port=' . $this->port;
     }
 
     /**
@@ -151,7 +156,7 @@ class MySQL extends Connector implements ConnectorInterface
      */
     public function getDsn(): string
     {
-        return 'mysql:'.$this->getHostOrSocket().';dbname='.$this->database;
+        return 'mysql:' . $this->getHostOrSocket() . ';dbname=' . $this->database;
     }
 
     /**

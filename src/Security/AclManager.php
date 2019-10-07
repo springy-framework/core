@@ -1,6 +1,7 @@
 <?php
+
 /**
- * ACL (Access Control List) Authorization class for the web application.
+ * Access Control List (ACL) Authorization for web application.
  *
  * @copyright 2014 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
@@ -14,6 +15,9 @@ namespace Springy\Security;
 
 use Springy\Core\ControllerInterface;
 
+/**
+ * Access Control List (ACL) Authorization class for the web application.
+ */
 class AclManager
 {
     /** @var array the module */

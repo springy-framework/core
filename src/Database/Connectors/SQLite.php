@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DBMS connector for SQLite databases.
  *
@@ -13,6 +14,9 @@ namespace Springy\Database\Connectors;
 
 use Springy\Exceptions\SpringyException;
 
+/**
+ * DBMS connector for SQLite databases.
+ */
 class SQLite extends Connector implements ConnectorInterface
 {
     protected $encloseCharOpn = '"';
@@ -40,7 +44,7 @@ class SQLite extends Connector implements ConnectorInterface
      */
     public function getDsn(): string
     {
-        return 'sqlite:'.$this->database;
+        return 'sqlite:' . $this->database;
     }
 
     /**
@@ -57,7 +61,7 @@ class SQLite extends Connector implements ConnectorInterface
         if ($database !== ':memory:') {
             $path = realpath($database);
             if ($path === false) {
-                throw new SpringyException('Database "'.$database.'" does not exists.');
+                throw new SpringyException('Database "' . $database . '" does not exists.');
             }
         }
     }

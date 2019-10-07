@@ -1,6 +1,7 @@
 <?php
+
 /**
- * SQL WHERE clause constructor class.
+ * SQL WHERE clause constructor.
  *
  * @copyright 2016 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Database\Query;
 
+/**
+ * SQL WHERE clause constructor class.
+ */
 class Where extends Conditions
 {
     /**
@@ -22,6 +26,6 @@ class Where extends Conditions
     {
         $where = parent::__toString();
 
-        return (!empty($where) ? ' WHERE ' : '').$where;
+        return (!empty($where) ? ' WHERE ' : '') . $where;
     }
 }

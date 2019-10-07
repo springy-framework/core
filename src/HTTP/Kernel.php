@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Kernel for the web application requisition.
  *
@@ -14,49 +15,38 @@ namespace Springy\HTTP;
 use Springy\Core\Configuration;
 use Springy\Core\Copyright;
 use Springy\Core\Kernel as MainKernel;
-use Springy\Exceptions\Http404Error;
+use Springy\Exceptions\HttpErrorForbidden;
+use Springy\Exceptions\HttpErrorNotFound;
+use Springy\Security\AuthDriver;
 use Springy\Security\Authentication;
 
+/**
+ * Kernel for the web application requisition.
+ */
 class Kernel extends MainKernel
 {
     /** @var static Kernel globally instance */
     protected static $instance;
 
+    protected $endpoint;
+    protected $params;
+
+    public const DEFAULT_NS = 'App\\Controllers\\Web\\';
+
     /**
-     * Calls the controller endpoint.
+     * Checks if endpoint exists.
      *
-     * @param array $arguments
+     * @param string $endpoint
      *
-     * @return bool
+     * @return string
      */
-    protected function callEndpoint(array $arguments): bool
+    protected function checkEndpoint(string $endpoint): string
     {
-        if (!$this->controller->_hasPermission()) {
-            $this->controller->_forbidden();
-
-            return true;
+        if (is_callable([$this->controller, $endpoint])) {
+            return $endpoint;
         }
 
-        // Checks if has no arguments of first argument is not an endpoint
-        if (!$endpoint = $this->getEndpoint($arguments)) {
-            // Injects index as first argument
-            array_unshift($arguments, 'index');
-            // Checks if index is an endpoint
-            $endpoint = $this->getEndpoint($arguments);
-        }
-
-        // Returns false if has no callable endpoint
-        if (!$endpoint) {
-            return false;
-        }
-
-        // Removes the fist argument
-        array_shift($arguments);
-
-        // Call the endpoint method and passes the rest of arguments
-        $this->controller->$endpoint($arguments);
-
-        return true;
+        return 'index';
     }
 
     /**
@@ -83,17 +73,17 @@ class Kernel extends MainKernel
         // Updates the configuration host
         Configuration::getInstance()->configHost($uri->getHost());
 
-        $segments = $uri->getSegments();
-        $segment = $this->findController('App\\Controllers\\Web\\', $segments);
-        if ($segment < 0) {
+        if (!$this->hasController($uri->getSegments())) {
             return $this->discoverMagic();
+        } elseif (!is_callable([$this->controller, $this->endpoint])) {
+            return false;
+        } elseif (!$this->controller->hasPermission()) {
+            throw new HttpErrorForbidden();
         }
 
-        // Extracts extra segments as arguments
-        $arguments = array_slice($segments, $segment);
-        array_splice($segments, $segment);
+        call_user_func([$this->controller, $this->endpoint], $this->params);
 
-        return $this->callEndpoint($arguments);
+        return true;
     }
 
     /**
@@ -131,33 +121,116 @@ class Kernel extends MainKernel
     }
 
     /**
-     * Gets the controller endpoint name.
+     * Finds the controller.
      *
-     * @param array $arguments
+     * @param array $segments
      *
-     * @return string|bool
+     * @return bool
      */
-    protected function getEndpoint(array $arguments)
+    protected function hasController(array $segments): bool
     {
-        // Gets first segment of arguments as endpoint method, if has
-        $endpoint = array_shift($arguments);
-        if ($endpoint && is_callable([$this->controller, $endpoint])) {
-            return $endpoint;
+        $config = $this->getRouteConfiguration();
+        $routing = new Routing($config['routes']);
+        $routing->parse();
+        if ($routing->hasFound()) {
+            $this->endpoint = $routing->getMethod();
+            $this->params = $routing->getParams();
+
+            return $this->loadController($routing->getName(), $segments);
         }
+
+        $this->params = [];
+        $arguments = $segments;
+        $namespace = $this->getNamespace($config, $arguments);
+        $endpoint = 'index';
+        do {
+            // Adds and finds an Index controller in current $arguments path
+            $arguments[] = 'Index';
+            if (
+                $this->loadController($namespace . $this->normalizeNamePath($arguments), $segments)
+            ) {
+                $this->endpoint = $this->checkEndpoint($endpoint);
+
+                return true;
+            }
+
+            // Removes Index and finds the full qualified name controller
+            array_pop($arguments);
+            if (
+                count($arguments)
+                && $this->loadController($namespace . $this->normalizeNamePath($arguments), $segments)
+            ) {
+                $this->endpoint = $this->checkEndpoint($endpoint);
+
+                return true;
+            }
+
+            $endpoint = array_pop($arguments);
+            array_unshift($this->params, $endpoint);
+        } while (count($arguments));
 
         return false;
     }
 
     /**
+     * Gets the controller namespace.
+     *
+     * @param array $segments
+     *
+     * @return string
+     */
+    protected function getNamespace(array $config, array &$segments): string
+    {
+        $uri = '/' . implode('/', $segments);
+        foreach (($config['segments'] ?? []) as $route => $namespace) {
+            $pattern = sprintf('#^%s(/(.+))?$#', $route);
+            if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {
+                $segments = explode('/', trim($matches[1][0], '/'));
+
+                return trim($namespace, " \t\0\x0B\\") . '\\';
+            }
+        }
+
+        return trim($config['namespace'] ?? self::DEFAULT_NS, " \t\0\x0B\\") . '\\';
+    }
+
+    /**
+     * Gets the configuration array for routing.
+     *
+     * @return array
+     */
+    protected function getRouteConfiguration(): array
+    {
+        $config = Configuration::getInstance();
+        $host = current_host();
+        foreach ($config->get('routing.hosts', []) as $route => $data) {
+            $pattern = sprintf('#^%s$#', $route);
+            if (preg_match_all($pattern, $host, $matches, PREG_PATTERN_ORDER)) {
+                return [
+                    'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
+                    'routes' => $data['routes'] ?? [],
+                    'segments' => $data['segments'] ?? [],
+                ];
+            }
+        }
+
+        return [
+            'namespace' => $config->get('routing.namespace', self::DEFAULT_NS),
+            'routes' => $config->get('routing.routes', []),
+            'segments' => $config->get('routing.segments', []),
+        ];
+    }
+
+    /**
      * Throws a 404 Page Not Found error.
      *
-     * @throws Http404Error
+     * @throws HttpErrorNotFound
      *
      * @return void
      */
     protected function notFound()
     {
-        throw new Http404Error();
+        throw new HttpErrorNotFound();
     }
 
     /**
@@ -191,14 +264,14 @@ class Kernel extends MainKernel
      */
     protected function setupAuthEvt(string $element, $default = null)
     {
-        $option = Configuration::getInstance()->get('application.authentication.'.$element, $default);
+        $option = Configuration::getInstance()->get('application.authentication.' . $element, $default);
 
         if ($option === null) {
             return;
         } elseif ($option instanceof Closure || is_object($option)) {
-            app()->bind('user.auth.'.$element, $option);
+            app()->bind('user.auth.' . $element, $option);
         } elseif (is_string($option)) {
-            app()->bind('user.auth.'.$element, function () use ($option) {
+            app()->bind('user.auth.' . $element, function () use ($option) {
                 return new $option();
             });
         }

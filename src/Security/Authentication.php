@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Authentication identity manager.
  *
@@ -15,6 +16,9 @@ namespace Springy\Security;
 use Springy\HTTP\Cookie;
 use Springy\HTTP\Session;
 
+/**
+ * Authentication identity manager.
+ */
 class Authentication
 {
     /** @var AuthDriverInterface the authentication driver */

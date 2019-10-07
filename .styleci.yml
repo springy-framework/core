@@ -4,3 +4,5 @@ risky: false
 
 disabled:
   - align_double_arrow
+  - concat_without_spaces
+  - no_blank_lines_after_phpdoc

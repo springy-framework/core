@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy Exception class.
+ * Springy Exception.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -13,6 +14,9 @@ namespace Springy\Exceptions;
 
 use RuntimeException;
 
+/**
+ * Springy Exception class.
+ */
 class SpringyException extends RuntimeException
 {
     /** @var array|null error context */
@@ -30,23 +34,19 @@ class SpringyException extends RuntimeException
     public function __construct(
         string $message = null,
         int $code = E_USER_ERROR,
-        string $file = '',
-        int $line = 0,
-        array $context = null
+        \Throwable $previous = null,
+        string $file = null,
+        int $line = null
     ) {
-        parent::__construct($message, $code);
+        if (null === $file || null === $line) {
+            $dbt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
+            $file = $dbt[0]['file'];
+            $line = $dbt[0]['line'];
+        }
+
         $this->file = $file;
         $this->line = $line;
-        $this->context = $context;
-    }
 
-    /**
-     * Returns the error context.
-     *
-     * @return array|null
-     */
-    public function getContext()
-    {
-        return $this->context;
+        parent::__construct($message, $code, $previous);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Migration revisions.
  *
@@ -15,12 +16,17 @@ use DirectoryIterator;
 use Iterator;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * Migration revisions.
+ */
 class Revisions implements Iterator
 {
     /** @var array the list of applied revision scripts */
     protected $applied;
     /** @var array the list of not applied revision scripts */
     protected $notApplied;
+    /** @var string the revisions namespace */
+    protected $revNamespace;
     /** @var string the revisions path */
     protected $revPath;
     /** @var array the list of revisions */
@@ -30,15 +36,17 @@ class Revisions implements Iterator
      * Constructor.
      *
      * @param string $path
+     * @param string $namespace
      */
-    public function __construct(string $path)
+    public function __construct(string $path, string $namespace)
     {
         if (!is_dir($path)) {
-            throw new SpringyException('"'.$path.'" is not a directory.');
+            throw new SpringyException('"' . $path . '" is not a directory.');
         }
 
         $this->applied = [];
         $this->notApplied = [];
+        $this->revNamespace = $namespace;
         $this->revPath = $path;
         $this->revs = [];
 
@@ -64,14 +72,19 @@ class Revisions implements Iterator
      */
     protected function getScriptsFiles(string $version)
     {
-        $path = $this->revPath.DS.$version;
+        $path = $this->revPath . DS . $version;
 
         foreach (new DirectoryIterator($path) as $file) {
             if (!$file->isFile()) {
                 continue;
             }
 
-            $this->revs[] = new MigrationScript($this->revPath, $version, $file->getBasename());
+            $this->revs[] = new MigrationScript(
+                $this->revPath,
+                $this->revNamespace,
+                $version,
+                $file->getBasename()
+            );
         }
     }
 
@@ -95,7 +108,7 @@ class Revisions implements Iterator
     public function get(int $index): MigrationScript
     {
         if (!isset($this->revs[$index])) {
-            throw new SpringyException('Undefined index '.$index.' in revisions iterator.');
+            throw new SpringyException('Undefined index ' . $index . ' in revisions iterator.');
         }
 
         return $this->revs[$index];

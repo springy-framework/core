@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Web console terminal controllers.
+ * Web console terminal controllers base.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -17,6 +18,9 @@ use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+/**
+ * Web console terminal controllers base class.
+ */
 class Terminal
 {
     /** @var array the user/password credential */
@@ -29,7 +33,7 @@ class Terminal
     protected $response;
 
     // The authentication session id var name
-    const TERM_SESSION_ID = 'termId';
+    protected const TERM_SESSION_ID = 'termId';
 
     /**
      * Constructor.
@@ -76,13 +80,13 @@ class Terminal
         ];
 
         if (!isset($commands[$command])) {
-            $this->sendError(404, 'Invalid command.'.LF);
+            $this->sendError(404, 'Invalid command.' . LF);
 
             return;
         }
 
         $class = $commands[$command];
-        $input = new StringInput($command.' '.$parameters);
+        $input = new StringInput($command . ' ' . $parameters);
         $output = new BufferedOutput();
         $command = new $class([$command]);
         $command->run($input, $output);
@@ -112,7 +116,7 @@ class Terminal
      */
     protected function parseRpc()
     {
-        $body = $this->request->getBody();
+        $body = $this->request->getJsonBody();
         if ($body === null) {
             return $this->sendError(400, 'Bad request');
         }
@@ -154,7 +158,7 @@ class Terminal
             'sdversion' => '2.0',
             'name'      => app_name(),
             'address'   => current_url(),
-            'id'        => 'urn:md5:'.md5(current_url()),
+            'id'        => 'urn:md5:' . md5(current_url()),
             'procs'     => [
                 [
                     'name'   => 'errors',
@@ -234,14 +238,14 @@ class Terminal
      */
     protected function serviceLogin()
     {
-        $body = $this->request->getBody();
+        $body = $this->request->getJsonBody();
         $params = $body->params ?? [];
 
         if (count($params) != 2 || $params[0] !== $this->credential[0] || $params[1] !== $this->credential[1]) {
             return $this->sendError(403, 'Invalid user or password.');
         }
 
-        $sessionId = md5($params[0].':'.$params[1].':'.microtime());
+        $sessionId = md5($params[0] . ':' . $params[1] . ':' . microtime());
 
         Session::getInstance()->set(self::TERM_SESSION_ID, $sessionId);
 
@@ -255,7 +259,7 @@ class Terminal
      */
     protected function startTerminal()
     {
-        $body = file_get_contents(__DIR__.DS.'assets'.DS.'terminal.html');
+        $body = file_get_contents(__DIR__ . DS . 'assets' . DS . 'terminal.html');
         $this->response->body(
             str_replace('###GREATINGS###', $this->getHello(), $body)
         );

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Driver for store session in MemcacheD service.
  *
@@ -15,6 +16,9 @@ use Springy\Core\Configuration;
 use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Cookie;
 
+/**
+ * Driver for store session in MemcacheD service.
+ */
 class Memcached extends Standard implements SessionDriverInterface
 {
     /** @var int session expiration time */
@@ -72,7 +76,7 @@ class Memcached extends Standard implements SessionDriverInterface
     {
         $memcached = $this->getMemcacheD();
         $memcached->set(
-            session_name().'_'.session_id(),
+            session_name() . '_' . session_id(),
             $this->data,
             $this->expires
         );
@@ -109,7 +113,7 @@ class Memcached extends Standard implements SessionDriverInterface
         );
 
         $memcached = $this->getMemcacheD();
-        $this->data = $memcached->get(session_name().'_'.session_id()) ?? [];
+        $this->data = $memcached->get(session_name() . '_' . session_id()) ?? [];
 
         register_shutdown_function([$this, 'saveSession']);
 

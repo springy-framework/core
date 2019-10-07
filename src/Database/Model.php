@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Parent class for relational database table model objects.
+ * Relational database table model constructor.
  *
  * @copyright 2014 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -23,6 +24,9 @@ use Springy\Database\Query\Update;
 use Springy\Database\Query\Where;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * Parent class for relational database table model objects.
+ */
 class Model extends RowsIterator
 {
     /**
@@ -69,12 +73,12 @@ class Model extends RowsIterator
     protected $selectColumns = [];
 
     // Trigger names
-    const TG_AFT_DEL = 'triggerAfterDelete';
-    const TG_AFT_INS = 'triggerAfterInsert';
-    const TG_AFT_UPD = 'triggerAfterUpdate';
-    const TG_BEF_DEL = 'triggerBeforeDelete';
-    const TG_BEF_INS = 'triggerBeforeInsert';
-    const TG_BEF_UPD = 'triggerBeforeUpdate';
+    protected const TG_AFT_DEL = 'triggerAfterDelete';
+    protected const TG_AFT_INS = 'triggerAfterInsert';
+    protected const TG_AFT_UPD = 'triggerAfterUpdate';
+    protected const TG_BEF_DEL = 'triggerBeforeDelete';
+    protected const TG_BEF_INS = 'triggerBeforeInsert';
+    protected const TG_BEF_UPD = 'triggerBeforeUpdate';
 
     /**
      * Constructor.
@@ -85,8 +89,8 @@ class Model extends RowsIterator
     {
         $strucPath = Configuration::getInstance()->get(
             'database.model_structures',
-            __DIR__.DS.'structures'
-        ).DS.preg_replace('/[^\\w_-]/', '', $this->table).'.json';
+            __DIR__ . DS . 'structures'
+        ) . DS . preg_replace('/[^\\w_-]/', '', $this->table) . '.json';
         parent::__construct($strucPath);
 
         $this->embeds = [];
@@ -312,6 +316,11 @@ class Model extends RowsIterator
         return false;
     }
 
+    /**
+     * Inserts current row data as new record.
+     *
+     * @return int
+     */
     protected function insertRow(): int
     {
         if (!$this->checkTrigger(static::TG_BEF_INS)) {
@@ -340,6 +349,14 @@ class Model extends RowsIterator
         return $res;
     }
 
+    /**
+     * Adds a value to SQL command.
+     *
+     * @param object $command
+     * @param string $column
+     *
+     * @return void
+     */
     protected function setCmdColVal($command, string $column)
     {
         $key = key($this->rows);
@@ -356,6 +373,13 @@ class Model extends RowsIterator
         }
     }
 
+    /**
+     * Sets SQL command values.
+     *
+     * @param object $command
+     *
+     * @return void
+     */
     protected function setCmdValues($command)
     {
         foreach ($this->columns as $column => $properties) {
@@ -406,6 +430,11 @@ class Model extends RowsIterator
         }
     }
 
+    /**
+     * Updates current row data to database record.
+     *
+     * @return int
+     */
     protected function updateRow(): int
     {
         if (!$this->checkTrigger(static::TG_BEF_UPD)) {
@@ -590,6 +619,11 @@ class Model extends RowsIterator
         return $this->loaded;
     }
 
+    /**
+     * Saves current row changes.
+     *
+     * @return int
+     */
     public function save(): int
     {
         if (!$this->valid() || !isset($this->changed[key($this->rows)])) {
@@ -662,9 +696,9 @@ class Model extends RowsIterator
             $column = $this->columns->$name ?? null;
 
             if (null === $column) {
-                throw new SpringyException('Column "'.$name.'" does not defined in model.');
+                throw new SpringyException('Column "' . $name . '" does not defined in model.');
             } elseif ($column->computed ?? false) {
-                throw new SpringyException('Column "'.$name.'" is computed.');
+                throw new SpringyException('Column "' . $name . '" is computed.');
             }
 
             $this->selectColumns[] = $name;

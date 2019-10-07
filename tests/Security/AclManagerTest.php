@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test case for Springy\Security\AclManager class.
  *
@@ -8,6 +9,7 @@
  *
  * @version   1.0.0
  */
+
 use PHPUnit\Framework\TestCase;
 use Springy\Core\ControllerInterface;
 use Springy\Security\AclManager;
@@ -65,11 +67,7 @@ class AclManagerTest extends TestCase
 
 class Controller implements ControllerInterface
 {
-    public function _forbidden()
-    {
-    }
-
-    public function _hasPermission(): bool
+    public function hasPermission(): bool
     {
         return true;
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework kernel.
  *
@@ -17,17 +18,20 @@ use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Request;
 use Springy\HTTP\URI;
 
+/**
+ * Framework kernel.
+ */
 class Kernel
 {
     // Framework version
-    const VERSION = '5.0.0';
+    public const VERSION = '5.0.0';
 
     // Constants path
-    const PATH_WEB_ROOT = 'ROOT';
+    public const PATH_WEB_ROOT = 'ROOT';
 
-    const PATH_APPLICATION = 'APP';
-    const PATH_VAR = 'VAR';
-    const PATH_ROOT = 'ROOT';
+    public const PATH_APPLICATION = 'APP';
+    public const PATH_VAR = 'VAR';
+    public const PATH_ROOT = 'ROOT';
 
     /** @var static Kernel globally instance */
     protected static $instance;
@@ -89,86 +93,23 @@ class Kernel
     }
 
     /**
-     * Finds the controller.
-     *
-     * @param string $baseNS
-     * @param array  $segments
-     *
-     * @return int
-     */
-    protected function findController(string $baseNS, array $segments): int
-    {
-        $arguments = [];
-
-        do {
-            $elements = count($segments);
-
-            // Finds an Index controller
-            $index = $segments;
-            $index[] = 'Index';
-            if ($this->loadController($baseNS, $index, $arguments)) {
-                return $elements;
-            }
-
-            // Finds the full qualified name controller
-            if ($elements && $this->loadController($baseNS, $segments, $arguments)) {
-                return $elements;
-            }
-
-            // Moves the last segment to the arguments array
-            // and pop it from the segments array
-            array_unshift($arguments, array_pop($segments));
-        } while (count($segments));
-
-        return -1;
-    }
-
-    /**
      * Tryes to load a full qualified name controller class.
      *
-     * @param string $baseNS
-     * @param array  $path
-     * @param array  $arguments
+     * @param string $name
+     * @param array  $segments
      *
      * @return bool
      */
-    protected function loadController(string $baseNS, array $path, array $arguments): bool
+    protected function loadController(string $name, array $segments): bool
     {
-        $name = $baseNS.$this->normalizeNamePath($path);
         if (!class_exists($name)) {
             return false;
         }
 
-        // Loads the hook controller if exists
-        $this->loadHookController($baseNS, $arguments);
-
         // Creates the controller
-        $this->controller = new $name($arguments);
+        $this->controller = new $name($segments);
 
         return true;
-    }
-
-    /**
-     * Loads the application hook controller.
-     *
-     * @param string $baseNS
-     * @param array  $arguments
-     *
-     * @return void
-     */
-    protected function loadHookController(string $baseNS, array $arguments)
-    {
-        $hook = array_slice(explode('\\', trim($baseNS, '\\')), 0, 2);
-        $hook[] = 'Hook';
-        $name = $this->normalizeNamePath($hook);
-        if (!class_exists($name)) {
-            return;
-        }
-
-        $this->hook = new $name($baseNS, $arguments);
-        if (is_callable([$this->hook, 'startup'])) {
-            $this->hook->startup();
-        }
     }
 
     /**
@@ -299,6 +240,13 @@ class Kernel
         return self::$paths[$component] ?? '';
     }
 
+    /**
+     * Runs the application.
+     *
+     * @param float $startime
+     *
+     * @return self
+     */
     public function run(float $startime = null): self
     {
         // Can be executed once
@@ -342,7 +290,7 @@ class Kernel
 
             // Verify if has an alias for host
             foreach ($alias as $host => $val) {
-                if (preg_match('/^'.$host.'$/', $env)) {
+                if (preg_match('/^' . $host . '$/', $env)) {
                     $env = $val;
                     break;
                 }
@@ -386,7 +334,7 @@ class Kernel
 
         $this->setEnvironment(
             $conf['environment'] ?? '',
-            $conf['ENVIRONMENT_ALIAS'] ?? []
+            $conf['environments'] ?? []
         );
 
         $this->errorHandler->setLogDir($conf['errors_log'] ?? '');

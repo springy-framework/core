@@ -1,6 +1,7 @@
 <?php
+
 /**
- * URI handler class.
+ * URI handler.
  *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -12,6 +13,9 @@
 
 namespace Springy\HTTP;
 
+/**
+ * URI handler class.
+ */
 class URI
 {
     /** @var self URI globally instance */
@@ -71,12 +75,14 @@ class URI
             return '$';
         }
 
-        return trim(
-            preg_replace(
-                '/([^:]+)(:\\d+)?/',
-                '$1$2',
-                $_SERVER['HTTP_HOST'] ?? ''
-            ), ' ..@'
+        return preg_replace(
+            '/([^:]+)(:\\d+)?/',
+            '$1',
+            $_SERVER['HTTP_HOST'] ?? ''
+        ) . (
+            ($_SERVER['SERVER_PORT'] ?? 80) != 80
+            ? ':' . $_SERVER['SERVER_PORT']
+            : ''
         );
     }
 
@@ -88,7 +94,7 @@ class URI
     protected function parsePathInfo(): string
     {
         $path = $_SERVER['ORIG_PATH_INFO'] ?? @getenv('ORIG_PATH_INFO');
-        if (trim($path, '/') == '' || $path == '/'.pathinfo(__FILE__, PATHINFO_BASENAME)) {
+        if (trim($path, '/') == '' || $path == '/' . pathinfo(__FILE__, PATHINFO_BASENAME)) {
             return '';
         }
 
@@ -108,7 +114,7 @@ class URI
             return;
         }
 
-        $this->uriString = explode('?', $_SERVER['REQUEST_URI'])[0];
+        $this->uriString = explode('?', rawurldecode($_SERVER['REQUEST_URI']))[0];
     }
 
     /**
@@ -130,7 +136,7 @@ class URI
     }
 
     /**
-     * Return the current host with protocol.
+     * Returns the current host with port number but without protocol.
      *
      * @return string
      */
@@ -154,9 +160,24 @@ class URI
      *
      * @return string
      */
-    public function getURIString(): string
+    public function getUriString(): string
     {
         return $this->uriString ?? '';
+    }
+
+    /**
+     * Returns the current URL with protocol and port number.
+     *
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return sprintf(
+            'http%s://%s%s',
+            ($_SERVER['HTTPS'] ?? '') == 'on' ? 's' : '',
+            $this->httpHost,
+            rtrim($this->uriString, '/')
+        );
     }
 
     /**

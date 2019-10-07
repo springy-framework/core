@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parent class for web controllers.
  *
@@ -14,10 +15,13 @@
 namespace Springy\HTTP;
 
 use Springy\Core\ControllerInterface;
-use Springy\Exceptions\Http403Error;
 use Springy\Exceptions\SpringyException;
 use Springy\Security\AclManager;
+use Throwable;
 
+/**
+ * Parent class for web controllers.
+ */
 class Controller implements ControllerInterface
 {
     /** @var \Springy\Security\AclManager the ACL manager object */
@@ -30,15 +34,18 @@ class Controller implements ControllerInterface
     protected $redirectUnsigned = false;
     /** @var \Springy\Security\AclUserInterface the current user object */
     protected $user;
+    /** @var array */
+    protected $uriSegments;
 
     /**
      * The constructor method.
      */
     public function __construct(array $segments)
     {
-        $this->user = $this->_getAuthManager();
+        $this->user = $this->getAuthManager();
         $this->aclManager = new AclManager($this->user, $this, $segments);
-        $this->hasPermission = $this->_hasAuthorization();
+        $this->hasPermission = $this->hasAuthorization();
+        $this->uriSegments = $segments;
     }
 
     /**
@@ -46,7 +53,7 @@ class Controller implements ControllerInterface
      *
      * @return bool
      */
-    protected function _hasAuthorization(): bool
+    protected function hasAuthorization(): bool
     {
         // Authorize if unsigned users has access
         if (!$this->authNeeded) {
@@ -54,7 +61,7 @@ class Controller implements ControllerInterface
         }
 
         return $this->user->getId()
-            && $this->_userSpecialVerifications()
+            && $this->userSpecialVerifications()
             && $this->aclManager->hasPermission();
     }
 
@@ -63,21 +70,21 @@ class Controller implements ControllerInterface
      *
      * @throws SpringyException
      *
-     * @return AclUserInterface
+     * @return \Springy\Security\AclUserInterface
      */
-    protected function _getAuthManager()
+    protected function getAuthManager()
     {
         try {
             $authManager = app('user.auth.manager');
             if ($authManager->check()) {
                 return $authManager->user();
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
         }
 
         try {
             $authIdentity = app('user.auth.identity');
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw new SpringyException('Authentication driver not configured');
         }
 
@@ -95,21 +102,9 @@ class Controller implements ControllerInterface
      *
      * @return bool true if user can access the module or false if not.
      */
-    protected function _userSpecialVerifications()
+    protected function userSpecialVerifications()
     {
         return true;
-    }
-
-    /**
-     * Throws a HTTP "403 - Forbidden" error or redirects the user to another page.
-     *
-     * @throws Http403Error
-     *
-     * @return void
-     */
-    public function _forbidden()
-    {
-        throw new Http403Error();
     }
 
     /**
@@ -117,7 +112,7 @@ class Controller implements ControllerInterface
      *
      * @return bool
      */
-    public function _hasPermission(): bool
+    public function hasPermission(): bool
     {
         return $this->hasPermission;
     }

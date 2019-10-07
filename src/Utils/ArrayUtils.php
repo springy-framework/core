@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Arrays manipulations utilities.
  *
@@ -231,12 +232,12 @@ class ArrayUtils
 
         foreach ($array as $key => $value) {
             if (is_array($value)) {
-                $results = array_merge($results, $this->dottedMake($value, $prepend.$key.'.'));
+                $results = array_merge($results, $this->dottedMake($value, $prepend . $key . '.'));
 
                 continue;
             }
 
-            $results[$prepend.$key] = $value;
+            $results[$prepend . $key] = $value;
         }
 
         return $results;
@@ -345,7 +346,8 @@ class ArrayUtils
     }
 
     /**
-     * Returns a one-dimensional array containing the values of a multidimensional array of the key in the dot notation format.
+     * Returns a one-dimensional array containing the values of a
+     * multidimensional array of the key in the dot notation format.
      *
      * @param array  $array
      * @param string $key

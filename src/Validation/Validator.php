@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Valuation class for validation of user-assigned data.
+ * Validation of user-assigned data.
  *
  * @copyright 2014 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
@@ -15,6 +16,9 @@ namespace Springy\Validation;
 use Springy\HTTP\Input;
 use Springy\Utils\MessageContainer;
 
+/**
+ * Class for validation of user-assigned data.
+ */
 class Validator
 {
     /** @var MessageContainer the validation error messages */
@@ -98,6 +102,17 @@ class Validator
                 'n' => $name,
                 'p' => is_array($params) ? $params : (array) explode(',', $params),
                 'm' => $rule['message'] ?? null,
+            ];
+        }
+
+        // The rule is an object (Json)?
+        if (is_object($rule)) {
+            $params = $rule->params ?? '';
+
+            return [
+                'n' => $name,
+                'p' => is_array($params) ? $params : (array) explode(',', $params),
+                'm' => $rule->message ?? null,
             ];
         }
 

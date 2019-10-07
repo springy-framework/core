@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTTP Header helper.
  *
@@ -11,6 +12,9 @@
 
 namespace Springy\HTTP;
 
+/**
+ * HTTP Header helper.
+ */
 class Header
 {
     /** @var array the list of headers to be sent */
@@ -81,7 +85,7 @@ class Header
      */
     public function contentType(string $type = 'text/html', string $charset = 'UTF-8', bool $replace = true)
     {
-        $this->header('Content-Type', $type.'; charset='.$charset, $replace);
+        $this->header('Content-Type', $type . '; charset=' . $charset, $replace);
     }
 
     /**
@@ -121,7 +125,7 @@ class Header
 
         foreach ($this->headers as $string => $values) {
             foreach ($values as $value) {
-                $headers[] = $string.': '.$value;
+                $headers[] = $string . ': ' . $value;
             }
         }
 
@@ -202,7 +206,7 @@ class Header
             $first = true;
 
             foreach ($values as $value) {
-                header($string.': '.$value, $first, $this->httpResponseCode);
+                header($string . ': ' . $value, $first, $this->httpResponseCode);
                 $first = false;
             }
         }

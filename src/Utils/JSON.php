@@ -1,19 +1,23 @@
 <?php
+
 /**
- * Class to construct and send JSON objects.
+ * JSON objects constructor and sender.
  *
  * @copyright 2018 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
  * @author    Lucas Cardozo <lucas.cardozo@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version	  1.2.0
+ * @version   1.2.0
  */
 
 namespace Springy\Utils;
 
 use Springy\HTTP\Response;
 
+/**
+ * Class to construct and send JSON objects.
+ */
 class JSON
 {
     /** @var array the JSON data */

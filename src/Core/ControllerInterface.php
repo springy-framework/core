@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface to standardize the controllers of the application.
  *
@@ -11,21 +12,15 @@
 
 namespace Springy\Core;
 
+/**
+ * Interface to standardize the controllers of the application.
+ */
 interface ControllerInterface
 {
-    /**
-     * Throws a HTTP "403 - Forbidden" error.
-     *
-     * @throws Exception
-     *
-     * @return void
-     */
-    public function _forbidden();
-
     /**
      * Checks whether the user has permission to the resource.
      *
      * @return bool
      */
-    public function _hasPermission(): bool;
+    public function hasPermission(): bool;
 }

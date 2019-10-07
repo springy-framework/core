@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface to standardize identity authentication drivers.
  *
@@ -12,6 +13,9 @@
 
 namespace Springy\Security;
 
+/**
+ * Interface to standardize identity authentication drivers.
+ */
 interface AuthDriverInterface
 {
     /**

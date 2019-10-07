@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Valuation rule class for validation of user-assigned data.
+ * Rule for validations of user-assigned data.
  *
  * @copyright 2019 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
@@ -14,6 +15,9 @@ namespace Springy\Validation;
 
 use Springy\Utils\StringUtils;
 
+/**
+ * Rule class for validations of user-assigned data.
+ */
 class Rule
 {
     use StringUtils;
@@ -59,10 +63,17 @@ class Rule
      */
     protected function parseMethod(): string
     {
-        $method = 'validate'.str_replace(' ', '', ucwords(strtolower(str_replace('_', ' ', $this->rule))));
+        $method = 'validate' . str_replace(
+            ' ',
+            '',
+            ucwords(strtolower(str_replace('_', ' ', $this->rule)))
+        );
 
         if (!method_exists($this, $method)) {
-            throw new \BadMethodCallException('Validation rule "'.$this->rule.'" has no equivalent method for validation.');
+            throw new \BadMethodCallException(
+                'Validation rule "' . $this->rule
+                . '" has no equivalent method for validation.'
+            );
         }
 
         return $method;
@@ -80,7 +91,7 @@ class Rule
         if ($value === null) {
             return 'NULL';
         } elseif (is_bool($value)) {
-            return '(bool)'.($value ? 'True' : 'False');
+            return '(bool)' . ($value ? 'True' : 'False');
         }
 
         return (string) $value;
@@ -111,6 +122,18 @@ class Rule
     }
 
     /**
+     * Validates whether the value is an array.
+     *
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    protected function validateArray($value): bool
+    {
+        return is_array($value);
+    }
+
+    /**
      * Validates if the value is between the minimum and maximum range.
      *
      * @param mixed $value
@@ -120,7 +143,10 @@ class Rule
     protected function validateBetween($value): bool
     {
         if (count($this->params) < 2) {
-            throw new \BadMethodCallException('Validation rule "'.$this->rule.'" require 2 parameters '.count($this->params).' given.');
+            throw new \BadMethodCallException(
+                'Validation rule "' . $this->rule
+                . '" require 2 parameters ' . count($this->params) . ' given.'
+            );
         }
 
         return ($value >= $this->params[0]) && ($value <= $this->params[1]);
@@ -150,7 +176,10 @@ class Rule
     protected function validateDifferent($value): bool
     {
         if (!isset($this->params[0])) {
-            throw new \BadMethodCallException('Validation rule "'.$this->rule.'" require comparison field name parameter no one given.');
+            throw new \BadMethodCallException(
+                'Validation rule "' . $this->rule
+                . '" require comparison field name parameter no one given.'
+            );
         }
 
         return $value !== ($this->input[$this->params[0]] ?? null);
@@ -214,7 +243,10 @@ class Rule
     protected function validateLengthBetween($value): bool
     {
         if (count($this->params) < 2) {
-            throw new \BadMethodCallException('Validation rule "'.$this->rule.'" require 2 parameters '.count($this->params).' given.');
+            throw new \BadMethodCallException(
+                'Validation rule "' . $this->rule
+                . '" require 2 parameters ' . count($this->params) . ' given.'
+            );
         }
 
         $length = mb_strlen($value, $this->charset);
@@ -232,7 +264,10 @@ class Rule
     protected function validateMax($value): bool
     {
         if (!isset($this->params[0])) {
-            throw new \BadMethodCallException('Validation rule "'.$this->rule.'" requires the maximum value parameter no one given.');
+            throw new \BadMethodCallException(
+                'Validation rule "' . $this->rule
+                . '" requires the maximum value parameter no one given.'
+            );
         }
 
         return $value <= $this->params[0];
@@ -248,7 +283,10 @@ class Rule
     protected function validateMaxLength($value): bool
     {
         if (!isset($this->params[0])) {
-            throw new \BadMethodCallException('Validation rule "'.$this->rule.'" requires the maximum length parameter no one given.');
+            throw new \BadMethodCallException(
+                'Validation rule "' . $this->rule
+                . '" requires the maximum length parameter no one given.'
+            );
         }
 
         return mb_strlen($value, $this->charset) <= $this->params[0];
@@ -264,7 +302,10 @@ class Rule
     protected function validateMin($value): bool
     {
         if (!isset($this->params[0])) {
-            throw new \BadMethodCallException('Validation rule "'.$this->rule.'" requires the minimum value parameter no one given.');
+            throw new \BadMethodCallException(
+                'Validation rule "' . $this->rule
+                . '" requires the minimum value parameter no one given.'
+            );
         }
 
         return $value >= $this->params[0];
@@ -280,7 +321,10 @@ class Rule
     protected function validateMinLength($value): bool
     {
         if (!isset($this->params[0])) {
-            throw new \BadMethodCallException('Validation rule "'.$this->rule.'" requires the minimum length parameter no one given.');
+            throw new \BadMethodCallException(
+                'Validation rule "' . $this->rule
+                . '" requires the minimum length parameter no one given.'
+            );
         }
 
         return mb_strlen($value, $this->charset) >= $this->params[0];
@@ -356,7 +400,10 @@ class Rule
     protected function validateSame($value, array $input): bool
     {
         if (!isset($this->params[0])) {
-            throw new \BadMethodCallException('Validation rule "'.$this->rule.'" require comparison field name parameter no one given.');
+            throw new \BadMethodCallException(
+                'Validation rule "' . $this->rule
+                . '" require comparison field name parameter no one given.'
+            );
         }
 
         return $value === ($input[$this->params[0]] ?? null);
@@ -410,7 +457,11 @@ class Rule
             $this->parseMethod();
         }
 
-        if (!isset($fields[$this->field]) && $this->method != 'validateNotNull' && $this->method != 'validateRequired') {
+        if (
+            !isset($fields[$this->field])
+            && $this->method != 'validateNotNull'
+            && $this->method != 'validateRequired'
+        ) {
             return true;
         }
 

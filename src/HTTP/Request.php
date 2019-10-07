@@ -1,6 +1,7 @@
 <?php
+
 /**
- * HTTP request handler class.
+ * HTTP request handler.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,19 +12,30 @@
 
 namespace Springy\HTTP;
 
+/**
+ * HTTP request handler class.
+ */
 class Request
 {
     /** @var self Request globally instance */
     protected static $instance;
 
-    /** @var object|null HTTP request body */
-    protected $body;
+    /** @var array HTTP request headers */
+    protected $headers;
+    /** @var object|null HTTP request body in Json format */
+    protected $jsonBody;
+    /** @var int the code of error occurred during parse body */
+    protected $jsonError;
+    /** @var string the message of error occurred during parse body */
+    protected $jsonErrorMsg;
     /** @var string HTTP request method */
     protected $method;
     /** @var string the received body in raw format */
     protected $rawBody;
     /** @var string HTTP_X_REQUESTED_WITH value */
     protected $requestedWith;
+    /** @var string Bearer Token value */
+    protected $bearerToken;
 
     /**
      * Constructor.
@@ -33,9 +45,14 @@ class Request
     private function __construct()
     {
         $this->method = $_SERVER['REQUEST_METHOD'] ?? null;
+        $this->headers = $this->parseHeaders();
         $this->rawBody = $this->getRawData();
-        $this->body = $this->parseRawData();
+        $this->jsonBody = $this->parseRawData();
+        $this->jsonError = json_last_error();
+        $this->jsonErrorMsg = json_last_error_msg();
         $this->requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+        $this->bearerToken = $this->parseBearerToken();
+
         self::$instance = $this;
     }
 
@@ -53,6 +70,42 @@ class Request
      */
     private function __wakeup()
     {
+    }
+
+    /**
+     * Gets all request headers.
+     *
+     * @return array
+     */
+    protected function parseHeaders()
+    {
+        $headers = [];
+
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            if ($headers !== false) {
+                return $headers;
+            }
+        }
+
+        foreach ($_SERVER as $name => $value) {
+            if (
+                (substr($name, 0, 5) == 'HTTP_')
+                || ($name == 'CONTENT_TYPE')
+                || ($name == 'CONTENT_LENGTH')
+                || ($name == 'AUTHORIZATION')
+            ) {
+                $headers[
+                    str_replace(
+                        [' ', 'Http'],
+                        ['-', 'HTTP'],
+                        ucwords(strtolower(str_replace('_', ' ', substr($name, 5))))
+                    )
+                ] = $value;
+            }
+        }
+
+        return $headers;
     }
 
     /**
@@ -81,9 +134,53 @@ class Request
             $this->rawBody = iconv($encoding, 'UTF-8', $this->rawBody);
         }
 
-        $request = json_decode($this->rawBody);
+        return json_decode($this->rawBody);
+    }
 
-        return $request;
+    /**
+     * Parses the bearer token authorization header.
+     *
+     * @return string|null
+     */
+    protected function parseBearerToken(): ?string
+    {
+        $headers = $this->getHeaders();
+
+        if (!isset($headers['Authorization'])) {
+            return null;
+        }
+
+        return trim(str_replace('Bearer', '', $headers['Authorization']));
+    }
+
+    /**
+     * Returns the bearer token.
+     *
+     * @return string|null
+     */
+    public function getBearerToken(): ?string
+    {
+        return $this->bearerToken ?? null;
+    }
+
+    /**
+     * Returns received body.
+     *
+     * @return string|null
+     */
+    public function getBody(): ?string
+    {
+        return $this->rawBody;
+    }
+
+    /**
+     * Returns all request headers.
+     *
+     * @return array
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
     }
 
     /**
@@ -91,9 +188,29 @@ class Request
      *
      * @return object|null
      */
-    public function getBody()
+    public function getJsonBody(): ?object
     {
-        return $this->body;
+        return $this->jsonBody;
+    }
+
+    /**
+     * Returns the code of the error occurred during body encoding.
+     *
+     * @return int
+     */
+    public function getJsonError(): int
+    {
+        return $this->jsonError;
+    }
+
+    /**
+     * Returns the message of the error occurred during body encoding.
+     *
+     * @return string
+     */
+    public function getJsonErrorMsg(): string
+    {
+        return $this->jsonErrorMsg;
     }
 
     /**
@@ -104,6 +221,24 @@ class Request
     public function getMethod(): string
     {
         return $this->method ?? '';
+    }
+
+    /**
+     * Returns the request method checking if has Method Override.
+     *
+     * @return string
+     */
+    public function getMethodOverride(): string
+    {
+        if (
+            $this->isPost()
+            && isset($this->headers['X-HTTP-Method-Override'])
+            && in_array($this->headers['X-HTTP-Method-Override'], ['PUT', 'DELETE', 'PATCH'])
+        ) {
+            return $this->headers['X-HTTP-Method-Override'];
+        }
+
+        return $this->getMethod();
     }
 
     /**

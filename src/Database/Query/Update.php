@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SQL UPDATE class constructor.
  *
@@ -14,6 +15,9 @@ namespace Springy\Database\Query;
 use Springy\Database\Connection;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * SQL UPDATE class constructor class.
+ */
 class Update extends CommandBase implements OperatorComparationInterface, OperatorGroupInterface
 {
     /** @var Connection the connection object */
@@ -53,10 +57,10 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
     {
         $this->parameters = [];
 
-        $update = 'UPDATE '.$this->getTableNameAndAlias()
-            .$this->strJoins()
-            .$this->strSet()
-            .$this->strWhere();
+        $update = 'UPDATE ' . $this->getTableNameAndAlias()
+            . $this->strJoins()
+            . $this->strSet()
+            . $this->strWhere();
 
         return $update;
     }
@@ -71,7 +75,7 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
     protected function addValueObj(Value $value)
     {
         if (in_array($value->getColumn(), $this->columns)) {
-            throw new SpringyException('Value "'.$value->getColumn().'" redeclared.');
+            throw new SpringyException('Value "' . $value->getColumn() . '" redeclared.');
         }
 
         $this->addCol($value->getColumn());
@@ -87,7 +91,7 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
     {
         $joins = '';
         foreach ($this->joins as $join) {
-            $joins .= ' '.$join;
+            $joins .= ' ' . $join;
 
             $this->parameters = array_merge($this->parameters, $join->params());
         }
@@ -110,10 +114,10 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
 
         $values = ' SET ';
         foreach ($this->values as $value) {
-            $values .= $value->getColumn().' = ';
+            $values .= $value->getColumn() . ' = ';
 
             if ($value->isExpression()) {
-                $values .= $value->getValue().',';
+                $values .= $value->getValue() . ',';
 
                 continue;
             }

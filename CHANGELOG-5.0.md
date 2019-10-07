@@ -4,15 +4,24 @@
 
 ### To do
 
--   Alternative routes
+-   Implement parse error message for migration in YAML formats
+-   Count method for models
 -   Automatic URL redirections
+-   RESTful controller
+-   Data validation on `RowsIterator->set()` method
 
 #### Test cases to do
 
+-   Springy\Database\RowsIteratPodor->getWritableColumns()
 -   Springy\Exceptions\Handler->setLogDir()
 -   Springy\Exceptions\Handler->setUnreportable()
 -   Springy\Exceptions\Handler->addWebmaster()
 -   Springy\Exceptions\Handler->setWebmaster()
+-   Springy\HTTP\Request->getBody()
+-   Springy\HTTP\Request->getHeaders()
+-   Springy\HTTP\Request->getJsonError()
+-   Springy\HTTP\Request->getJsonErrorMsg()
+-   Springy\HTTP\Routing
 -   Springy\Utils\NetworkUtils
 -   Helper functions
 -   All console classes
@@ -56,9 +65,22 @@
 -   Added `Springy\Database\Query\Value` class
 -   Added `Springy\Database\RowsIterator` class
 -   Added `Springy\Exceptions\Handler` class
--   Added `Springy\Exceptions\Http403Error` class
--   Added `Springy\Exceptions\Http404Error` class
 -   Added `Springy\Exceptions\HttpError` class
+-   Added `Springy\Exceptions\HttpErrorBadRequest` class
+-   Added `Springy\Exceptions\HttpErrorConflict` class
+-   Added `Springy\Exceptions\HttpErrorForbidden` class
+-   Added `Springy\Exceptions\HttpErrorGone` class
+-   Added `Springy\Exceptions\HttpErrorImaTeapot` class
+-   Added `Springy\Exceptions\HttpErrorLengthRequired` class
+-   Added `Springy\Exceptions\HttpErrorMethodNotAllowed` class
+-   Added `Springy\Exceptions\HttpErrorNotAcceptable` class
+-   Added `Springy\Exceptions\HttpErrorNotFound` class
+-   Added `Springy\Exceptions\HttpErrorPreconditionFailed` class
+-   Added `Springy\Exceptions\HttpErrorPreconditionRequired` class
+-   Added `Springy\Exceptions\HttpErrorServiceUnavailable` class
+-   Added `Springy\Exceptions\HttpErrorTooManyRequests` class
+-   Added `Springy\Exceptions\HttpErrorUnauthorized` class
+-   Added `Springy\Exceptions\HttpErrorUnsupportedMediaType` class
 -   Added `Springy\Exceptions\SpringyException` class
 -   Added `Springy\HTTP\Controller` class
 -   Added `Springy\HTTP\Cookie::getInstance()` method
@@ -86,6 +108,8 @@
 -   Added `Springy\Validation\Rule` class
 -   Added configuration file `dbms.php` (see bellow)
 -   Added configuration entry `'application.authentication'` (see bellow)
+-   Added configuration entry `'database.default'`
+-   Added configuration entry `'database.model_structures'`
 -   Added configuration entry `'template.auto_escape'`
 -   Added configuration entry `'template.file_sufix'`
 -   Added property `$dbIdentity` into `Springy\Database\Model` class
@@ -183,18 +207,31 @@
 -   Main system configuration `PROJECT_CODE_NAME` renamed to `main.app.code_name`
 -   Main system configuration `CHARSET` renamed to `main.charset`
 -   Main system configuration `ENVIRONMENT` renamed to `main.environment`
+-   Configuration `'db'` moved to `'database.connections'`
 -   Configuration `'mail.default_driver'` renamed to `'mail.driver'`
 -   Configuration `'mail.mails_go_to'` renamed to `'mail.fake_to'`
--   Configuration `'system'` renamed to `'application'`
+-   Configuration `'system.debug'` renamed to `'application.debug'`
+-   Configuration `'system.session.domain'` renamed to `'session.domain'`
+-   Configuration `'system.session.expires'` renamed to `'session.expires'`
+-   Configuration `'system.session.memcached.address'` renamed to `'session.host'`
+-   Configuration `'system.session.memcached.port'` renamed to `'session.port'`
+-   Configuration `'system.session.name'` renamed to `'session.name'`
+-   Configuration `'system.session.type'` renamed to `'session.engine'`
 -   Configuration `'template.auto_reload'` renamed to `'template.force_compile'`
+-   Configuration `'template.autoescape'` renamed to `'template.auto_escape'`
+-   Configuration `'template.template_cached_path'` renamed to `'template.paths.cache'`
 -   Configuration `'template.compiled_template_path'` renamed to `'template.paths.compiled'`
 -   Configuration `'template.default_template_path'` renamed to `'template.paths.alternative'`
+-   Configuration `'template.strict_variables'` renamed to `'template.strict'`
 -   Configuration `'template.template_engine'` renamed to `'template.driver'`
 -   Configuration `'template.template_path'` renamed to `'template.paths.templates'`
--   Template variable `ACTIVE_ENVIRONMENT` renamed to `ENVIRONMENT`
--   Template variable `PROJECT_CODE_NAME` renamed to `APP_CODE_NAME`
--   Template variable `SYSTEM_NAME` renamed to `APP_NAME`
--   Template variable `SYSTEM_VERSION` renamed to `APP_VERSION`
+-   Configuration `'uri.host_controller_path'` moved to `'routing.hostings'`
+-   Configuration `'uri.routes'` moved to `'routing.routes'`
+-   General system configuration `ACTIVE_ENVIRONMENT` moved to `main.environment`
+-   General system configuration `ENVIRONMENT_ALIAS` moved to `main.environments`
+-   General system configuration `PROJECT_CODE_NAME` moved to `main.app.code_name`
+-   General system configuration `SYSTEM_NAME` moved to `main.app.name`
+-   General system configuration `SYSTEM_VERSION` moved to `main.app.version`
 -   The trigger function was removed from `Springy\Database\Model` but will be called if exists in heir class
 -   The structure of array os rules for `Springy\Validation\Validator` class was changed to receive the custom error messages
 
@@ -204,9 +241,10 @@
 -   Removed `$controller` property from `Springy\Security\AclManager`
 -   Removed `$defaultModule` property from `Springy\Security\AclManager`
 -   Removed `$modulePrefix` property from `Springy\Security\AclManager`
--   Removed `Springy\Controller->_pageNotFound()` method. Throws a `Springy\Exceptions\Http404Error` exception to returns a '404-page not found' HTTP error.
+-   Removed `Springy\Controller->_pageNotFound()` method. Throws a `Springy\Exceptions\HttpErrorNotFound` exception to returns a '404-page not found' HTTP error.
 -   Removed `Springy\Cookie::contents()` method
 -   Removed `Springy\Cookie::del()` method
+-   Removed `Springy\Controller->_template()` method
 -   Removed `Springy\CreditCardValidation` class
 -   Removed `Springy\DB::castDateBrToDb()` method
 -   Removed `Springy\DB::castDateDbToBr()` method
@@ -286,18 +324,47 @@
 -   Removed `Springy\Validation\Validator->setMessages()` method
 -   Removed `$cacheLifeTime` parameters from `Springy\Database\Connection::__construct`
 -   Removed comparison constants aliases from `Springy\Database\Conditions` class
--   Removed support to configuration `db` configuration files
--   Removed support to configuration `'uri.common_urls'`
--   Removed support to configuration `'uri.redirect_last_slash'`
--   Removed support to configuration `'uri.force_slash_on_index'`
+-   Removed support to configuration `'system.assets_path'`
+-   Removed support to configuration `'system.assets_source_path'`
+-   Removed support to configuration `'system.authentication'`
+-   Removed support to configuration `'system.bug_authentication'`
+-   Removed support to configuration `'system.cache-control'`
+-   Removed support to configuration `'system.dba_user'`
+-   Removed support to configuration `'system.developer_pass'`
+-   Removed support to configuration `'system.developer_user'`
+-   Removed support to configuration `'system.rewrite_url'`
+-   Removed support to configuration `'system.session.database'`
+-   Removed support to configuration `'system.system_error.create_table'`
+-   Removed support to configuration `'system.system_error.db_server'`
+-   Removed support to configuration `'system.system_error.reported_errors'`
+-   Removed support to configuration `'system.system_error.save_in_database'`
+-   Removed support to configuration `'system.system_error.table_name'`
+-   Removed support to configuration `'template.template_config_path'`
 -   Removed support to configuration `'template.debugging_ctrl'`
 -   Removed support to configuration `'template.errors'`
 -   Removed support to configuration `'template.escape_html'` see `'template.auto_escape'`
+-   Removed support to configuration `'uri.assets_dir'`
+-   Removed support to configuration `'uri.common_urls'`
+-   Removed support to configuration `'uri.css_dir'`
+-   Removed support to configuration `'uri.dynamic'`
+-   Removed support to configuration `'uri.force_slash_on_index'`
+-   Removed support to configuration `'uri.ignored_segments'`
+-   Removed support to configuration `'uri.images_dir'`
+-   Removed support to configuration `'uri.js_dir'`
+-   Removed support to configuration `'uri.prevalidate_controller'`
+-   Removed support to configuration `'uri.redirect_last_slash'`
+-   Removed support to configuration `'uri.register_method_set_common_urls'`
+-   Removed support to configuration `'uri.secure'`
+-   Removed support to configuration `'uri.static'`
+-   Removed support to configuration `'uri.swf_dir'`
 -   Removed support to configuration `'system.system_error.save_in_database'`
+-   Removed support to `$over_conf` variable in configuration files
+-   Removed support to hook controller `_global.php`
 -   Removed support to Manuel Lemos' MIME Mail Message classes. Thanks a lot!
 -   Removed template variable `HOST`
 -   Removed template variable `CURRENT_PAGE_URI`
 -   Removed `assetFile` pre-defined template function. The application must implements by it self using `Springy\Template\Template->addFunction()` method.
+-   Removed support to `sysconf.php` file inside public root folder
 
 ### Configuration files
 
@@ -339,6 +406,7 @@ The dbms.php file in configuration directories is used by Springy\DBMS\Connectio
 
 -   `'mysql'` : MySQL server.
 -   `'sqlite'` : SQLite3 database.
+-   `'pgsql'` : PostgreSQL server.
 
 ###### The `'connections.*.round_robin'` Configuration Structure
 
@@ -347,6 +415,43 @@ The dbms.php file in configuration directories is used by Springy\DBMS\Connectio
 -   `'address'` : address of the Memcached server for 'memcached' driver.
 -   `'port'` : TCP port of the Memcached server for 'memcached' driver.
 -   `'key'` : round robin item key in the Memcached server for 'memcached' driver.
+
+#### The Routing configuration: routing.php
+
+The configuration file `routing.php` has to key pair arrays.
+
+The 'routes' array with the structure *pattern => handling*.
+
+And the 'namespaces' array that changes the default namespace for controllers.
+
+##### The Pattern
+
+The pattern is a string with two parts separated by **@** char.
+
+The first part is the request methods and you can set as one or several separated by the **|** char.
+You can also use the wildcard "*" to represent all the methods (GET, POST, PUT, DELETE, OPTIONS, PATCH and HEAD).
+
+Example: 'GET|POST'
+
+The second part of the pattern is the URI-Pattern and can be static or dynamic with PCRE regular expression or placeholder expression.
+
+###### Static URI-Patterns
+
+Example: '/user'
+
+###### Dynamic PCRE URI-Patterns
+
+Example: '/user/(\d+)'
+
+###### Dynamic Placeholder URI-Patterns
+
+Example: '/user/{id}'
+
+##### The Handling
+
+###### Array Handling
+
+The array handlings must be a key pair where the key is a pattern to be appended to the parent pattern and the value as the handling.
 
 ### RowsIterator Columns Object
 
@@ -360,23 +465,23 @@ $rowsIterator = new RowsIterator('/path/to/my/structure.json');
 
 #### The JSON File With Columns Structure
 
-The JSON file with the columns structure must contains keys with columns names and at last one of the following properties:
+The JSON file with the columns structure must contains keys with column names and at last one of the following properties:
 
 -   "primaryKey": `bool` - defines the column as a primary key
--   "computed": `string` - if its value is a callable function name defines the column as computed
--   "hook": `string` - defines a callable hook function to process column value when setting data to it
--   "readonly": `bool` - defines the column as read only
--   "insertedAt": `bool` - defines the column as the added date controller
--   "softDelete": `bool` - defines the column as a soft delete controller int(0|1)
--   "validation": `array` - an array of validation rules and error messages
+-   "computed": `string` - if its value is a function name that can be called it defines the column as computed
+-   "hook": `string` - defines a hook function to process the column value by defining data for it
+-   "readOnly": `bool` - sets the column to read-only
+-   "insertedAt": `bool` - it sets column as date-added controller
+-   "softDelete": `bool` - it defines the column as a soft delete controller int(0|1)
+-   "validation": `array` - an array or object validation rules and error messages
 
 Example:
 
 ```json
 {
   "id": {
-    "pk": true,
-    "readyOnly": true
+    "primaryKey": true,
+    "readOnly": true
   },
   "name": {
     "validation": [
@@ -386,7 +491,7 @@ Example:
   },
   "created_at": {
     "insertedAt": true,
-    "readyOnly": true
+    "readOnly": true
   }
 }
 ```
@@ -395,20 +500,20 @@ Observations:
 
 All computed columns are read only.
 
-Can have only one collumn with added date controller attribute. If more than one column has this attribute, only the first will be defined.
+May only have one column with added date controller attribute. If more than one column has this attribute, only the first one is set.
 
-Can have only one soft delete controller column. Then only the first column with this attribute will be considered.
+You can have only one exclusion control column. So only the first column with this attribute will be considered.
 
 ### Validation Rules Array
 
-The array of validation rules used by the class `Springy\Validation\Validator` must be in a structure where the name of the fields stays in each index of the array and the rule set in its value.
+The validation rule array used by the `Springy\Validation\Validator` class must be in a structure where the field name remains in each array index and the rule set in their value.
 
-Each rule set can be a string of rules concatenated by pipe "|" or an array of validation rules.
+Each set of rules can be a sequence of rules concatenated by pipe "|" or an array of validation rules.
 
 Each validation rule can be a string in the format "rule_name:param1,param2,paramN:custom error message" or an array with the following indexes:
 
--   'params' => an array of parameters or a string with parameters separated by comma ","
--   'message' => the string for the custom message. See messages tag section.
+-   'params' => an array of parameters or a string with parameters separated by commas ","
+-   'message' => the custom message string. See messages tag section.
 
 #### Messages tag
 
@@ -439,3 +544,7 @@ Must be in namespace `App\Migrations\Rev#` where **#** is the version number and
 If there is no method called `rollback()` no rollback can be applied to the migration.
 
 Both methods `migrate()` and `rollback()` will receives a `Springy\Database\Connection` object as parameter.
+
+### Custom Error Pages
+
+To create custom error pages ...

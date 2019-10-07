@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Application configuration handler.
  *
@@ -15,6 +16,9 @@ namespace Springy\Core;
 use Springy\Exceptions\SpringyException;
 use Springy\Utils\ArrayUtils;
 
+/**
+ * Application configuration handler.
+ */
 class Configuration
 {
     /** @var self globally singleton instance */
@@ -29,11 +33,11 @@ class Configuration
     /** @var string the host for configurations overwrite */
     protected $host;
 
-    const LC_DB = 'db';
-    const LC_MAIL = 'mail';
-    const LC_SYSTEM = 'system';
-    const LC_TEMPLATE = 'template';
-    const LC_URI = 'uri';
+    public const LC_DB = 'db';
+    public const LC_MAIL = 'mail';
+    public const LC_SYSTEM = 'system';
+    public const LC_TEMPLATE = 'template';
+    public const LC_URI = 'uri';
 
     /**
      * Constructor.
@@ -41,7 +45,7 @@ class Configuration
     private function __construct(string $path = null, string $env = null, string $host = null)
     {
         $this->configSets = [];
-        $this->configPath = $path ?? __DIR__.'/../../../../conf';
+        $this->configPath = $path ?? __DIR__ . '/../../../../conf';
         $this->envDir = $env ?? 'production';
         $this->host = $host ?? '';
         self::$instance = $this;
@@ -95,20 +99,20 @@ class Configuration
      */
     private function loadJson($file, $set)
     {
-        if (!file_exists($file.'.json')) {
+        if (!file_exists($file . '.json')) {
             return;
         }
 
         // Initializes the config set if needed
         $this->prepareSetting($set);
 
-        if (!$str = file_get_contents($file.'.json')) {
-            throw new SpringyException('Can not open the configuration file '.$file.'.json');
+        if (!$str = file_get_contents($file . '.json')) {
+            throw new SpringyException('Can not open the configuration file ' . $file . '.json');
         }
 
         $conf = json_decode($str, true);
         if (json_last_error() != JSON_ERROR_NONE) {
-            throw new SpringyException('Parse error at '.$file.'.json: '.json_last_error_msg());
+            throw new SpringyException('Parse error at ' . $file . '.json: ' . json_last_error_msg());
         }
 
         $this->configSets[$set] = array_replace_recursive($this->configSets[$set], $conf);
@@ -124,14 +128,14 @@ class Configuration
      */
     protected function loadScript($file, $set)
     {
-        if (!file_exists($file.'.php')) {
+        if (!file_exists($file . '.php')) {
             return;
         }
 
         // Initializes the config set if needed
         $this->prepareSetting($set);
 
-        $conf = require $file.'.php';
+        $conf = require $file . '.php';
         $this->configSets[$set] = array_replace_recursive($this->configSets[$set], $conf);
     }
 
@@ -218,22 +222,28 @@ class Configuration
         unset($this->configSets[$set]);
 
         // Load configuration file from main folder
-        $this->loadScript($this->configPath.DS.$set, $set);
-        $this->loadScript($this->configPath.DS.$set.'-'.$this->host, $set);
-        $this->loadJson($this->configPath.DS.$set, $set);
-        $this->loadJson($this->configPath.DS.$set.'-'.$this->host, $set);
+        $this->loadScript($this->configPath . DS . $set, $set);
+        $this->loadScript($this->configPath . DS . $set . '-' . $this->host, $set);
+        $this->loadJson($this->configPath . DS . $set, $set);
+        $this->loadJson($this->configPath . DS . $set . '-' . $this->host, $set);
 
         // Load configuration file from environment folder
         if ($this->envDir) {
-            $this->loadScript($this->configPath.DS.$this->envDir.DS.$set, $set);
-            $this->loadScript($this->configPath.DS.$this->envDir.DS.$set.'-'.$this->host, $set);
-            $this->loadJson($this->configPath.DS.$this->envDir.DS.$set, $set);
-            $this->loadJson($this->configPath.DS.$this->envDir.DS.$set.'-'.$this->host, $set);
+            $this->loadScript($this->configPath . DS . $this->envDir . DS . $set, $set);
+            $this->loadScript($this->configPath . DS . $this->envDir . DS . $set . '-' . $this->host, $set);
+            $this->loadJson($this->configPath . DS . $this->envDir . DS . $set, $set);
+            $this->loadJson($this->configPath . DS . $this->envDir . DS . $set . '-' . $this->host, $set);
         }
 
         // Check if configuration was loaded
         if (!isset($this->configSets[$set])) {
-            throw new SpringyException('Configuration settings "'.$set.'" not found in the environment "'.$this->envDir.'".');
+            throw new SpringyException(
+                'Configuration settings "'
+                . $set
+                . '" not found in the environment "'
+                . $this->envDir
+                . '".'
+            );
         }
     }
 
@@ -246,10 +256,10 @@ class Configuration
      */
     public function save(string $set)
     {
-        $fileName = $this->configPath.DS.($this->envDir ? $this->envDir.DS : '').$set.'.json';
+        $fileName = $this->configPath . DS . ($this->envDir ? $this->envDir . DS : '') . $set . '.json';
 
         if (!file_put_contents($fileName, json_encode($this->configSets[$set], JSON_PRETTY_PRINT))) {
-            throw new SpringyException('Can not write to '.$fileName);
+            throw new SpringyException('Can not write to ' . $fileName);
         }
     }
 

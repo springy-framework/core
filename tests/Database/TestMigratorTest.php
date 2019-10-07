@@ -18,11 +18,12 @@ class TestMigratorTest extends TestCase
 {
     public function testRevisions()
     {
-        $path = config_get('database.connections.mysql.migration_dir');
+        $path = config_get('database.connections.mysql.migration.dir');
+        $namespace = config_get('database.connections.mysql.migration.namespace');
 
         $this->assertTrue(is_dir($path));
 
-        $revisions = new Revisions($path);
+        $revisions = new Revisions($path, $namespace);
         $this->assertCount(4, $revisions->getRevisions());
     }
 

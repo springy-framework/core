@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait with network helper functions.
  *
@@ -6,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version	  1.0.0
+ * @version   1.0.0
  *
  * The methods of this trait can be accessed by seting use
  * of this trait inside user classes.
@@ -16,6 +17,9 @@
 
 namespace Springy\Utils;
 
+/**
+ * Trait with network helper functions.
+ */
 trait NetworkUtils
 {
     /**
@@ -34,8 +38,10 @@ trait NetworkUtils
     protected function getRealRemoteAddr(): string
     {
         // Check if behind a proxy
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])
-            && strcasecmp($_SERVER['HTTP_X_FORWARDED_FOR'], 'unknown')) {
+        if (
+            isset($_SERVER['HTTP_X_FORWARDED_FOR'])
+            && strcasecmp($_SERVER['HTTP_X_FORWARDED_FOR'], 'unknown')
+        ) {
             foreach (explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']) as $val) {
                 $val = trim($val);
 
@@ -88,9 +94,11 @@ trait NetworkUtils
      */
     protected function isValidIP(string $ipValue): bool
     {
-        if (filter_var($ipValue, FILTER_VALIDATE_IP) === false
+        if (
+            filter_var($ipValue, FILTER_VALIDATE_IP) === false
             || $this->isPraviteNetwork($ipValue)
-            || !strcasecmp($ipValue, 'unknown')) {
+            || !strcasecmp($ipValue, 'unknown')
+        ) {
             return false;
         }
 

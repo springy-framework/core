@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Parent class for relational database table model objects.
+ * Relational database table row iterator constructor.
  *
  * @copyright 2014 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -17,6 +18,9 @@ use Springy\Exceptions\SpringyException;
 use Springy\Utils\MessageContainer;
 use Springy\Validation\Validator;
 
+/**
+ * Parent class for relational database table row iterator objects.
+ */
 class RowsIterator implements Iterator
 {
     /**
@@ -82,7 +86,7 @@ class RowsIterator implements Iterator
      * The list of writable columns.
      *
      * If undefined the model will catch them from columns list
-     * searching for column where properties 'readonly' and 'computed'
+     * searching for column where properties 'readOnly' and 'computed'
      * are false or undefined.
      *
      * @var array
@@ -106,14 +110,25 @@ class RowsIterator implements Iterator
     /** @var MessageContainer the last validation errors */
     protected $validationErrors;
 
+    /** @var array persistence of Json structures */
+    protected static $strucs = [];
+
     /**
      * Constructor.
      */
     public function __construct(string $structure)
     {
+        if (!isset(static::$strucs[$structure])) {
+            static::$strucs[$structure] = json_decode(file_get_contents($structure));
+        }
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new SpringyException('trouble.json.structure.decoding.error.' . json_last_error());
+        }
+
         $this->bypassTriggers = false;
         $this->changed = [];
-        $this->columns = json_decode(file_get_contents($structure));
+        $this->columns = static::$strucs[$structure];
         $this->foundRows = 0;
         $this->newRecord = false;
         $this->rows = [];
@@ -404,7 +419,7 @@ class RowsIterator implements Iterator
         }
 
         foreach ($this->columns as $name => $properties) {
-            if (($properties->readonly ?? false) || ($properties->computed ?? false)) {
+            if (($properties->readOnly ?? false) || ($properties->computed ?? false)) {
                 continue;
             }
 
@@ -438,7 +453,7 @@ class RowsIterator implements Iterator
         $columns = current($this->rows);
 
         if (!isset($columns[$column]) && $this->errorIfColNotExists) {
-            throw new SpringyException('Column "'.$column.'" does not exists.');
+            throw new SpringyException('Column "' . $column . '" does not exists.');
         }
 
         return $columns[$column] ?? null;
@@ -485,6 +500,16 @@ class RowsIterator implements Iterator
     }
 
     /**
+     * Returns the array of writable columns.
+     *
+     * @return array
+     */
+    public function getWritableColumns(): array
+    {
+        return $this->writableColumns;
+    }
+
+    /**
      * Returns the number of rows.
      *
      * @return int
@@ -507,9 +532,9 @@ class RowsIterator implements Iterator
     public function set(string $column, $value = null)
     {
         if (!isset($this->columns->$column)) {
-            throw new SpringyException('Column "'.$column.'" does not exists.');
+            throw new SpringyException('Column "' . $column . '" does not exists.');
         } elseif (!in_array($column, $this->writableColumns)) {
-            throw new SpringyException('Column "'.$column.'" is not writable.');
+            throw new SpringyException('Column "' . $column . '" is not writable.');
         }
 
         if (empty($this->rows)) {
@@ -554,7 +579,7 @@ class RowsIterator implements Iterator
     {
         foreach ($rows as $index => $row) {
             if (!is_array($row)) {
-                throw new SpringyException('Incorrect row format at index ('.$index.').');
+                throw new SpringyException('Incorrect row format at index (' . $index . ').');
             }
 
             $this->setRow($row);

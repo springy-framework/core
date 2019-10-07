@@ -1,6 +1,7 @@
 <?php
+
 /**
- * SQL JOIN clause constructor class.
+ * SQL JOIN clause constructor.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -13,12 +14,15 @@ namespace Springy\Database\Query;
 
 use Springy\Exceptions\SpringyException;
 
+/**
+ * SQL JOIN clause constructor class.
+ */
 class Join extends CommandBase implements OperatorComparationInterface, OperatorGroupInterface
 {
-    const INNER = 'INNER JOIN';
-    const LEFT_OUTER = 'LEFT OUTER JOIN';
-    const RIGHT_OUTER = 'RIGHT OUTER JOIN';
-    const OUTER = 'OUTER JOIN';
+    public const INNER = 'INNER JOIN';
+    public const LEFT_OUTER = 'LEFT OUTER JOIN';
+    public const RIGHT_OUTER = 'RIGHT OUTER JOIN';
+    public const OUTER = 'OUTER JOIN';
 
     /** @var string the type of join */
     protected $joinType;
@@ -46,7 +50,7 @@ class Join extends CommandBase implements OperatorComparationInterface, Operator
      */
     public function __toString()
     {
-        $join = $this->joinType.' '.$this->getTableNameAndAlias().$this->getOn();
+        $join = $this->joinType . ' ' . $this->getTableNameAndAlias() . $this->getOn();
 
         return $join;
     }
@@ -64,7 +68,7 @@ class Join extends CommandBase implements OperatorComparationInterface, Operator
             throw new SpringyException('Join condition ON undefined');
         }
 
-        return ' ON '.$this->conditions;
+        return ' ON ' . $this->conditions;
     }
 
     /**

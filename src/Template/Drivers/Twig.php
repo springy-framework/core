@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Class driver for Smarty template engine.
+ * Driver for Smarty template engine.
  *
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -20,6 +21,9 @@ use Twig\Environment as TwigEnvironment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFunction;
 
+/**
+ * Class driver for Smarty template engine.
+ */
 class Twig implements TemplateDriverInterface
 {
     use FileSystemUtils;
@@ -96,7 +100,7 @@ class Twig implements TemplateDriverInterface
             return;
         }
 
-        $dir = $this->envOptions['cache'].DS;
+        $dir = $this->envOptions['cache'] . DS;
         $objects = scandir($dir);
         if (!$objects) {
             return;
@@ -108,7 +112,7 @@ class Twig implements TemplateDriverInterface
             }
 
             $this->unlinkExtended(
-                $dir.$object,
+                $dir . $object,
                 function ($file) use ($expTime) {
                     return filemtime($file) <= (time() - $expTime);
                 },

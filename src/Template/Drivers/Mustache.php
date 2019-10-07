@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Class driver for Smarty template engine.
+ * Driver for Smarty template engine.
  *
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -20,6 +21,9 @@ use Mustache_Loader_FilesystemLoader as FilesystemLoader;
 use Mustache_Logger_StreamLogger as StreamLogger;
 use Springy\Utils\FileSystemUtils;
 
+/**
+ * Class driver for Smarty template engine.
+ */
 class Mustache implements TemplateDriverInterface
 {
     use FileSystemUtils;
@@ -114,7 +118,7 @@ class Mustache implements TemplateDriverInterface
             return;
         }
 
-        $dir = $this->tplOptions['cache'].DS;
+        $dir = $this->tplOptions['cache'] . DS;
         $objects = scandir($dir);
         if (!$objects) {
             return;
@@ -126,7 +130,7 @@ class Mustache implements TemplateDriverInterface
             }
 
             $this->unlinkExtended(
-                $dir.$object,
+                $dir . $object,
                 function ($file) use ($expTime) {
                     return filemtime($file) <= (time() - $expTime);
                 },

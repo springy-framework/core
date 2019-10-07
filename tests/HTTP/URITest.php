@@ -25,13 +25,18 @@ class URITest extends TestCase
         $this->assertCount(0, $this->uri->getSegments());
     }
 
-    public function testGetURIString()
+    public function testGetUriString()
     {
-        $this->assertEmpty($this->uri->getURIString());
+        $this->assertEmpty($this->uri->getUriString());
     }
 
     public function testGetHost()
     {
         $this->assertEquals('$', $this->uri->getHost());
+    }
+
+    public function testGetUrl()
+    {
+        $this->assertEquals('http://$', $this->uri->getUrl());
     }
 }

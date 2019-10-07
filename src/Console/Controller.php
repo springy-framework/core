@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parent class for console command controllers.
  *
@@ -14,13 +15,15 @@
 namespace Springy\Console;
 
 use Springy\Core\ControllerInterface;
-use Springy\Exceptions\SpringyException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Parent class for console command controllers.
+ */
 class Controller extends Command implements ControllerInterface
 {
     /**
@@ -69,31 +72,14 @@ class Controller extends Command implements ControllerInterface
         $this->addOption('quiet', 'q', InputOption::VALUE_NONE, 'Do not output any message.');
         $this->addOption('ansi', null, InputOption::VALUE_NONE, 'Force ANSI output.');
         $this->addOption('no-ansi', null, InputOption::VALUE_NONE, 'Disable ANSI output.');
-        $this->addOption('verbose', 'v|vv|vvv', InputOption::VALUE_OPTIONAL, 'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug.');
+        $this->addOption(
+            'verbose',
+            'v|vv|vvv',
+            InputOption::VALUE_OPTIONAL,
+            'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug.'
+        );
         $this->addOption('no-interaction', 'n', InputOption::VALUE_NONE, 'Do not ask any interactive question.');
         $this->addOption('version', 'V', InputOption::VALUE_NONE, 'Display application version.');
-    }
-
-    /**
-     * Throws a "Forbidden" error.
-     *
-     * @throws SpringyException
-     *
-     * @return void
-     */
-    public function _forbidden()
-    {
-        throw new SpringyException('Forbidden.');
-    }
-
-    /**
-     * Checks whether the user has permission to the resource.
-     *
-     * @return bool
-     */
-    public function _hasPermission(): bool
-    {
-        return true;
     }
 
     /**
@@ -181,7 +167,7 @@ class Controller extends Command implements ControllerInterface
     protected function printTitle()
     {
         $this->output->writeln([
-            $this->getAppNameVersion().' - '.($this->description ? $this->description : $this->name),
+            $this->getAppNameVersion() . ' - ' . ($this->description ? $this->description : $this->name),
             '',
         ]);
     }
@@ -221,9 +207,19 @@ class Controller extends Command implements ControllerInterface
         $this->output->writeln('Options:');
         foreach ($options as $option) {
             $this->output->writeln(
-                '  '.str_pad($option[0], $leftcol + 2, ' ').$option[1]
+                '  ' . str_pad($option[0], $leftcol + 2, ' ') . $option[1]
             );
         }
+    }
+
+    /**
+     * Checks whether the user has permission to the resource.
+     *
+     * @return bool
+     */
+    public function hasPermission(): bool
+    {
+        return true;
     }
 
     /**

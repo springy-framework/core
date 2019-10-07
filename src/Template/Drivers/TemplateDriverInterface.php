@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface for template plugin drivers.
  *
@@ -14,6 +15,9 @@
 
 namespace Springy\Template\Drivers;
 
+/**
+ * Interface for template plugin drivers.
+ */
 interface TemplateDriverInterface
 {
     /**

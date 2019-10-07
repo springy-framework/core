@@ -11,12 +11,13 @@
 
 return [
     'app' => [
-        'name'      => 'Foo',
-        'version'   => [1, 0, 0],
+        'name' => 'Foo',
+        'version' => [1, 0, 0],
         'code_name' => 'Alpha',
     ],
-    'charset'     => 'UTF-8',
-    'timezone'    => 'UTC',
+    'charset' => 'UTF-8',
+    'timezone' => 'UTC',
     'environment' => 'test',
+    'environments' => [],
     'config_path' => __DIR__,
 ];
