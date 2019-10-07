@@ -15,8 +15,10 @@ namespace Springy\HTTP;
 use Springy\Core\Configuration;
 use Springy\Core\Copyright;
 use Springy\Core\Kernel as MainKernel;
-use Springy\Exceptions\{HttpErrorForbidden, HttpErrorNotFound};
-use Springy\Security\{AuthDriver, Authentication};
+use Springy\Exceptions\HttpErrorForbidden;
+use Springy\Exceptions\HttpErrorNotFound;
+use Springy\Security\AuthDriver;
+use Springy\Security\Authentication;
 
 /**
  * Kernel for the web application requisition.
