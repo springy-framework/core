@@ -1,6 +1,7 @@
 <?php
+
 /**
- * SQL DELETE class constructor.
+ * SQL DELETE command constructor.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -14,6 +15,9 @@ namespace Springy\Database\Query;
 use Springy\Database\Connection;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * SQL DELETE command constructor class.
+ */
 class Delete extends CommandBase implements OperatorComparationInterface, OperatorGroupInterface
 {
     /** @var Connection the connection object */
@@ -47,8 +51,7 @@ class Delete extends CommandBase implements OperatorComparationInterface, Operat
     {
         $this->parameters = [];
 
-        $update = 'DELETE FROM '.$this->getTableNameAndAlias()
-            .$this->strWhere();
+        $update = 'DELETE FROM ' . $this->getTableNameAndAlias() . $this->strWhere();
 
         return $update;
     }

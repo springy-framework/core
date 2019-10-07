@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 418 I'm a Teapot error class.
+ * HTTP 418 I'm a Teapot error.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 418 I'm a Teapot error class.
+ */
 class HttpErrorImaTeapot extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorImaTeapot extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'I\'m a Teapot', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'I\'m a Teapot',
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(418, $message, $previous, $code, $file, $line);
     }
 }

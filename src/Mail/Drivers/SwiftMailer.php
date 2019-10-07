@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Driver class for use with Swift Mailer v6 class.
+ * Driver for use with Swift Mailer v6 class.
  *
  * @copyright 2016 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -36,6 +37,9 @@ use Swift_Message;
 use Swift_SendmailTransport;
 use Swift_SmtpTransport;
 
+/**
+ * Driver class for use with Swift Mailer v6 class.
+ */
 class SwiftMailer implements MailDriverInterface
 {
     /** @var string last send error message */

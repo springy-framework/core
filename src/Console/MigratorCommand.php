@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database migration console command.
  *
@@ -16,6 +17,9 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
+/**
+ * Database migration console command controller.
+ */
 class MigratorCommand extends Controller
 {
     /**
@@ -42,7 +46,7 @@ class MigratorCommand extends Controller
         $this->addOption('database', 'd', InputOption::VALUE_OPTIONAL, 'Database name.');
         $this->addOption('revision', 'r', InputOption::VALUE_OPTIONAL, 'The target revision.');
 
-        $this->addUsage($this->getCommandTag().' <instruction> [<options>]');
+        $this->addUsage($this->getCommandTag() . ' <instruction> [<options>]');
     }
 
     /**
@@ -91,7 +95,7 @@ class MigratorCommand extends Controller
     {
         $this->setHelp([
             'Usage:',
-            '  '.$this->getCommandTag().' migrate|rollback|status [<options>]',
+            '  ' . $this->getCommandTag() . ' migrate|rollback|status [<options>]',
             '',
             'Instructions:',
             '  migrate   Install database migrations.',

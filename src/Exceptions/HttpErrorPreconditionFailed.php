@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 412 Precondition Failed error class.
+ * HTTP 412 Precondition Failed error.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 412 Precondition Failed error class.
+ */
 class HttpErrorPreconditionFailed extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorPreconditionFailed extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Precondition Failed', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'Precondition Failed',
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(412, $message, $previous, $code, $file, $line);
     }
 }

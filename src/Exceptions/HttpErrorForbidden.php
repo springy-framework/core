@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 403 Forbidden error class.
+ * HTTP 403 Forbidden error.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 403 Forbidden error class.
+ */
 class HttpErrorForbidden extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorForbidden extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Forbidden', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'Forbidden',
+        Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(403, $message, $previous, $code, $file, $line);
     }
 }

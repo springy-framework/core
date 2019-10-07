@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 406 Not Acceptable error class.
+ * HTTP 406 Not Acceptable error.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 406 Not Acceptable error class.
+ */
 class HttpErrorNotAcceptable extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorNotAcceptable extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Not Acceptable', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'Not Acceptable',
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(406, $message, $previous, $code, $file, $line);
     }
 }

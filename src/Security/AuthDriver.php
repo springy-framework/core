@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Authentication driver.
  *
@@ -12,8 +13,9 @@
 
 namespace Springy\Security;
 
-use Springy\Core\Application;
-
+/**
+ * Authentication driver.
+ */
 class AuthDriver implements AuthDriverInterface
 {
     /** @var HasherInterface the password hasher handler */

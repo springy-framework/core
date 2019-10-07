@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 503 Service unavailable class.
+ * HTTP 503 Service unavailable.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 503 Service unavailable class.
+ */
 class HttpErrorServiceUnavailable extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorServiceUnavailable extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Service Unavailable', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'Service Unavailable',
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(503, $message, $previous, $code, $file, $line);
     }
 }

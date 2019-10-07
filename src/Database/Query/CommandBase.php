@@ -1,9 +1,22 @@
 <?php
 
+/**
+ * Base for SQL commands.
+ *
+ * @copyright 2019 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ *
+ * @version   1.0.0
+ */
+
 namespace Springy\Database\Query;
 
 use Springy\Exceptions\SpringyException;
 
+/**
+ * Base for SQL commands.
+ */
 class CommandBase implements OperatorComparationInterface, OperatorGroupInterface
 {
     /** @var array the list of columns */
@@ -48,11 +61,11 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
     protected function addCol(string $statement, string $alias = null)
     {
         if ($alias !== null) {
-            $statement .= ' AS '.$alias;
+            $statement .= ' AS ' . $alias;
         }
 
         if (in_array($statement, $this->columns)) {
-            throw new SpringyException('"'.$statement.'" already added to columns list');
+            throw new SpringyException('"' . $statement . '" already added to columns list');
         }
 
         $this->columns[] = $statement;
@@ -109,7 +122,7 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
         $alias = $this->getTableAlias();
 
         if ($alias !== $table) {
-            $table .= ' AS '.$alias;
+            $table .= ' AS ' . $alias;
         }
 
         return $table;
@@ -140,9 +153,11 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
      */
     public function addColumn(string $name, string $alias = null, bool $addTable = true)
     {
-        $name = ($addTable
-            ? $this->getTableAlias().'.'
-            : '').$name;
+        $name = (
+            $addTable
+            ? $this->getTableAlias() . '.'
+            : ''
+        ) . $name;
 
         $this->addCol($name, $alias);
     }
@@ -157,7 +172,7 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
      */
     public function addCount(string $statement, string $alias = null)
     {
-        $this->addCol('COUNT('.$statement.')', $alias);
+        $this->addCol('COUNT(' . $statement . ')', $alias);
     }
 
     /**
@@ -183,7 +198,7 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
      */
     public function addMax(string $statement, string $alias = null)
     {
-        $this->addCol('MAX('.$statement.')', $alias);
+        $this->addCol('MAX(' . $statement . ')', $alias);
     }
 
     /**
@@ -196,7 +211,7 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
      */
     public function addMin(string $statement, string $alias = null)
     {
-        $this->addCol('MIN('.$statement.')', $alias);
+        $this->addCol('MIN(' . $statement . ')', $alias);
     }
 
     /**
@@ -209,7 +224,7 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
      */
     public function addSum(string $statement, string $alias = null)
     {
-        $this->addCol('SUM('.$statement.')', $alias);
+        $this->addCol('SUM(' . $statement . ')', $alias);
     }
 
     /**

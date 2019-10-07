@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File system handler.
  *
@@ -16,6 +17,9 @@ use InvalidArgumentException;
 use SplFileInfo;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * File system handler.
+ */
 class File extends SplFileInfo
 {
     /**
@@ -64,12 +68,17 @@ class File extends SplFileInfo
     protected function getTargetFile(string $directory, string $name = null): self
     {
         if (!is_dir($directory) && (@mkdir($directory, 0777, true) === false)) {
-            throw new SpringyException(sprintf('Unable to create the "%s" directory', $directory));
+            throw new SpringyException(
+                sprintf('Unable to create the "%s" directory', $directory)
+            );
         } elseif (!is_writable($directory)) {
-            throw new SpringyException(sprintf('Unable to write in the "%s" directory', $directory));
+            throw new SpringyException(
+                sprintf('Unable to write in the "%s" directory', $directory)
+            );
         }
 
-        $target = rtrim($directory, '/\\').DS.($name === null ? $this->getBasename() : $this->getName($name));
+        $target = rtrim($directory, '/\\') . DS
+            . ($name === null ? $this->getBasename() : $this->getName($name));
 
         return new self($target, false);
     }

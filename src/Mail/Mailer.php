@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailer.
  *
@@ -14,12 +15,15 @@ namespace Springy\Mail;
 
 use Springy\Exceptions\SpringyException;
 
+/**
+ * Mailer class.
+ */
 class Mailer
 {
     // Supported mailer drivers constans
-    const MAIL_ENGINE_PHPMAILER = 'phpmailer';
-    const MAIL_ENGINE_SENDGRID = 'sendgrid';
-    const MAIL_ENGINE_SWIFTMAILER = 'swiftmailer';
+    public const MAIL_ENGINE_PHPMAILER = 'phpmailer';
+    public const MAIL_ENGINE_SENDGRID = 'sendgrid';
+    public const MAIL_ENGINE_SWIFTMAILER = 'swiftmailer';
 
     protected $fakeTo;
     /** @var object the mailer driver object */
@@ -81,7 +85,7 @@ class Mailer
             throw new SpringyException('Mail driver configuration settings not defined');
         }
 
-        $driver = __NAMESPACE__.'\\Drivers\\'.$drivers[$driver];
+        $driver = __NAMESPACE__ . '\\Drivers\\' . $drivers[$driver];
 
         $this->mailObj = new $driver($config);
     }

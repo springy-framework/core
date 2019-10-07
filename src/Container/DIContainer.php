@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Container for dependency injection.
  *
@@ -22,11 +23,11 @@ use InvalidArgumentException;
 class DIContainer implements ArrayAccess
 {
     /// Constante que indica o tipo do elemento como uma factory
-    const TYPE_FACTORY = 'factory';
+    public const TYPE_FACTORY = 'factory';
     /// Constante que indica o tipo do elemento como um parâmetro
-    const TYPE_PARAM = 'param';
+    public const TYPE_PARAM = 'param';
     /// Constante que indica o tipo do elemento como uma instância compartilhada
-    const TYPE_SHARED = 'shared';
+    public const TYPE_SHARED = 'shared';
 
     /// Array que armazena as chaves de todos os elemntos registrados no container
     protected $registeredKeys;
@@ -189,14 +190,17 @@ class DIContainer implements ArrayAccess
      */
     public function instance($key, $instance = null)
     {
-        // Se chave for uma closure, esta é executada e seu resultado é retornado (útil para ser usado com o modo array do container)
+        // Se chave for uma closure, esta é executada e seu resultado é retornado
+        // (útil para ser usado com o modo array do container)
         if ($key instanceof Closure) {
             return call_user_func($key, $this);
         }
 
         $this->registeredKeys[$key] = static::TYPE_SHARED;
 
-        if ($instance instanceof Closure) { // Se instância for uma closure, então a instância a ser registrada será o resutado dessa closure.
+        // Se instância for uma closure,
+        // então a instância a ser registrada será o resutado dessa closure.
+        if ($instance instanceof Closure) {
             $this->sharedInstFactories[$key] = $instance;
 
             return;

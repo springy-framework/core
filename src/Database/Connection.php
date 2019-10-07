@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Relational database access class.
  *
@@ -20,6 +21,9 @@ use Springy\Core\Configuration;
 use Springy\Exceptions\SpringyException;
 use Throwable;
 
+/**
+ * Relational database access class.
+ */
 class Connection
 {
     use LostConnectionDetector;
@@ -86,16 +90,16 @@ class Connection
             switch (gettype($value)) {
                 case 'boolean':
                     $param = PDO::PARAM_BOOL;
-                break;
+                    break;
                 case 'integer':
                     $param = PDO::PARAM_INT;
-                break;
+                    break;
                 case 'NULL':
                     $param = PDO::PARAM_NULL;
-                break;
+                    break;
                 default:
                     $param = PDO::PARAM_STR;
-                break;
+                    break;
             }
 
             $this->bindValue($key, $value, $param, $counter);
@@ -120,7 +124,7 @@ class Connection
             return;
         }
 
-        $this->statement->bindValue(':'.$key, $value, $param);
+        $this->statement->bindValue(':' . $key, $value, $param);
     }
 
     /**
@@ -221,7 +225,7 @@ class Connection
             $mmc = new Memcached();
             $mmc->addServer($this->cache['host'], $this->cache['port']);
 
-            if ($sql = $mmc->get('dbCache_'.$cacheKey)) {
+            if ($sql = $mmc->get('dbCache_' . $cacheKey)) {
                 $this->statement = $sql;
             }
         } catch (Exception $e) {
@@ -248,13 +252,13 @@ class Connection
 
             $rows = $this->getAll();
 
-            $mmc->set('dbCache_'.$cacheKey, $rows, $this->cacheLifeTime);
+            $mmc->set('dbCache_' . $cacheKey, $rows, $this->cacheLifeTime);
 
             $this->statement->closeCursor();
             $this->statement = $rows;
         } catch (Throwable $err) {
             debug($this->lastQuery);
-            debug('Erro: '.$err->getMessage());
+            debug('Erro: ' . $err->getMessage());
         }
     }
 
@@ -267,10 +271,17 @@ class Connection
      */
     protected function setLastQuery(string $query)
     {
-        if ($this->cacheLifeTime > 0
+        if (
+            $this->cacheLifeTime > 0
             && strtoupper(substr(ltrim($query), 0, 19)) == 'SELECT FOUND_ROWS()'
-            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT ') {
-            $this->lastQuery = $query.'; /* '.md5(implode('//', array_merge([$this->lastQuery], $this->lastValues))).' */';
+            && strtoupper(substr(ltrim($this->lastQuery), 0, 7)) == 'SELECT '
+        ) {
+            $this->lastQuery = $query . '; /* ' . md5(
+                implode(
+                    '//',
+                    array_merge([$this->lastQuery], $this->lastValues)
+                )
+            ) . ' */';
 
             return;
         }
@@ -288,8 +299,10 @@ class Connection
     public function connect()
     {
         // Is a connector to the identity?
-        if (isset(self::$conectionIds[$this->identity])
-            && self::$conectionIds[$this->identity]->getPdo() !== null) {
+        if (
+            isset(self::$conectionIds[$this->identity])
+            && self::$conectionIds[$this->identity]->getPdo() !== null
+        ) {
             return;
         }
 
@@ -302,19 +315,22 @@ class Connection
             'sqlite'     => 'SQLite',
         ];
 
-        $driver = $config->get('database.connections.'.$this->identity.'.driver');
+        $driver = $config->get('database.connections.' . $this->identity . '.driver');
         if ($driver === null) {
             throw new SpringyException('Database driver undefined.');
         } elseif (!isset($drivers[$driver])) {
             throw new SpringyException('Database driver not supported.');
         }
 
-        $this->cache = $config->get('database.cache', [
-            'driver' => 'none',
-        ]);
+        $this->cache = $config->get(
+            'database.cache',
+            [
+                'driver' => 'none',
+            ]
+        );
 
-        $driver = __NAMESPACE__.'\\Connectors\\'.$drivers[$driver];
-        self::$conectionIds[$this->identity] = new $driver($config->get('database.connections.'.$this->identity));
+        $driver = __NAMESPACE__ . '\\Connectors\\' . $drivers[$driver];
+        self::$conectionIds[$this->identity] = new $driver($config->get('database.connections.' . $this->identity));
         self::$conectionIds[$this->identity]->connect();
     }
 

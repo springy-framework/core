@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 429 Too Many Requests error class.
+ * HTTP 429 Too Many Requests error.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 429 Too Many Requests error class.
+ */
 class HttpErrorTooManyRequests extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorTooManyRequests extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Too Many Requests', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'Too Many Requests',
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(429, $message, $previous, $code, $file, $line);
     }
 }

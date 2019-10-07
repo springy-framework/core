@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Debug helper.
  *
@@ -13,6 +14,9 @@ namespace Springy\Core;
 
 use Springy\HTTP\Response;
 
+/**
+ * Debug helper.
+ */
 class Debug
 {
     /** @var self globally singleton instance */
@@ -70,8 +74,10 @@ class Debug
         //
         $export = preg_replace('/=>\s*/m', ' => ', $export); // No new line between array/object keys and properties
         $export = preg_replace('/\[([\w": ]+)\]/', '$1 ', $export); // remove square brackets in array/object keys
-        // $export = preg_replace('/\[([\w": ]+)\]/', ', $1 ', $export); // remove square brackets in array/object keys
-        // $export = preg_replace('/([{(]\s+), /', '$1  ', $export); // remove first coma in array/object properties listing
+        // remove square brackets in array/object keys
+        // $export = preg_replace('/\[([\w": ]+)\]/', ', $1 ', $export);
+        // remove first coma in array/object properties listing
+        // $export = preg_replace('/([{(]\s+), /', '$1  ', $export);
         $export = preg_replace('/\{\s+\}/m', '{}', $export);
         $export = preg_replace('/\s+$/m', '', $export); // Trim end spaces/new line
 
@@ -91,20 +97,24 @@ class Debug
     protected function formatHtml(array $debug): string
     {
         return '<div class="springy-debug-info">'
-            .'<div class="springy-debug-time"><strong>Time:</strong> '
-            .sprintf('%.6f', $debug[1]).' s | <strong>Memory:</strong> '
-            .$this->getMemoryString($debug[0]).
-            ' <a href="javascript:;" class="springy-debug-remove" title="Delete"></a></div>'
-            .'<div class="springy-debug-value">'.$this->highligh($debug[2]).'</div>'
-            .($debug[4] > 0
+            . '<div class="springy-debug-time"><strong>Time:</strong> '
+            . sprintf('%.6f', $debug[1])
+            . ' s | <strong>Memory:</strong> '
+            . $this->getMemoryString($debug[0])
+            . '  <a href="javascript:;" class="springy-debug-remove" title="Delete"></a></div>'
+            . '<div class="springy-debug-value">'
+            . $this->highligh($debug[2])
+            . '</div>'
+            . ($debug[4] > 0
                 ? '<a class="spring-debug-backtrace-btn">Backtrace ('
-                    .($debug[4] > 0 ? 'last '.$debug[4] : 'all')
-                    .') <i class="springy-arrow down"></i></a>'
-                    .'<div class="spring-debug-backtrace-data">'
-                    .$this->backtrace($debug[3]).'</div>'
+                    . ($debug[4] > 0 ? 'last ' . $debug[4] : 'all')
+                    . ') <i class="springy-arrow down"></i></a>'
+                    . '<div class="spring-debug-backtrace-data">'
+                    . $this->backtrace($debug[3])
+                    . '</div>'
                 : ''
             )
-            .'</div>';
+            . '</div>';
     }
 
     /**
@@ -124,7 +134,7 @@ class Debug
 
         if ($debug[4] > 0) {
             $result['Backtrace'] = [
-                'Quantity' => $debug[4] > 0 ? 'last '.$debug[4] : 'all',
+                'Quantity' => $debug[4] > 0 ? 'last ' . $debug[4] : 'all',
                 'Backtrace' => $this->translateBacktrace($debug[3], true),
             ];
         }
@@ -141,12 +151,12 @@ class Debug
      */
     protected function formatPlain(array $debug): string
     {
-        return '> Time: '.sprintf('%.6f s', $debug[1])
-            .' Memory: '.$this->getMemoryString($debug[0]).LF
-            .'> '.$this->highligh($debug[2]).LF
-            .($debug[4] > 0
-                ? '> Backtrace ('.$debug[4] > 0 ? 'last '.$debug[4] : 'all'.'):'.LF
-                    .$this->backtrace($debug[3]).LF.LF
+        return '> Time: ' . sprintf('%.6f s', $debug[1])
+            . ' Memory: ' . $this->getMemoryString($debug[0]) . LF
+            . '> ' . $this->highligh($debug[2]) . LF
+            . ($debug[4] > 0
+                ? '> Backtrace (' . ($debug[4] > 0 ? 'last ' . $debug[4] : 'all') . '):' . LF
+                    . $this->backtrace($debug[3]) . LF . LF
                 : ''
             );
     }
@@ -169,7 +179,10 @@ class Debug
             'PiB',
         ];
 
-        return round($memory / pow(1024, ($idx = floor(log($memory, 1024)))), 2).' '.$unit[$idx];
+        return round(
+            $memory / pow(1024, ($idx = floor(log($memory, 1024)))),
+            2
+        ) . ' ' . $unit[$idx];
     }
 
     /**
@@ -289,15 +302,15 @@ class Debug
             }
 
             $line = sprintf('[%05d]', $trace['line']);
-            $result .= '<li><p><strong>'.$line.'</strong> '
-                .$trace['file'].'</p><div class="springy-debug-backtrace-content">'
-                .$trace['content'].'</div>';
+            $result .= '<li><p><strong>' . $line . '</strong> '
+                . $trace['file'] . '</p><div class="springy-debug-backtrace-content">'
+                . $trace['content'] . '</div>';
 
             if (count($trace['args'])) {
                 $result .= '<ul class="springy-debug-backtrace-args">';
 
                 foreach ($trace['args'] as $arg) {
-                    $result .= '<li>'.$this->highligh($arg).'</li>';
+                    $result .= '<li>' . $this->highligh($arg) . '</li>';
                 }
 
                 $result .= '</ul>';
@@ -306,7 +319,7 @@ class Debug
             $result .= '</li>';
         }
 
-        return $result.'</ul>';
+        return $result . '</ul>';
     }
 
     /**
@@ -316,7 +329,7 @@ class Debug
      */
     public function get(string $format = 'html'): string
     {
-        $format = 'format'.ucfirst($format);
+        $format = 'format' . ucfirst($format);
         if (!method_exists($this, $format)) {
             return '';
         }
@@ -369,7 +382,7 @@ class Debug
             str_replace(
                 '&nbsp;?&gt;',
                 '',
-                highlight_string('<?php '.$export, true)
+                highlight_string('<?php ' . $export, true)
             )
         );
     }
@@ -383,10 +396,13 @@ class Debug
      */
     public function inject(string $content)
     {
-        $this->add('Execution time: '.
-            sprintf('%.8f', Kernel::getInstance()->runTime()).
-            ' seconds '.LF.'Maximum memory used: '.$this->getMemoryString(memory_get_peak_usage(true)),
-            true, false
+        $this->add(
+            'Execution time: '
+            . sprintf('%.8f', Kernel::getInstance()->runTime())
+            . ' seconds ' . LF
+            . 'Maximum memory used: ' . $this->getMemoryString(memory_get_peak_usage(true)),
+            true,
+            false
         );
 
         // Gets the Content-Type header
@@ -399,7 +415,7 @@ class Debug
                 return $content;
             }
 
-            return substr_replace($content, ',"springy_debug":'.$this->get('json'), -1, 0);
+            return substr_replace($content, ',"springy_debug":' . $this->get('json'), -1, 0);
         }
 
         // Others content types than HTML
@@ -409,7 +425,7 @@ class Debug
 
         // Injects into a HTML
         $htmlDebug = '';
-        $debugTemplate = __DIR__.DS.'assets'.DS.'debug.html';
+        $debugTemplate = __DIR__ . DS . 'assets' . DS . 'debug.html';
         if (file_exists($debugTemplate) && $htmlDebug = file_get_contents($debugTemplate)) {
             $htmlDebug = preg_replace(
                 [
@@ -426,7 +442,8 @@ class Debug
                     "/\{\s*?\n/",
                     "/\}\n/",
                     "/;\n/",
-                ], [
+                ],
+                [
                     $this->get(),
                     '',
                     '',
@@ -440,15 +457,16 @@ class Debug
                     '{',
                     '} ',
                     ';',
-                ], $htmlDebug
+                ],
+                $htmlDebug
             );
         }
 
         if (preg_match('/<\/body>/', $content)) {
-            return preg_replace('/<\/body>/', $htmlDebug.'</body>', $content);
+            return preg_replace('/<\/body>/', $htmlDebug . '</body>', $content);
         }
 
-        return preg_replace('/^(.*?)$/', $htmlDebug.'\\1', $content);
+        return preg_replace('/^(.*?)$/', $htmlDebug . '\\1', $content);
     }
 
     /**

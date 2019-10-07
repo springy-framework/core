@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 401 Unauthorized error class.
+ * HTTP 401 Unauthorized error.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 401 Unauthorized error class.
+ */
 class HttpErrorUnauthorized extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorUnauthorized extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Unauthorized', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'Unauthorized',
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(401, $message, $previous, $code, $file, $line);
     }
 }

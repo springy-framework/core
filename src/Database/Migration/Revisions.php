@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Migration revisions.
  *
@@ -15,6 +16,9 @@ use DirectoryIterator;
 use Iterator;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * Migration revisions.
+ */
 class Revisions implements Iterator
 {
     /** @var array the list of applied revision scripts */
@@ -37,7 +41,7 @@ class Revisions implements Iterator
     public function __construct(string $path, string $namespace)
     {
         if (!is_dir($path)) {
-            throw new SpringyException('"'.$path.'" is not a directory.');
+            throw new SpringyException('"' . $path . '" is not a directory.');
         }
 
         $this->applied = [];
@@ -68,7 +72,7 @@ class Revisions implements Iterator
      */
     protected function getScriptsFiles(string $version)
     {
-        $path = $this->revPath.DS.$version;
+        $path = $this->revPath . DS . $version;
 
         foreach (new DirectoryIterator($path) as $file) {
             if (!$file->isFile()) {
@@ -104,7 +108,7 @@ class Revisions implements Iterator
     public function get(int $index): MigrationScript
     {
         if (!isset($this->revs[$index])) {
-            throw new SpringyException('Undefined index '.$index.' in revisions iterator.');
+            throw new SpringyException('Undefined index ' . $index . ' in revisions iterator.');
         }
 
         return $this->revs[$index];

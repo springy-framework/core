@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Valuation class for validation of user-assigned data.
+ * Validation of user-assigned data.
  *
  * @copyright 2014 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
@@ -15,6 +16,9 @@ namespace Springy\Validation;
 use Springy\HTTP\Input;
 use Springy\Utils\MessageContainer;
 
+/**
+ * Class for validation of user-assigned data.
+ */
 class Validator
 {
     /** @var MessageContainer the validation error messages */

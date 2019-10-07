@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 415 Unsupported Media Type error class.
+ * HTTP 415 Unsupported Media Type error.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 415 Unsupported Media Type error class.
+ */
 class HttpErrorUnsupportedMediaType extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorUnsupportedMediaType extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Unsupported Media Type', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'Unsupported Media Type',
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(415, $message, $previous, $code, $file, $line);
     }
 }

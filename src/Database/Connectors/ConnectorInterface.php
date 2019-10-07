@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface to standardize the DMBS connector drivers.
  *
@@ -11,6 +12,9 @@
 
 namespace Springy\Database\Connectors;
 
+/**
+ * Interface to standardize the DMBS connector drivers.
+ */
 interface ConnectorInterface
 {
     /**

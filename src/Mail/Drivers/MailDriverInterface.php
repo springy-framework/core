@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface for mail drivers implementations.
  *
@@ -11,6 +12,9 @@
 
 namespace Springy\Mail\Drivers;
 
+/**
+ * Interface for mail drivers implementations.
+ */
 interface MailDriverInterface
 {
     /**

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Class driver for Smarty template engine.
+ * Driver for Smarty template engine.
  *
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -18,6 +19,9 @@ namespace Springy\Template\Drivers;
 use Smarty as SmartyTemplate;
 use Springy\Core\Kernel;
 
+/**
+ * Class driver for Smarty template engine.
+ */
 class Smarty implements TemplateDriverInterface
 {
     /** @var string cache id for the template */

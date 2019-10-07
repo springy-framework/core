@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 400 Bad Request error class.
+ * HTTP 400 Bad Request error.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 400 Bad Request error class.
+ */
 class HttpErrorBadRequest extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorBadRequest extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Bad Request', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'Bad Request',
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(400, $message, $previous, $code, $file, $line);
     }
 }

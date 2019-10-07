@@ -1,4 +1,5 @@
 <?php
+
 /**
  * BCrypt hash generator.
  *

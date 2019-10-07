@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Database condition clauses constructor class.
+ * Database condition clauses constructor.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -13,6 +14,9 @@ namespace Springy\Database\Query;
 
 use Springy\Exceptions\SpringyException;
 
+/**
+ * Database condition clauses constructor class.
+ */
 class Condition implements OperatorComparationInterface, OperatorGroupInterface
 {
     /** @var string the column name */
@@ -59,7 +63,7 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
     public function __get(string $name)
     {
         if (!isset($this->$name)) {
-            throw new SpringyException('Property "'.$name.'" does not exists.');
+            throw new SpringyException('Property "' . $name . '" does not exists.');
         }
 
         return $this->$name;
@@ -74,7 +78,7 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
     public function __set(string $name, $value)
     {
         if (!isset($this->$name)) {
-            throw new SpringyException('Property "'.$name.'" does not exists.');
+            throw new SpringyException('Property "' . $name . '" does not exists.');
         }
 
         $this->$name = $value;
@@ -128,7 +132,7 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
      */
     protected function comparationGeneral(): string
     {
-        return $this->column.' '.$this->operator.' '.$this->getQuestionMark();
+        return $this->column . ' ' . $this->operator . ' ' . $this->getQuestionMark();
     }
 
     /**
@@ -138,9 +142,9 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
      */
     protected function comparationIn(): string
     {
-        return $this->column.(
+        return $this->column . (
                 $this->operator === self::OP_NOT_IN ? ' NOT' : ''
-            ).' IN ('.trim(str_repeat('?, ', count($this->value)), ', ').')';
+            ) . ' IN (' . trim(str_repeat('?, ', count($this->value)), ', ') . ')';
     }
 
     /**
@@ -153,9 +157,9 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
      */
     protected function comparationMatch(): string
     {
-        return 'MATCH ('.$this->column.') AGAINST ('.$this->getQuestionMark().(
+        return 'MATCH (' . $this->column . ') AGAINST (' . $this->getQuestionMark() . (
                 $this->operator === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : ''
-            ).')';
+            ) . ')';
     }
 
     /**

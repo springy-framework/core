@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait with file system helper functions.
  *
@@ -6,7 +7,7 @@
  * @author    Fernando Val <fernando.val@gmail.com>
  * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
  *
- * @version	  1.0.0
+ * @version   1.0.0
  *
  * The methods of this trait can be accessed by seting use
  * of this trait inside user classes.
@@ -16,6 +17,9 @@
 
 namespace Springy\Utils;
 
+/**
+ * Trait with file system helper functions.
+ */
 trait FileSystemUtils
 {
     /**
@@ -44,7 +48,7 @@ trait FileSystemUtils
                 continue;
             }
 
-            $empty = $this->unlinkExtended($path.DS.$object, $callback, $recursive) && $empty;
+            $empty = $this->unlinkExtended($path . DS . $object, $callback, $recursive) && $empty;
         }
 
         return $empty && rmdir($path);

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Template handler class.
+ * Template handler.
  *
  * @copyright 2007 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -16,11 +17,14 @@ use Springy\Core\Configuration;
 use Springy\Core\Kernel;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * Template handler class.
+ */
 class Template
 {
-    const DRV_MUSTACHE = 'mustache';
-    const DRV_SMARTY = 'smarty';
-    const DRV_TWIG = 'twig';
+    public const DRV_MUSTACHE = 'mustache';
+    public const DRV_SMARTY = 'smarty';
+    public const DRV_TWIG = 'twig';
 
     /** @var string sufix for template files */
     protected $fileSufix;
@@ -100,7 +104,7 @@ class Template
             throw new SpringyException('Template driver unknown or not supported');
         }
 
-        $driver = __NAMESPACE__.'\\Drivers\\'.$drivers[$driver];
+        $driver = __NAMESPACE__ . '\\Drivers\\' . $drivers[$driver];
 
         $this->tplObj = new $driver();
     }
@@ -204,7 +208,7 @@ class Template
         if ($template === '') {
             throw new SpringyException('Template file undefined');
         } elseif (!$this->tplObj->templateExists($template)) {
-            throw new SpringyException('Template file "'.$template.'" does not exists');
+            throw new SpringyException('Template file "' . $template . '" does not exists');
         }
 
         return $this->tplObj->fetch($this->templateVars, $this->templateFuncs);
@@ -373,7 +377,7 @@ class Template
      */
     public function setTemplate(string $template)
     {
-        $this->tplObj->setTemplate($template.$this->fileSufix);
+        $this->tplObj->setTemplate($template . $this->fileSufix);
     }
 
     /**
@@ -413,7 +417,7 @@ class Template
         return $this->tplObj->templateExists(
             $templateName === null
             ? $this->tplObj->getTemplateName()
-            : $templateName.$this->fileSufix
+            : $templateName . $this->fileSufix
         );
     }
 

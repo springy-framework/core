@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Parent class for relational database table model objects.
+ * Relational database table row iterator constructor.
  *
  * @copyright 2014 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -17,6 +18,9 @@ use Springy\Exceptions\SpringyException;
 use Springy\Utils\MessageContainer;
 use Springy\Validation\Validator;
 
+/**
+ * Parent class for relational database table row iterator objects.
+ */
 class RowsIterator implements Iterator
 {
     /**
@@ -119,7 +123,7 @@ class RowsIterator implements Iterator
         }
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new SpringyException('trouble.json.structure.decoding.error.'.json_last_error());
+            throw new SpringyException('trouble.json.structure.decoding.error.' . json_last_error());
         }
 
         $this->bypassTriggers = false;
@@ -449,7 +453,7 @@ class RowsIterator implements Iterator
         $columns = current($this->rows);
 
         if (!isset($columns[$column]) && $this->errorIfColNotExists) {
-            throw new SpringyException('Column "'.$column.'" does not exists.');
+            throw new SpringyException('Column "' . $column . '" does not exists.');
         }
 
         return $columns[$column] ?? null;
@@ -528,9 +532,9 @@ class RowsIterator implements Iterator
     public function set(string $column, $value = null)
     {
         if (!isset($this->columns->$column)) {
-            throw new SpringyException('Column "'.$column.'" does not exists.');
+            throw new SpringyException('Column "' . $column . '" does not exists.');
         } elseif (!in_array($column, $this->writableColumns)) {
-            throw new SpringyException('Column "'.$column.'" is not writable.');
+            throw new SpringyException('Column "' . $column . '" is not writable.');
         }
 
         if (empty($this->rows)) {
@@ -575,7 +579,7 @@ class RowsIterator implements Iterator
     {
         foreach ($rows as $index => $row) {
             if (!is_array($row)) {
-                throw new SpringyException('Incorrect row format at index ('.$index.').');
+                throw new SpringyException('Incorrect row format at index (' . $index . ').');
             }
 
             $this->setRow($row);

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP error class.
+ * HTTP error.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -14,6 +15,9 @@ namespace Springy\Exceptions;
 use Error;
 use Throwable;
 
+/**
+ * HTTP error class.
+ */
 class HttpError extends Error
 {
     protected $statusCode;
@@ -29,8 +33,14 @@ class HttpError extends Error
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(int $statusCode, string $message = null, Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        int $statusCode,
+        string $message = null,
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         if (null === $file || null === $line) {
             $dbt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
             $file = $dbt[0]['file'];

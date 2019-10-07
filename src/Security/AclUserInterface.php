@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface to standardize the identities that will be allowed in the application.
  *
@@ -12,6 +13,9 @@
 
 namespace Springy\Security;
 
+/**
+ * Interface to standardize the identities that will be allowed in the application.
+ */
 interface AclUserInterface
 {
     /**

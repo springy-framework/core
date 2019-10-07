@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface of operators for set of conditions.
  *
@@ -11,8 +12,11 @@
 
 namespace Springy\Database\Query;
 
+/**
+ * Interface of operators for set of conditions.
+ */
 interface OperatorGroupInterface
 {
-    const COND_AND = 'AND';
-    const COND_OR = 'OR';
+    public const COND_AND = 'AND';
+    public const COND_OR = 'OR';
 }

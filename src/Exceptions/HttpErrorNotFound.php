@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 404 Not Found error class.
+ * HTTP 404 Not Found error class.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 404 Not Found error class.
+ */
 class HttpErrorNotFound extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorNotFound extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Not Found', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'Not Found',
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(404, $message, $previous, $code, $file, $line);
     }
 }

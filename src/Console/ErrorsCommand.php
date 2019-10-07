@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Errors console command.
  *
@@ -20,6 +21,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Errors console command controller.
+ */
 class ErrorsCommand extends Controller
 {
     /**
@@ -205,7 +209,7 @@ class ErrorsCommand extends Controller
             return $this->deleteAll();
         }
 
-        return $this->delete($this->logDir.DS.$this->crc.'.yml');
+        return $this->delete($this->logDir . DS . $this->crc . '.yml');
     }
 
     /**
@@ -281,12 +285,12 @@ class ErrorsCommand extends Controller
             return false;
         }
 
-        $file = $this->logDir.DS.$this->crc.'.yml';
+        $file = $this->logDir . DS . $this->crc . '.yml';
         if (!is_file($file)) {
             $this->output->writeln(
                 '<error>Error identified by <comment>'
-                .$this->crc
-                .'</> CRC not found.</>'
+                . $this->crc
+                . '</> CRC not found.</>'
             );
 
             return false;
@@ -408,7 +412,7 @@ class ErrorsCommand extends Controller
             $this->stayInteractive = false;
             $this->setHelp([
                 'Usage:',
-                '  '.$this->getCommandTag().' [<instruction>] [<options>]',
+                '  ' . $this->getCommandTag() . ' [<instruction>] [<options>]',
                 '',
             ]);
             $this->output->writeln($this->getProcessedHelp());
@@ -419,8 +423,8 @@ class ErrorsCommand extends Controller
         foreach ($this->commandInstructions as $name => $obj) {
             if (!$obj->hidden && (!$this->commingCli || !$obj->onlyInteractive)) {
                 $table->addRow([
-                    ' '.$name.($obj->alias ? '|'.$obj->alias : '').' '.$obj->parameter,
-                    ' '.$obj->description,
+                    ' ' . $name . ($obj->alias ? '|' . $obj->alias : '') . ' ' . $obj->parameter,
+                    ' ' . $obj->description,
                 ]);
             }
         }
@@ -467,14 +471,15 @@ class ErrorsCommand extends Controller
             $spaces = str_repeat('  ', $indent);
 
             if (is_array($value)) {
-                $this->output->writeln($spaces.sprintf('<info>%s</> => <comment>[</>', $var));
+                $this->output->writeln($spaces . sprintf('<info>%s</> => <comment>[</>', $var));
                 $this->printVar($value, $indent + 1);
-                $this->output->writeln($spaces.'<comment>]</>,');
+                $this->output->writeln($spaces . '<comment>]</>,');
 
                 continue;
             }
 
-            $this->output->writeln($spaces.sprintf('<info>%s</>: %s',
+            $this->output->writeln($spaces . sprintf(
+                '<info>%s</>: %s',
                 $var,
                 $value
             ));
@@ -582,7 +587,8 @@ class ErrorsCommand extends Controller
             sprintf('  User-agent: <info>%s</>', $error['client']['user_agent'] ?? ''),
             '',
             '<comment>Variables (data quantity):</>',
-            sprintf('  $_GET: <info>%d</>  $_POST: <info>%d</>  $_SESSION: <info>%d</>  $_COOKIE: <info>%d</>',
+            sprintf(
+                '  $_GET: <info>%d</>  $_POST: <info>%d</>  $_SESSION: <info>%d</>  $_COOKIE: <info>%d</>',
                 count($error['php_vars']['get']),
                 count($error['php_vars']['post']),
                 count($error['php_vars']['session']),
@@ -690,9 +696,10 @@ class ErrorsCommand extends Controller
         $this->output->writeln('Stack trace:');
 
         foreach ($error['trace'] as $index => $trace) {
-            $this->output->writeln(sprintf('  <info>%4d</>: %s: <comment>%d</>',
+            $this->output->writeln(sprintf(
+                '  <info>%4d</>: %s: <comment>%d</>',
                 $index,
-                $trace['file'] ?? (($trace['class'] ?? '').($trace['type'] ?? '').($trace['funcion'] ?? '').'()'),
+                $trace['file'] ?? (($trace['class'] ?? '') . ($trace['type'] ?? '') . ($trace['funcion'] ?? '') . '()'),
                 $trace['line'] ?? ''
             ));
         }

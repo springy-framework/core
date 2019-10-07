@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Object for values data.
  *
@@ -11,6 +12,9 @@
 
 namespace Springy\Database\Query;
 
+/**
+ * Object for values data.
+ */
 class Value
 {
     /** @var string the column name */

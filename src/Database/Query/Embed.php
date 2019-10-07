@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Embed object.
  *
@@ -11,6 +12,9 @@
 
 namespace Springy\Database\Query;
 
+/**
+ * Embed object class.
+ */
 class Embed
 {
     /** @var string the name for embeded attribute */
@@ -35,8 +39,8 @@ class Embed
     protected $when;
 
     // Embeding type constants
-    const ET_DATA = 1;
-    const ET_LIST = 2;
+    public const ET_DATA = 1;
+    public const ET_LIST = 2;
 
     /**
      * Constructor.

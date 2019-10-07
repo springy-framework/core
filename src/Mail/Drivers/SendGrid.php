@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Driver class for use with SendGrid v7 class for integration with SendGrid API v3.
+ * Driver for use with SendGrid v7 class for integration with SendGrid API v3.
  *
  * @copyright 2015 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -34,6 +35,9 @@ use SendGrid\Mail\Mail;
 use Springy\Exceptions\SpringyException;
 use Throwable;
 
+/**
+ * Driver class for use with SendGrid v7 class for integration with SendGrid API v3.
+ */
 class SendGrid implements MailDriverInterface
 {
     /** @var string last send error message */
@@ -181,7 +185,10 @@ class SendGrid implements MailDriverInterface
             $response = $this->sendgrid->send($this->mailObj);
             $this->lastError = $response->body();
         } catch (Throwable $err) {
-            $this->lastError = $err->getCode().' - '.$err->getMessage().' at '.$err->getFile().' ('.$err->getLine().')';
+            $this->lastError = $err->getCode()
+                . ' - ' . $err->getMessage()
+                . ' at ' . $err->getFile()
+                . ' (' . $err->getLine() . ')';
         }
 
         return empty($this->lastError);

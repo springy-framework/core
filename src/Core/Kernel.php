@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework kernel.
  *
@@ -17,17 +18,20 @@ use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Request;
 use Springy\HTTP\URI;
 
+/**
+ * Framework kernel.
+ */
 class Kernel
 {
     // Framework version
-    const VERSION = '5.0.0';
+    public const VERSION = '5.0.0';
 
     // Constants path
-    const PATH_WEB_ROOT = 'ROOT';
+    public const PATH_WEB_ROOT = 'ROOT';
 
-    const PATH_APPLICATION = 'APP';
-    const PATH_VAR = 'VAR';
-    const PATH_ROOT = 'ROOT';
+    public const PATH_APPLICATION = 'APP';
+    public const PATH_VAR = 'VAR';
+    public const PATH_ROOT = 'ROOT';
 
     /** @var static Kernel globally instance */
     protected static $instance;
@@ -286,7 +290,7 @@ class Kernel
 
             // Verify if has an alias for host
             foreach ($alias as $host => $val) {
-                if (preg_match('/^'.$host.'$/', $env)) {
+                if (preg_match('/^' . $host . '$/', $env)) {
                     $env = $val;
                     break;
                 }

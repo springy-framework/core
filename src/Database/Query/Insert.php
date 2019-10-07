@@ -1,6 +1,7 @@
 <?php
+
 /**
- * SQL INSERT class constructor.
+ * SQL INSERT command constructor.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -14,10 +15,13 @@ namespace Springy\Database\Query;
 use Springy\Database\Connection;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * SQL INSERT command constructor class.
+ */
 class Insert extends CommandBase implements OperatorComparationInterface, OperatorGroupInterface
 {
-    const MYSQL_HIGH_PRIORITY = 'HIGH_PRIORITY';
-    const MYSQL_LOW_PRIORITY = 'LOW_PRIORITY';
+    public const MYSQL_HIGH_PRIORITY = 'HIGH_PRIORITY';
+    public const MYSQL_LOW_PRIORITY = 'LOW_PRIORITY';
 
     /** @var Connection the connection object */
     protected $connection;
@@ -57,10 +61,10 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
 
         $insert = $this->fetchIgnoreError(
             'INSERT '
-            .($this->priority ? $this->priority.' ' : '')
-            .'INTO '.$this->getTableName()
-            .'('.$this->strColumns().') VALUES '
-            .$this->strValues()
+            . ($this->priority ? $this->priority . ' ' : '')
+            . 'INTO ' . $this->getTableName()
+            . '(' . $this->strColumns() . ') VALUES '
+            . $this->strValues()
         );
 
         return $insert;
@@ -87,7 +91,7 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
         $key = key($this->values);
 
         if (isset($this->values[$key][$value->getColumn()])) {
-            throw new SpringyException('Value "'.$value->getColumn().'" redeclared.');
+            throw new SpringyException('Value "' . $value->getColumn() . '" redeclared.');
         }
 
         $this->values[$key][$value->getColumn()] = $value;
@@ -101,7 +105,8 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
     protected function getConnectorClass(): string
     {
         return str_replace(
-            'Springy\\Database\\Connectors\\', '',
+            'Springy\\Database\\Connectors\\',
+            '',
             get_class($this->connection->getConnector())
         );
     }
@@ -132,7 +137,7 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
             'SQLite'     => '$1OR IGNORE $4',
         ];
 
-        return preg_replace('/'.$regex[$connector].'/', $replace[$connector], $select);
+        return preg_replace('/' . $regex[$connector] . '/', $replace[$connector], $select);
     }
 
     /**
@@ -154,13 +159,13 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
 
         foreach ($this->columns as $column) {
             if (!isset($values[$column])) {
-                throw new SpringyException('Column "'.$column.'" has no correspondent value.');
+                throw new SpringyException('Column "' . $column . '" has no correspondent value.');
             }
 
             $value = $values[$column];
 
             if ($value->isExpression()) {
-                $strValues .= $value->getValue().',';
+                $strValues .= $value->getValue() . ',';
 
                 continue;
             }
@@ -169,7 +174,7 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
             $this->parameters[] = $value->getValue();
         }
 
-        return rtrim($strValues, ', ').')';
+        return rtrim($strValues, ', ') . ')';
     }
 
     /**
@@ -272,7 +277,7 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
         $connector = $this->getConnectorClass();
 
         if (!isset($priorities[$connector])) {
-            throw new SpringyException('Connector "'.$connector.'" does not support priority.');
+            throw new SpringyException('Connector "' . $connector . '" does not support priority.');
         } elseif (!in_array(strtoupper($priority), $priorities[$connector])) {
             throw new SpringyException('Unknown priority modifier.');
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Basic hash generator.
  *
@@ -12,10 +13,13 @@
 
 namespace Springy\Security;
 
+/**
+ * Basic hash generator.
+ */
 class BasicHasher implements HasherInterface
 {
     // Salt to difficult the hash to be broken
-    const SALT = '865516de75706d3e9f8cdae8f66f0e0c15d6ceed';
+    public const SALT = '865516de75706d3e9f8cdae8f66f0e0c15d6ceed';
 
     /**
      * Creates and returns the generated hash of the entered string.
@@ -27,7 +31,7 @@ class BasicHasher implements HasherInterface
      */
     public function make(string $stringToHash, int $times = 0): string
     {
-        $md5 = md5(strtolower(self::SALT.$stringToHash));
+        $md5 = md5(strtolower(self::SALT . $stringToHash));
 
         // Not used
         $times = null;

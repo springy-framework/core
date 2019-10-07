@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Springy HTTP 411 Length Required error class.
+ * HTTP 411 Length Required error.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -11,6 +12,9 @@
 
 namespace Springy\Exceptions;
 
+/**
+ * HTTP 411 Length Required error class.
+ */
 class HttpErrorLengthRequired extends HttpError
 {
     /**
@@ -23,8 +27,13 @@ class HttpErrorLengthRequired extends HttpError
      * @param string    $file
      * @param int       $line
      */
-    public function __construct(string $message = 'Length Required', Throwable $previous = null, ?int $code = E_USER_ERROR, string $file = null, int $line = null)
-    {
+    public function __construct(
+        string $message = 'Length Required',
+        \Throwable $previous = null,
+        ?int $code = E_USER_ERROR,
+        string $file = null,
+        int $line = null
+    ) {
         parent::__construct(411, $message, $previous, $code, $file, $line);
     }
 }

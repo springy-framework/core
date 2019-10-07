@@ -12,6 +12,9 @@
 
 namespace Springy\Core;
 
+/**
+ * Interface to standardize the controllers of the application.
+ */
 interface ControllerInterface
 {
     /**

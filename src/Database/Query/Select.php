@@ -1,6 +1,7 @@
 <?php
+
 /**
- * SQL SELECT command constructor class.
+ * SQL SELECT command constructor.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -14,10 +15,13 @@ namespace Springy\Database\Query;
 use Springy\Database\Connection;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * SQL SELECT command constructor class.
+ */
 class Select extends CommandBase implements OperatorComparationInterface, OperatorGroupInterface
 {
-    const ORDER_ASC = 'ASC';
-    const ORDER_DESC = 'DESC';
+    public const ORDER_ASC = 'ASC';
+    public const ORDER_DESC = 'DESC';
 
     /** @var Connection the connection object */
     protected $connection;
@@ -69,15 +73,15 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
     {
         $this->parameters = [];
 
-        $select = 'SELECT '.$this->strColumns()
-            .' FROM '.$this->getTableNameAndAlias()
-            .$this->strJoins()
-            .$this->strWhere()
-            .$this->strOrderBy()
-            .$this->strGroupBy()
-            .$this->strHaving()
-            .($this->limit ? ' LIMIT '.$this->limit : '')
-            .($this->offset ? ' OFFSET '.$this->offset : '');
+        $select = 'SELECT ' . $this->strColumns()
+            . ' FROM ' . $this->getTableNameAndAlias()
+            . $this->strJoins()
+            . $this->strWhere()
+            . $this->strOrderBy()
+            . $this->strGroupBy()
+            . $this->strHaving()
+            . ($this->limit ? ' LIMIT ' . $this->limit : '')
+            . ($this->offset ? ' OFFSET ' . $this->offset : '');
 
         return $select;
     }
@@ -93,7 +97,7 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
             return '';
         }
 
-        return ' GROUP BY '.implode(', ', $this->groupBy);
+        return ' GROUP BY ' . implode(', ', $this->groupBy);
     }
 
     /**
@@ -106,7 +110,7 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
         $having = $this->having->parse();
         $this->parameters = array_merge($this->parameters, $this->having->params());
 
-        return $having ? ' HAVING '.$this->having : '';
+        return $having ? ' HAVING ' . $this->having : '';
     }
 
     /**
@@ -118,7 +122,7 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
     {
         $joins = '';
         foreach ($this->joins as $join) {
-            $joins .= ' '.$join;
+            $joins .= ' ' . $join;
 
             $this->parameters = array_merge($this->parameters, $join->params());
         }
@@ -137,7 +141,7 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
             return '';
         }
 
-        return ' ORDER BY '.implode(', ', $this->orderBy);
+        return ' ORDER BY ' . implode(', ', $this->orderBy);
     }
 
     /**
@@ -250,7 +254,7 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
      */
     public function addOrderBy(string $name, string $direction = self::ORDER_ASC)
     {
-        $this->orderBy[] = $name.($direction != self::ORDER_ASC ? ' '.$direction : '');
+        $this->orderBy[] = $name . ($direction != self::ORDER_ASC ? ' ' . $direction : '');
     }
 
     /**
@@ -278,10 +282,10 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
     {
         $this->parameters = [];
 
-        $select = 'SELECT '.$this->strColumns()
-        .' FROM '.$this->getTableNameAndAlias()
-        .$this->strJoins()
-        .$this->strWhere();
+        $select = 'SELECT ' . $this->strColumns()
+            . ' FROM ' . $this->getTableNameAndAlias()
+            . $this->strJoins()
+            . $this->strWhere();
 
         return $this->connection->getConnector()->foundRowsSelect($select);
     }

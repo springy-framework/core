@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Errors handler class.
+ * Errors handler.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -23,13 +24,16 @@ use Springy\Utils\StringUtils;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
 
+/**
+ * Errors handler class.
+ */
 class Handler
 {
     use NetworkUtils;
     use StringUtils;
 
-    const HT_ERROR = 1;
-    const HT_EXCEPTION = 2;
+    public const HT_ERROR = 1;
+    public const HT_EXCEPTION = 2;
 
     /** @var mixed previous error handler */
     protected $prevErrorHandler;
@@ -81,12 +85,12 @@ class Handler
      */
     protected function displayCliError()
     {
-        echo LF.'Application error:'.LF;
-        echo '  '.$this->exception->getMessage().LF;
-        echo LF.'Stack trace:'.LF;
+        echo LF . 'Application error:' . LF;
+        echo '  ' . $this->exception->getMessage() . LF;
+        echo LF . 'Stack trace:' . LF;
 
         foreach ($this->exception->getTrace() as $index => $trace) {
-            echo '  '.str_pad($index, 3, ' ', STR_PAD_LEFT).': ';
+            echo '  ' . str_pad($index, 3, ' ', STR_PAD_LEFT) . ': ';
 
             if (!isset($trace['file'])) {
                 echo $trace['class'] ?? '';
@@ -97,7 +101,7 @@ class Handler
                 continue;
             }
 
-            echo $trace['file'].': '.$trace['line'].LF;
+            echo $trace['file'] . ': ' . $trace['line'] . LF;
         }
         // echo $this->exception->getTraceAsString();
 
@@ -143,7 +147,10 @@ class Handler
      */
     protected function getCrc(): string
     {
-        return hash('crc32', $this->exception->getCode().$this->exception->getFile().$this->exception->getLine());
+        return hash(
+            'crc32',
+            $this->exception->getCode() . $this->exception->getFile() . $this->exception->getLine()
+        );
     }
 
     /**
@@ -176,8 +183,8 @@ class Handler
 
         return $errorNames[$errNo] ?? (
             $this->exception instanceof PDOException
-            ? 'Database error ('.$errNo.')'
-            : 'Unknown Error ('.$errNo.')'
+            ? 'Database error (' . $errNo . ')'
+            : 'Unknown Error (' . $errNo . ')'
         );
     }
 
@@ -193,11 +200,11 @@ class Handler
     {
         $config = Configuration::getInstance();
         $sufix = $config->get('template.file_sufix');
-        $path = $config->get('template.paths.errors').DS.'http'.$responseCode.'error'.$sufix;
+        $path = $config->get('template.paths.errors') . DS . 'http' . $responseCode . 'error' . $sufix;
         if (is_file($path)) {
             $template = new Template();
             $template->setTemplateDir($config->get('template.paths.errors'));
-            $template->setTemplate('http'.$responseCode.'error');
+            $template->setTemplate('http' . $responseCode . 'error');
             $template->assign('errorCode', $errCode);
             $template->assign('responseCode', $responseCode);
             $template->assign('exception', $this->exception);
@@ -205,15 +212,15 @@ class Handler
             return $template->fetch();
         }
 
-        $path = __DIR__.DS.'assets'.DS.'http'.$responseCode.'error.html';
+        $path = __DIR__ . DS . 'assets' . DS . 'http' . $responseCode . 'error.html';
         if (is_file($path)) {
             return file_get_contents($path);
         }
 
         return $this->getErrorName($errCode)
-            .' - '.$this->exception->getMessage()
-            .' on ['.$this->exception->getLine().'] '
-            .$this->exception->getFile();
+            . ' - ' . $this->exception->getMessage()
+            . ' on [' . $this->exception->getLine() . '] '
+            . $this->exception->getFile();
     }
 
     /**
@@ -298,12 +305,12 @@ class Handler
 
         $message = sprintf(
             '<strong>%s - System Error Report</strong><br><br>'
-            .'The application was aborted with the following error:<br><br>'
-            .'<p>Error code: <strong>%s</strong></p>'
-            .'<p>Error Message: <font color="red">%s</font></p>'
-            .'<p>File: <strong>%s</strong></p>'
-            .'<p>Line: <strong>%d</strong></p><br>'
-            .'The error was identified with the CRC <font color="red">%s</font>',
+            . 'The application was aborted with the following error:<br><br>'
+            . '<p>Error code: <strong>%s</strong></p>'
+            . '<p>Error Message: <font color="red">%s</font></p>'
+            . '<p>File: <strong>%s</strong></p>'
+            . '<p>Line: <strong>%d</strong></p><br>'
+            . 'The error was identified with the CRC <font color="red">%s</font>',
             app_name(),
             $this->exception->getCode(),
             $this->exception->getMessage(),
@@ -316,7 +323,7 @@ class Handler
             $email->addTo($address, 'Webmaster');
         }
 
-        $email->setFrom($this->webmasters[0], app_name().' - System Error Report');
+        $email->setFrom($this->webmasters[0], app_name() . ' - System Error Report');
         $email->setSubject(sprintf(
             'Error on %s v%s [%s] at %s',
             app_name(),
@@ -361,7 +368,7 @@ class Handler
         }
 
         $errorCode = $this->getCrc();
-        $filePath = $this->logDir.DS.$errorCode.'.yml';
+        $filePath = $this->logDir . DS . $errorCode . '.yml';
         $error = $this->getYaml($filePath);
         $error['occurrences'] += 1;
         $error['date'] = (new DateTime())->format('c');
@@ -582,9 +589,11 @@ class Handler
      */
     public function trigger()
     {
-        if ($this->handlerType === null
+        if (
+            $this->handlerType === null
             || $this->isIgnored($this->exception->getCode())
-            || $this->isIgnored($this->exception)) {
+            || $this->isIgnored($this->exception)
+        ) {
             return;
         }
 

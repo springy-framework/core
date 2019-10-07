@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Help and usage console command.
  *
@@ -11,6 +12,9 @@
 
 namespace Springy\Console;
 
+/**
+ * Help and usage console command controller.
+ */
 class HelpCommand extends Controller
 {
     /**
@@ -30,7 +34,7 @@ class HelpCommand extends Controller
         $this->name = '';
         $this->setHelp([
             'Usage:',
-            '  '.(php_sapi_name() === 'cli' ? $_SERVER['PHP_SELF'].' ' : '').'<command> <options>',
+            '  ' . (php_sapi_name() === 'cli' ? $_SERVER['PHP_SELF'] . ' ' : '') . '<command> <options>',
             '',
             'Commands:',
             '  help      Display this help message.',

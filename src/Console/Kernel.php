@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Kernel for the console application requisition.
  *
@@ -17,6 +18,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Kernel for the console application requisition.
+ */
 class Kernel extends MainKernel
 {
     /** @var static Kernel globally instance */
@@ -43,8 +47,10 @@ class Kernel extends MainKernel
         }
 
         $command = $input->getFirstArgument() ?? '';
-        if (!$this->loadController('App\\Console\\'.$this->normalizeNamePath([$command]), [])
-            && !$this->discoverInternals($command)) {
+        if (
+            !$this->loadController('App\\Console\\' . $this->normalizeNamePath([$command]), [])
+            && !$this->discoverInternals($command)
+        ) {
             return false;
         }
 
@@ -126,7 +132,7 @@ class Kernel extends MainKernel
             '<error>Command not found.</error>',
             '',
             'Try:',
-            '  '.$_SERVER['PHP_SELF'].' --help',
+            '  ' . $_SERVER['PHP_SELF'] . ' --help',
         ]);
     }
 
