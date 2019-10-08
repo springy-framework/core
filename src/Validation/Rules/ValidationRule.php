@@ -80,7 +80,7 @@ class ValidationRule
             return '(bool)' . ($value ? 'True' : 'False');
         }
 
-        return (string)$value;
+        return (string) $value;
     }
 
     /**
@@ -88,7 +88,7 @@ class ValidationRule
      *
      * Must be extended in validation rule class.
      *
-     * @return boolean
+     * @return bool
      */
     protected function isValueValid(): bool
     {
