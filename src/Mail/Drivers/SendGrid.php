@@ -54,7 +54,9 @@ class SendGrid implements MailDriverInterface
      */
     public function __construct(array $config)
     {
-        if (!($apikey = $config['apikey'] ?? false)) {
+        $apikey = $config['apikey'] ?? false;
+
+        if (!$apikey) {
             throw new SpringyException('SendGrid API key undefined');
         }
 

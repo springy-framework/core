@@ -18,10 +18,16 @@
     <rule ref="rulesets/codesize.xml">
         <exclude name="ExcessiveClassComplexity" />
         <exclude name="TooManyPublicMethods" />
+        <exclude name="TooManyFields" />
     </rule>
     <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity">
         <properties>
             <property name="maximum" description="The maximum WMC tolerable for a class." value="100"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/codesize.xml/TooManyFields">
+        <properties>
+            <property name="maxfields" description="The field count reporting threshold" value="20"/>
         </properties>
     </rule>
 

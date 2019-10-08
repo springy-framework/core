@@ -154,7 +154,9 @@ function env(string $key, $default = null)
         return $default;
     }
 
-    if (($vLength = strlen($value)) > 1 && $value[0] === '"' && $value[$vLength - 1] === '"') {
+    $vLength = strlen($value);
+
+    if ($vLength > 1 && $value[0] === '"' && $value[$vLength - 1] === '"') {
         return substr($value, 1, -1);
     }
 

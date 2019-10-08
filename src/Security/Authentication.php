@@ -68,10 +68,9 @@ class Authentication
      */
     protected function rememberSession()
     {
-        if (
-            $this->user == null
-            && $uid = Cookie::getInstance()->get($this->driver->getIdentitySessionKey())
-        ) {
+        $uid = Cookie::getInstance()->get($this->driver->getIdentitySessionKey());
+
+        if ($this->user == null && $uid) {
             $this->loginWithId($uid);
         }
     }

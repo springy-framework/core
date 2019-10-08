@@ -22,6 +22,8 @@ use Springy\Security\Authentication;
 
 /**
  * Kernel for the web application requisition.
+ *
+ * @SuppressWarnings(PHPMD.CountInLoopExpression)
  */
 class Kernel extends MainKernel
 {
@@ -123,6 +125,8 @@ class Kernel extends MainKernel
     /**
      * Finds the controller.
      *
+     * @SuppressWarnings(PHPMD.CountInLoopExpression)
+     *
      * @param array $segments
      *
      * @return bool
@@ -205,7 +209,7 @@ class Kernel extends MainKernel
         $host = current_host();
         foreach ($config->get('routing.hosts', []) as $route => $data) {
             $pattern = sprintf('#^%s$#', $route);
-            if (preg_match_all($pattern, $host, $matches, PREG_PATTERN_ORDER)) {
+            if (preg_match_all($pattern, $host)) {
                 return [
                     'namespace' => $data['namespace'] ?? self::DEFAULT_NS,
                     'routes' => $data['routes'] ?? [],
@@ -235,6 +239,8 @@ class Kernel extends MainKernel
 
     /**
      * Sets up authentication driver event handler.
+     *
+     * @SuppressWarnings(PHPMD.IfStatementAssignment)
      *
      * @return void
      */

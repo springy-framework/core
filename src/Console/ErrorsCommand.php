@@ -23,6 +23,8 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Errors console command controller.
+ *
+ * @SuppressWarnings(PHPMD.CountInLoopExpression)
  */
 class ErrorsCommand extends Controller
 {

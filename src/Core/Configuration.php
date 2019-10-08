@@ -106,7 +106,9 @@ class Configuration
         // Initializes the config set if needed
         $this->prepareSetting($set);
 
-        if (!$str = file_get_contents($file . '.json')) {
+        $str = file_get_contents($file . '.json');
+
+        if (!$str) {
             throw new SpringyException('Can not open the configuration file ' . $file . '.json');
         }
 

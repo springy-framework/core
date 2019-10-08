@@ -224,8 +224,9 @@ class Connection
         try {
             $mmc = new Memcached();
             $mmc->addServer($this->cache['host'], $this->cache['port']);
+            $sql = $mmc->get('dbCache_' . $cacheKey);
 
-            if ($sql = $mmc->get('dbCache_' . $cacheKey)) {
+            if ($sql) {
                 $this->statement = $sql;
             }
         } catch (Exception $e) {
