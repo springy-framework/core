@@ -96,6 +96,8 @@ class Migrator
     /**
      * Checks the existence of the control table.
      *
+     * @SuppressWarnings(PHPMD.EmptyCatchBlock)
+     *
      * @throws SpringyException
      *
      * @return void

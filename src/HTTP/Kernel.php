@@ -22,6 +22,8 @@ use Springy\Security\Authentication;
 
 /**
  * Kernel for the web application requisition.
+ *
+ * @SuppressWarnings(PHPMD.CountInLoopExpression)
  */
 class Kernel extends MainKernel
 {
@@ -122,6 +124,8 @@ class Kernel extends MainKernel
 
     /**
      * Finds the controller.
+     *
+     * @SuppressWarnings(PHPMD.CountInLoopExpression)
      *
      * @param array $segments
      *
@@ -235,6 +239,8 @@ class Kernel extends MainKernel
 
     /**
      * Sets up authentication driver event handler.
+     *
+     * @SuppressWarnings(PHPMD.IfStatementAssignment)
      *
      * @return void
      */

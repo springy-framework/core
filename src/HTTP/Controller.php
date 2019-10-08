@@ -68,6 +68,8 @@ class Controller implements ControllerInterface
     /**
      * Tries to get the authentication manager object.
      *
+     * @SuppressWarnings(PHPMD.EmptyCatchBlock)
+     *
      * @throws SpringyException
      *
      * @return \Springy\Security\AclUserInterface

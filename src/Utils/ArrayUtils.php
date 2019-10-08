@@ -15,6 +15,8 @@ namespace Springy\Utils;
 
 /**
  * Arrays manipulations utilities.
+ *
+ * @SuppressWarnings(PHPMD.CountInLoopExpression)
  */
 class ArrayUtils
 {
@@ -322,6 +324,8 @@ class ArrayUtils
 
     /**
      * Removes the element from an array using dot notation.
+     *
+     * @SuppressWarnings(PHPMD.CountInLoopExpression)
      *
      * @param array  $array
      * @param string $key

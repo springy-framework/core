@@ -12,6 +12,7 @@
 
 namespace Springy\HTTP\SessionDrivers;
 
+use Memcached as NativeMC;
 use Springy\Core\Configuration;
 use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Cookie;
@@ -52,7 +53,7 @@ class Memcached extends Standard implements SessionDriverInterface
      */
     protected function getMemcacheD()
     {
-        $memcached = new \Memcached();
+        $memcached = new NativeMC();
         $memcached->addServer($this->host, $this->port);
 
         $name = 'testkey';

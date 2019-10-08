@@ -390,6 +390,8 @@ class Debug
     /**
      * Injects the debug data into HTML page.
      *
+     * @SuppressWarnings(PHPMD.IfStatementAssignment)
+     *
      * @param string $content
      *
      * @return void

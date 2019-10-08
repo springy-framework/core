@@ -143,8 +143,9 @@ class Connector
         $this->roundRobin = function (array $list) use ($address, $port, $key) {
             $memCached = new Memcached();
             $memCached->addServer($address, $port);
+            $next = (int) $memCached->get($key);
 
-            if (!($next = (int) $memCached->get($key))) {
+            if (!$next) {
                 $next = -1;
             }
 
