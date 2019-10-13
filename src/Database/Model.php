@@ -194,17 +194,7 @@ class Model extends RowsIterator
             $select->addColumn($column);
         }
 
-        foreach ($this->joins as $join) {
-            $select->addJoin($join);
-        }
-
-        $select->setWhere($where);
-
-        foreach ($this->groupBy as $col) {
-            $select->addGroupBy($col);
-        }
-
-        $select->setHaving($this->having);
+        $this->setSelectStruc($select, $where);
 
         foreach ($orderby as $key => $value) {
             $select->addOrderBy($key, $value);
@@ -431,6 +421,30 @@ class Model extends RowsIterator
     }
 
     /**
+     * Adds join, where, group by and having clauses (if applicable)
+     * to the select command.
+     *
+     * @param Select $select
+     * @param Where  $where
+     *
+     * @return void
+     */
+    protected function setSelectStruc(Select $select, Where $where)
+    {
+        foreach ($this->joins as $join) {
+            $select->addJoin($join);
+        }
+
+        $select->setWhere($where);
+
+        foreach ($this->groupBy as $col) {
+            $select->addGroupBy($col);
+        }
+
+        $select->setHaving($this->having);
+    }
+
+    /**
      * Updates current row data to database record.
      *
      * @return int
@@ -552,6 +566,23 @@ class Model extends RowsIterator
     public function clearJoin()
     {
         $this->joins = [];
+    }
+
+    /**
+     * Performs a row count for a given condition.
+     *
+     * @param Where $where
+     *
+     * @return integer
+     */
+    public function count(Where $where): int
+    {
+        $select = new Select(new Connection($this->dbIdentity), $this->table);
+        $select->addCount('0', 'rowscount');
+        $this->setSelectStruc($select, $where);
+        $rows = $select->run(false);
+
+        return (int) $rows[0]['rowscount'];
     }
 
     /**

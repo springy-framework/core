@@ -118,6 +118,16 @@ class UserModelTest extends TestCase
         $this->assertEquals(12, $model->id);
     }
 
+    public function testCount()
+    {
+        $model = new TestSpf();
+        $where = new Where();
+        $where->add('id', 2, Where::OP_GREATER_EQUAL);
+        $where->add('id', 5, Where::OP_LESS_EQUAL);
+
+        $this->assertEquals(4, $model->count($where));
+    }
+
     public function testUpdate()
     {
         $model = new TestSpf(12);
