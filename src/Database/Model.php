@@ -573,7 +573,7 @@ class Model extends RowsIterator
      *
      * @param Where $where
      *
-     * @return integer
+     * @return int
      */
     public function count(Where $where): int
     {
