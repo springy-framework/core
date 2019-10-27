@@ -116,7 +116,7 @@ class ValidationRule
     }
 
     /**
-     * Returns the result of the validation proccess.
+     * Returns the result of the validation process.
      *
      * @return bool
      */
@@ -130,7 +130,7 @@ class ValidationRule
     }
 
     /**
-     * Proccess the validation of the field value in the input array.
+     * Process the validation of the field value in the input array.
      *
      * @return self
      */

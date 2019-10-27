@@ -60,7 +60,7 @@ class Rule
     }
 
     /**
-     * Returns the result of the validation proccess.
+     * Returns the result of the validation process.
      *
      * @return bool
      */

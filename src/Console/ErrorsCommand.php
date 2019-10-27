@@ -489,7 +489,7 @@ class ErrorsCommand extends Controller
     }
 
     /**
-     * Proccesses the instruction.
+     * Processes the instruction.
      *
      * @return int
      */
