@@ -105,7 +105,8 @@ class Debug
             . '<div class="springy-debug-value">'
             . $this->highligh($debug[2])
             . '</div>'
-            . ($debug[4] > 0
+            . (
+                $debug[4] > 0
                 ? '<a class="spring-debug-backtrace-btn">Backtrace ('
                     . ($debug[4] > 0 ? 'last ' . $debug[4] : 'all')
                     . ') <i class="springy-arrow down"></i></a>'
@@ -154,7 +155,8 @@ class Debug
         return '> Time: ' . sprintf('%.6f s', $debug[1])
             . ' Memory: ' . $this->getMemoryString($debug[0]) . LF
             . '> ' . $this->highligh($debug[2]) . LF
-            . ($debug[4] > 0
+            . (
+                $debug[4] > 0
                 ? '> Backtrace (' . ($debug[4] > 0 ? 'last ' . $debug[4] : 'all') . '):' . LF
                     . $this->backtrace($debug[3]) . LF . LF
                 : ''
