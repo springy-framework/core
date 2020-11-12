@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Springy\Core\ControllerInterface;
 use Springy\Security\AclManager;
 
-require_once __DIR__.'/../mocks/mockUser.php';
+require_once __DIR__ . '/../mocks/mockUser.php';
 
 class AclManagerTest extends TestCase
 {

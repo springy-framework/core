@@ -2,7 +2,7 @@
 
 return [
     'default' => 'mysql',
-    'model_structures' => __DIR__.'/../mocks',
+    'model_structures' => __DIR__ . '/../mocks',
     'connections' => [
         'mysql' => [
             'driver' => 'mysql',
@@ -11,7 +11,7 @@ return [
             'password' => '',
             'database' => 'test',
             'migration' => [
-                'dir' => __DIR__.'/../migration/mysql',
+                'dir' => __DIR__ . '/../migration/mysql',
                 'namespace' => 'App',
             ],
         ],
@@ -23,7 +23,7 @@ return [
             'database' => 'test',
             'round_robin' => [
                 'driver' => 'file',
-                'file' => __DIR__.'/../var/roundrobin',
+                'file' => __DIR__ . '/../var/roundrobin',
             ],
         ],
         'mysql_mc' => [

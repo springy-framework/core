@@ -15,7 +15,7 @@ use Springy\Security\AuthDriver;
 use Springy\Security\Authentication;
 use Springy\Security\BasicHasher;
 
-require_once __DIR__.'/../mocks/mockUser.php';
+require_once __DIR__ . '/../mocks/mockUser.php';
 
 /**
  * @runTestsInSeparateProcesses

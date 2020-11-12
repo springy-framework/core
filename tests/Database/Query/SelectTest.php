@@ -66,7 +66,7 @@ class SelectTest extends TestCase
     public function testSelectWithLimit()
     {
         $this->select->addColumn('id');
-        $this->select->setLimit(10).
+        $this->select->setLimit(10);
 
         $sql = 'SELECT test_spf.id FROM test_spf LIMIT 10';
         $this->assertEquals($sql, (string) $this->select);
@@ -75,8 +75,8 @@ class SelectTest extends TestCase
     public function testSelectWithLimitOffset()
     {
         $this->select->addColumn('name');
-        $this->select->setLimit(10).
-        $this->select->setOffset(1).
+        $this->select->setLimit(10);
+        $this->select->setOffset(1);
 
         $sql = 'SELECT test_spf.name FROM test_spf LIMIT 10 OFFSET 1';
         $this->assertEquals($sql, (string) $this->select);

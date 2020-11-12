@@ -17,7 +17,7 @@ class ConfigurationTest extends TestCase
 
     public function setUp()
     {
-        $this->conf = Configuration::getInstance(__DIR__.'/../conf', 'test', 'foo.bar');
+        $this->conf = Configuration::getInstance(__DIR__ . '/../conf', 'test', 'foo.bar');
     }
 
     public function testConfigHost()
@@ -69,7 +69,7 @@ class ConfigurationTest extends TestCase
         $this->conf->set('simpsons.dog', 'Sant\'s Little Helper');
         $this->conf->save('simpsons');
 
-        $fileName = $this->conf->getPath().DS.$this->conf->getEnvironment().DS.'simpsons.json';
+        $fileName = $this->conf->getPath() . DS . $this->conf->getEnvironment() . DS . 'simpsons.json';
 
         $this->assertFileExists($fileName);
         unlink($fileName);

@@ -205,12 +205,12 @@ class TestSpf extends Model
 
     protected function myHook($value)
     {
-        return $value === '' ? '' : $value.($this->newRecord ? '' : ' Foo');
+        return $value === '' ? '' : $value . ($this->newRecord ? '' : ' Foo');
     }
 
     protected function person($row)
     {
-        return 'Person '.$row['name'];
+        return 'Person ' . $row['name'];
     }
 
     protected function triggerBeforeDelete()

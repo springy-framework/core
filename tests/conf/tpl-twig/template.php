@@ -10,8 +10,8 @@ return [
     'optimizations' => 0,
 
     'paths' => [
-        'cache' => __DIR__.'/../../var',
-        'compiled' => __DIR__.'/../../var',
-        'templates' => __DIR__.'/templates',
+        'cache' => __DIR__ . '/../../var',
+        'compiled' => __DIR__ . '/../../var',
+        'templates' => __DIR__ . '/templates',
     ],
 ];

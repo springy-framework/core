@@ -17,7 +17,7 @@ use Springy\HTTP\Kernel;
 use Springy\HTTP\Session;
 use Springy\Security\AuthDriver;
 
-require_once __DIR__.'/../mocks/mockUser.php';
+require_once __DIR__ . '/../mocks/mockUser.php';
 
 /**
  * @runTestsInSeparateProcesses
@@ -40,7 +40,7 @@ class WebControllerTest extends TestCase
             return new AuthDriver($hasher, $user);
         });
 
-        $kernel->setUp(__DIR__.'/../conf/main.php');
+        $kernel->setUp(__DIR__ . '/../conf/main.php');
 
         Session::getInstance()->configure($config);
 

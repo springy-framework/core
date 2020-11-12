@@ -21,7 +21,7 @@ class SessionMemcachedTest extends TestCase
 
     public function setUp()
     {
-        $config = Configuration::getInstance(__DIR__.'/../conf', 'test', 'memcached');
+        $config = Configuration::getInstance(__DIR__ . '/../conf', 'test', 'memcached');
         $this->session = Session::getInstance();
         $this->session->configure($config);
     }

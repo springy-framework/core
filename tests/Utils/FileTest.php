@@ -44,17 +44,17 @@ class FileTest extends TestCase
 
     public function testMoveTo()
     {
-        $path = __DIR__.'/../tmp';
+        $path = __DIR__ . '/../tmp';
         if (!is_dir($path) && !mkdir($path)) {
             throw new RuntimeException('Can\'t create temporary folder.');
         }
 
-        $fileName = $path.'/test.txt';
+        $fileName = $path . '/test.txt';
         if (file_put_contents($fileName, 'test') === false) {
             throw new RuntimeException('Can\'t write to temporary file.');
         }
 
-        $targetName = $path.'/target.txt';
+        $targetName = $path . '/target.txt';
         $file = new File($fileName);
         $this->assertEquals($targetName, $file->moveTo($path, 'target.txt'));
 

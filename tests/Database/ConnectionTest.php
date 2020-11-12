@@ -25,11 +25,11 @@ class ConnectionTest extends TestCase
         $connection->run($sql);
 
         $sql = 'CREATE TABLE IF NOT EXISTS `test_spf` ('
-            .'`id` INT NOT NULL AUTO_INCREMENT, '
-            .'`name` VARCHAR(20) NULL, '
-            .'`created` DATETIME NOT NULL, '
-            .'`deleted` TINYINT(1) NOT NULL DEFAULT \'0\', '
-            .'PRIMARY KEY (`id`))';
+            . '`id` INT NOT NULL AUTO_INCREMENT, '
+            . '`name` VARCHAR(20) NULL, '
+            . '`created` DATETIME NOT NULL, '
+            . '`deleted` TINYINT(1) NOT NULL DEFAULT \'0\', '
+            . 'PRIMARY KEY (`id`))';
 
         $connection->run($sql);
         $connection->run('TRUNCATE TABLE `test_spf`');
@@ -89,20 +89,20 @@ class ConnectionTest extends TestCase
 
         $connection->run(
             'CREATE TABLE IF NOT EXISTS test_spf ('
-            .'"id" SERIAL PRIMARY KEY,'
-            .'"name" character varying(20) NOT NULL,'
-            .'"created" timestamp without time zone NOT NULL,'
-            .'"deleted" SMALLINT NOT NULL DEFAULT \'0\'::smallint'
-            .') WITH (OIDS=FALSE);'
+            . '"id" SERIAL PRIMARY KEY,'
+            . '"name" character varying(20) NOT NULL,'
+            . '"created" timestamp without time zone NOT NULL,'
+            . '"deleted" SMALLINT NOT NULL DEFAULT \'0\'::smallint'
+            . ') WITH (OIDS=FALSE);'
         );
         $this->assertEquals('', $connection->getError());
 
         $result = $connection->insert(
             'INSERT INTO test_spf("name","created") VALUES '
-            .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
-            .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
-            .'(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
-            .'(?, CURRENT_TIMESTAMP)',
+            . '(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
+            . '(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
+            . '(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
+            . '(?, CURRENT_TIMESTAMP)',
             ['Homer', 'Marge', 'Lisa', 'Bart', 'Meggy', 'Santa\'\'s Helper', 'Cat']
         );
         $this->assertEquals(7, $result);

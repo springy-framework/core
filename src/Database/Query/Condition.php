@@ -143,8 +143,8 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
     protected function comparationIn(): string
     {
         return $this->column . (
-                $this->operator === self::OP_NOT_IN ? ' NOT' : ''
-            ) . ' IN (' . trim(str_repeat('?, ', count($this->value)), ', ') . ')';
+            $this->operator === self::OP_NOT_IN ? ' NOT' : ''
+        ) . ' IN (' . trim(str_repeat('?, ', count($this->value)), ', ') . ')';
     }
 
     /**
@@ -158,8 +158,8 @@ class Condition implements OperatorComparationInterface, OperatorGroupInterface
     protected function comparationMatch(): string
     {
         return 'MATCH (' . $this->column . ') AGAINST (' . $this->getQuestionMark() . (
-                $this->operator === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : ''
-            ) . ')';
+            $this->operator === self::OP_MATCH_BOOLEAN_MODE ? ' IN BOOLEAN MODE' : ''
+        ) . ')';
     }
 
     /**

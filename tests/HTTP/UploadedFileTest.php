@@ -11,7 +11,7 @@
 use PHPUnit\Framework\TestCase;
 use Springy\HTTP\UploadedFile;
 
-require __DIR__.'/../mocks/mockUploadedFile.php';
+require __DIR__ . '/../mocks/mockUploadedFile.php';
 
 class UploadedFileTest extends TestCase
 {
@@ -26,7 +26,7 @@ class UploadedFileTest extends TestCase
     {
         $this->tmpFolder = sys_get_temp_dir();
 
-        $this->tmpName = $this->tmpFolder.'/php68up19';
+        $this->tmpName = $this->tmpFolder . '/php68up19';
         if (file_put_contents($this->tmpName, 'test') === false) {
             throw new RuntimeException('Can\'t write to temporary file.');
         }
@@ -118,7 +118,7 @@ class UploadedFileTest extends TestCase
 
     public function testMoveTo()
     {
-        $targetName = $this->tmpFolder.'/target.txt';
+        $targetName = $this->tmpFolder . '/target.txt';
 
         $this->assertEquals($targetName, $this->ulFile->moveTo($this->tmpFolder, 'target.txt'));
 
