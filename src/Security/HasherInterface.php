@@ -26,7 +26,7 @@ interface HasherInterface
      *
      * @return string
      */
-    public function make(string $stringToHash, int $times): string;
+    public function make(string $stringToHash, int $times = 10): string;
 
     /**
      * Checks whether the string needs to be encrypted again.
@@ -36,7 +36,7 @@ interface HasherInterface
      *
      * @return bool
      */
-    public function needsRehash(string $hash, int $times): bool;
+    public function needsRehash(string $hash, int $times = 10): bool;
 
     /**
      * Checks a password against a hash.

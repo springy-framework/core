@@ -14,6 +14,7 @@
 
 namespace Springy\Database;
 
+use Exception;
 use Memcached;
 use PDO;
 use PDOStatement;

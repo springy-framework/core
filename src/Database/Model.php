@@ -19,6 +19,9 @@ use Springy\Database\Query\Conditions;
 use Springy\Database\Query\Delete;
 use Springy\Database\Query\Embed;
 use Springy\Database\Query\Insert;
+use Springy\Database\Query\Join;
+use Springy\Database\Query\OperatorComparationInterface;
+use Springy\Database\Query\OperatorGroupInterface;
 use Springy\Database\Query\Select;
 use Springy\Database\Query\Update;
 use Springy\Database\Query\Where;
@@ -520,8 +523,8 @@ class Model extends RowsIterator
     public function addHaving(
         string $statement,
         $value = null,
-        string $operator = self::OP_EQUAL,
-        string $expression = self::COND_AND
+        string $operator = OperatorComparationInterface::OP_EQUAL,
+        string $expression = OperatorGroupInterface::COND_AND
     ) {
         $this->having->add($statement, $value, $operator, $expression);
     }

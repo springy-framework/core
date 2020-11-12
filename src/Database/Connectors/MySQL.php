@@ -166,11 +166,11 @@ class MySQL extends Connector implements ConnectorInterface
      *
      * @return string
      */
-    public function paginatedSelect(string $select): string
-    {
-        $reg = '/^(SELECT )(SQL_CALC_FOUND_ROWS ){0}((.*)( LIMIT [\d]+)( OFFSET [\d]+)?.*){1}$/mi';
-        $subst = '$1SQL_CALC_FOUND_ROWS $3';
+    // public function paginatedSelect(string $select): string
+    // {
+    //     $reg = '/^(SELECT )(SQL_CALC_FOUND_ROWS ){0}((.*)( LIMIT [\d]+)( OFFSET [\d]+)?.*){1}$/mi';
+    //     $subst = '$1SQL_CALC_FOUND_ROWS $3';
 
-        return preg_replace($reg, $subst, $select);
-    }
+    //     return preg_replace($reg, $subst, $select);
+    // }
 }

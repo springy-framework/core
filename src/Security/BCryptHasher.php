@@ -29,7 +29,7 @@ class BCryptHasher implements HasherInterface
      * @param inte   $algorithm
      * @param string $salt
      */
-    public function __construct(int $algorithm = PASSWORD_DEFAULT, string $salt = '')
+    public function __construct($algorithm = PASSWORD_BCRYPT, string $salt = '')
     {
         $this->algorithm = $algorithm;
         $this->salt = $salt;
