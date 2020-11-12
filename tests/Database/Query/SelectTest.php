@@ -57,7 +57,7 @@ class SelectTest extends TestCase
     public function testSelectWithOffset()
     {
         $this->select->addColumn('name');
-        $this->select->setOffset(1).
+        $this->select->setOffset(1);
 
         $sql = 'SELECT test_spf.name FROM test_spf OFFSET 1';
         $this->assertEquals($sql, (string) $this->select);
