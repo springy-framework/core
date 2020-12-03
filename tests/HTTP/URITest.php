@@ -15,7 +15,7 @@ class URITest extends TestCase
 {
     public $uri;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->uri = URI::getInstance();
     }

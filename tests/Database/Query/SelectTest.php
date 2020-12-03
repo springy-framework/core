@@ -19,7 +19,7 @@ class SelectTest extends TestCase
 {
     public $select;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $connection = new Connection('mysql');
         $this->select = new Select($connection, 'test_spf');

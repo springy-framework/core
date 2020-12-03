@@ -336,7 +336,7 @@ class Twig implements TemplateDriverInterface
      *
      * @return void
      */
-    public function setCaching($cache = false)
+    public function setCaching($cache)
     {
         if ($cache !== false) {
             return;

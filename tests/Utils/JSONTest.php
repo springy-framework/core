@@ -16,7 +16,7 @@ class JSONTest extends TestCase
     public $data;
     public $json;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->data = [
             'Homer'  => 'Duh!',

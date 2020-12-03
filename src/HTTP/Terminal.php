@@ -53,7 +53,9 @@ class Terminal
         $this->response = Response::getInstance();
 
         if ($this->request->isGet()) {
-            return $this->startTerminal();
+            $this->startTerminal();
+
+            return;
         } elseif (!$this->request->isPost() || !$this->request->isAjax()) {
             $this->response->header()->notFound();
 
@@ -71,7 +73,7 @@ class Terminal
      *
      * @return void
      */
-    protected function command(string $command, string $parameters)
+    protected function command(string $command, string $parameters): void
     {
         $commands = [
             'errors'   => 'Springy\Console\ErrorsCommand',
@@ -96,9 +98,9 @@ class Terminal
     /**
      * Returns the greetings message.
      *
-     * @return void
+     * @return string
      */
-    protected function getHello()
+    protected function getHello(): string
     {
         $format = new OutputFormatter(true);
 
@@ -114,11 +116,13 @@ class Terminal
      *
      * @return void
      */
-    protected function parseRpc()
+    protected function parseRpc(): void
     {
         $body = $this->request->getJsonBody();
         if ($body === null) {
-            return $this->sendError(400, 'Bad request');
+            $this->sendError(400, 'Bad request');
+
+            return;
         }
 
         $this->requestId = $body->id ?? 0;
@@ -128,13 +132,21 @@ class Terminal
         $sessId = Session::getInstance()->get(self::TERM_SESSION_ID, false);
 
         if ($method === 'system.describe') {
-            return $this->serviceDescription();
+            $this->serviceDescription();
+
+            return;
         } elseif ($method === 'login') {
-            return $this->serviceLogin();
+            $this->serviceLogin();
+
+            return;
         } elseif ($method === 'logout') {
-            return $this->serviceLogout();
+            $this->serviceLogout();
+
+            return;
         } elseif (!$sessId || $sessId !== $cred) {
-            return $this->sendError(401, 'Session terminated. Please login again.');
+            $this->sendError(401, 'Session terminated. Please login again.');
+
+            return;
         }
 
         if (!in_array('--no-interaction', $params)) {
@@ -152,7 +164,7 @@ class Terminal
      *
      * @return void
      */
-    protected function serviceDescription()
+    protected function serviceDescription(): void
     {
         $json = new JSON([
             'sdversion' => '2.0',
@@ -242,7 +254,9 @@ class Terminal
         $params = $body->params ?? [];
 
         if (count($params) != 2 || $params[0] !== $this->credential[0] || $params[1] !== $this->credential[1]) {
-            return $this->sendError(403, 'Invalid user or password.');
+            $this->sendError(403, 'Invalid user or password.');
+
+            return;
         }
 
         $sessionId = md5($params[0] . ':' . $params[1] . ':' . microtime());

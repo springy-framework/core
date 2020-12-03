@@ -18,7 +18,7 @@ class UpdateTest extends TestCase
 {
     public $update;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $connection = new Connection('mysql');
         $this->update = new Update($connection, 'test_spf');

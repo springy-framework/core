@@ -356,7 +356,7 @@ class Kernel
     public static function getInstance($appConf = null): self
     {
         if (static::$instance === null) {
-            new static($appConf);
+            new static($appConf); // @phpstan-ignore-line
         }
 
         return static::$instance;

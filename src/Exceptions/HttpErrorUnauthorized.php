@@ -12,6 +12,8 @@
 
 namespace Springy\Exceptions;
 
+use Throwable;
+
 /**
  * HTTP 401 Unauthorized error class.
  */
@@ -29,7 +31,7 @@ class HttpErrorUnauthorized extends HttpError
      */
     public function __construct(
         string $message = 'Unauthorized',
-        \Throwable $previous = null,
+        Throwable $previous = null,
         ?int $code = E_USER_ERROR,
         string $file = null,
         int $line = null

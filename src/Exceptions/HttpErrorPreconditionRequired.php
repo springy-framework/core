@@ -12,6 +12,8 @@
 
 namespace Springy\Exceptions;
 
+use Throwable;
+
 /**
  * HTTP 428 Precondition Required error class.
  */
@@ -29,7 +31,7 @@ class HttpErrorPreconditionRequired extends HttpError
      */
     public function __construct(
         string $message = 'Precondition Required',
-        \Throwable $previous = null,
+        Throwable $previous = null,
         ?int $code = E_USER_ERROR,
         string $file = null,
         int $line = null

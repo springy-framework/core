@@ -267,7 +267,7 @@ class ErrorsCommand extends Controller
      *
      * @return void
      */
-    protected function getCrc()
+    protected function getCrc(): void
     {
         if ($this->crc === null) {
             $helper = new QuestionHelper();
@@ -283,11 +283,14 @@ class ErrorsCommand extends Controller
      */
     protected function getError()
     {
-        if ($this->getCrc()) {
+        $this->getCrc();
+
+        if (!$this->crc) {
             return false;
         }
 
         $file = $this->logDir . DS . $this->crc . '.yml';
+
         if (!is_file($file)) {
             $this->output->writeln(
                 '<error>Error identified by <comment>'

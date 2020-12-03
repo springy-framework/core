@@ -20,7 +20,7 @@ class FlashMessageManagerTest extends TestCase
 {
     public $flash;
 
-    public function setUp()
+    protected function setUp(): void
     {
         Kernel::getInstance()->setEnvironment('test');
         $this->flash = new FlashMessagesManager();

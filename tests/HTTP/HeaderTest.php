@@ -15,7 +15,7 @@ class HeaderTest extends TestCase
 {
     public $header;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->header = new Header();
     }

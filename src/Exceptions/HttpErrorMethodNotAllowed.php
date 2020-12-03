@@ -12,6 +12,8 @@
 
 namespace Springy\Exceptions;
 
+use Throwable;
+
 /**
  * HTTP 405 Method Not Allowed error class.
  */
@@ -29,7 +31,7 @@ class HttpErrorMethodNotAllowed extends HttpError
      */
     public function __construct(
         string $message = 'Method Not Allowed',
-        \Throwable $previous = null,
+        Throwable $previous = null,
         ?int $code = E_USER_ERROR,
         string $file = null,
         int $line = null

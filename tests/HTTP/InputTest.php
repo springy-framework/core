@@ -20,7 +20,7 @@ class InputTest extends TestCase
 {
     public $input;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $config = Configuration::getInstance(__DIR__ . '/../conf', 'test');
         $session = Session::getInstance();

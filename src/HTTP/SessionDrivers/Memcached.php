@@ -49,9 +49,9 @@ class Memcached extends Standard implements SessionDriverInterface
     /**
      * Gets the Memcached object.
      *
-     * @return void
+     * @return NativeMC
      */
-    protected function getMemcacheD()
+    protected function getMemcacheD(): NativeMC
     {
         $memcached = new NativeMC();
         $memcached->addServer($this->host, $this->port);

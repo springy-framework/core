@@ -26,7 +26,7 @@ class AuthenticationTest extends TestCase
     public $authentication;
     public $user;
 
-    public function setUp()
+    protected function setUp(): void
     {
         Session::getInstance()->configure(
             Configuration::getInstance()

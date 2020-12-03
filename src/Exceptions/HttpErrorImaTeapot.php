@@ -12,6 +12,8 @@
 
 namespace Springy\Exceptions;
 
+use Throwable;
+
 /**
  * HTTP 418 I'm a Teapot error class.
  */
@@ -29,7 +31,7 @@ class HttpErrorImaTeapot extends HttpError
      */
     public function __construct(
         string $message = 'I\'m a Teapot',
-        \Throwable $previous = null,
+        Throwable $previous = null,
         ?int $code = E_USER_ERROR,
         string $file = null,
         int $line = null

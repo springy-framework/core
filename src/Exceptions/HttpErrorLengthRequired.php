@@ -12,6 +12,8 @@
 
 namespace Springy\Exceptions;
 
+use Throwable;
+
 /**
  * HTTP 411 Length Required error class.
  */
@@ -29,7 +31,7 @@ class HttpErrorLengthRequired extends HttpError
      */
     public function __construct(
         string $message = 'Length Required',
-        \Throwable $previous = null,
+        Throwable $previous = null,
         ?int $code = E_USER_ERROR,
         string $file = null,
         int $line = null

@@ -28,6 +28,8 @@ class Configuration
     protected $confs;
     /** @var string the configuration root path */
     protected $configPath;
+    /** @var array the configuration sets */
+    protected $configSets;
     /** @var string the configuration environment path */
     protected $envDir;
     /** @var string the host for configurations overwrite */
@@ -318,7 +320,7 @@ class Configuration
     public static function getInstance(string $path = null, string $env = null, string $host = null): self
     {
         if (static::$instance === null) {
-            new static($path, $env, $host);
+            new static($path, $env, $host); // @phpstan-ignore-line
         }
 
         if (null !== $path) {

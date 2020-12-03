@@ -71,6 +71,8 @@ class Cookie
      */
     protected function unscrubKey($key)
     {
+        $matches = [];
+
         if (
             !is_array($key)
             && preg_match('/([\w\d]+)\[([\w\d]+)\]$/i', $key, $matches)

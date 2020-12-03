@@ -481,7 +481,7 @@ class Handler
         $this->handlerType = self::HT_ERROR;
         $this->exception = new SpringyException($errstr, $errno, $this->exception, $errfile, $errline);
 
-        return $this->trigger();
+        $this->trigger();
     }
 
     /**
@@ -496,7 +496,7 @@ class Handler
         $this->handlerType = self::HT_EXCEPTION;
         $this->exception = $err;
 
-        return $this->trigger();
+        $this->trigger();
     }
 
     /**
@@ -612,7 +612,5 @@ class Handler
         }
 
         $this->displayError($errCode, $responseCode);
-
-        return true;
     }
 }

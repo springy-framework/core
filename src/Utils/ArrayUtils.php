@@ -384,6 +384,6 @@ class ArrayUtils
      */
     public static function newInstance()
     {
-        return new static();
+        return new static(); // @phpstan-ignore-line
     }
 }

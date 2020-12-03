@@ -12,6 +12,8 @@
 
 namespace Springy\Exceptions;
 
+use Throwable;
+
 /**
  * HTTP 503 Service unavailable class.
  */
@@ -29,7 +31,7 @@ class HttpErrorServiceUnavailable extends HttpError
      */
     public function __construct(
         string $message = 'Service Unavailable',
-        \Throwable $previous = null,
+        Throwable $previous = null,
         ?int $code = E_USER_ERROR,
         string $file = null,
         int $line = null

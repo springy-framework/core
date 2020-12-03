@@ -18,7 +18,7 @@ class InsertTest extends TestCase
 {
     public $insert;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $connection = new Connection('mysql');
         $this->insert = new Insert($connection, 'test_spf');

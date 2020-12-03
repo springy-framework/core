@@ -1,6 +1,6 @@
 <?php
 /**
- * Initialization script fir PHPUnit.
+ * Initialization script for PHPUnit.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>

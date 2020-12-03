@@ -31,8 +31,7 @@ class ValidateDifferent extends ValidationRule
     {
         if (!isset($this->params[0])) {
             throw new BadMethodCallException(
-                'Validation rule "' . $this->rule
-                . '" require comparison field name parameter no one given.'
+                'Validation rule "Different" require comparison field name parameter no one given.'
             );
         }
 

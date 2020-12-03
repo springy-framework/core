@@ -32,6 +32,8 @@ trait StringUtils
      */
     protected function isValidEmailAddress(string $email, bool $checkDNS = true): bool
     {
+        $res = [];
+
         if (
             filter_var($email, FILTER_VALIDATE_EMAIL) &&
             preg_match('/^[a-z0-9_\-]+(\.[a-z0-9_\-]+)*@([a-z0-9_\.\-]*[a-z0-9_\-]+\.[a-z]{2,})$/i', $email, $res)

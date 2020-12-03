@@ -22,7 +22,7 @@ class UploadedFileTest extends TestCase
     public $tmpName;
     public $ulFile;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->tmpFolder = sys_get_temp_dir();
 
@@ -54,7 +54,7 @@ class UploadedFileTest extends TestCase
         );
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         unset($_FILES);
 

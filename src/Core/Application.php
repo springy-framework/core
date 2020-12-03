@@ -87,7 +87,7 @@ class Application extends DIContainer
     public static function sharedInstance()
     {
         if (!static::$sharedInstance) {
-            static::$sharedInstance = new static();
+            static::$sharedInstance = new static(); // @phpstan-ignore-line
         }
 
         return static::$sharedInstance;

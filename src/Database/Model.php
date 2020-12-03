@@ -169,7 +169,7 @@ class Model extends RowsIterator
 
         // Navigate through found rows and deletes it
         $couter = 0;
-        $model = new static();
+        $model = new static(); // @phpstan-ignore-line
         $model->select($where);
         while ($model->valid()) {
             $couter += $model->delete();
@@ -471,7 +471,7 @@ class Model extends RowsIterator
         $res = $update->run();
 
         if ($res === 1) {
-            $clone = new static($pkVal);
+            $clone = new static($pkVal); // @phpstan-ignore-line
             if (!$clone->isLoaded()) {
                 return 0;
             }

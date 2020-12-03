@@ -12,6 +12,8 @@
 
 namespace Springy\Exceptions;
 
+use Throwable;
+
 /**
  * HTTP 412 Precondition Failed error class.
  */
@@ -29,7 +31,7 @@ class HttpErrorPreconditionFailed extends HttpError
      */
     public function __construct(
         string $message = 'Precondition Failed',
-        \Throwable $previous = null,
+        Throwable $previous = null,
         ?int $code = E_USER_ERROR,
         string $file = null,
         int $line = null

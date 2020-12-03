@@ -26,7 +26,7 @@ class WebControllerTest extends TestCase
 {
     public $controller;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $config = Configuration::getInstance();
         $kernel = Kernel::getInstance();

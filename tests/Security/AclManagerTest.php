@@ -20,7 +20,7 @@ class AclManagerTest extends TestCase
 {
     public $aclManager;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $controller = new Controller();
         $this->aclManager = new AclManager(new User(), $controller, ['test', 'acl']);

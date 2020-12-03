@@ -19,7 +19,7 @@ class SessionTest extends TestCase
 {
     public $session;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $config = Configuration::getInstance(__DIR__ . '/../conf', 'test');
         $this->session = Session::getInstance();

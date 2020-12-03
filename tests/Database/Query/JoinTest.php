@@ -16,7 +16,7 @@ class JoinTest extends TestCase
 {
     public $join;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->join = new Join('test');
     }

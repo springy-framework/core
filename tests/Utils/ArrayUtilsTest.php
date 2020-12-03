@@ -17,7 +17,7 @@ class ArrayUtilsTest extends TestCase
     public $arrayUtils;
     public $data;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->arrayUtils = new ArrayUtils();
         $this->data = [

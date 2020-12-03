@@ -16,7 +16,7 @@ class FileTest extends TestCase
 {
     public $file;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->file = new File(__FILE__);
     }

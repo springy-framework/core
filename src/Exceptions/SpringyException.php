@@ -13,6 +13,7 @@
 namespace Springy\Exceptions;
 
 use RuntimeException;
+use Throwable;
 
 /**
  * Springy Exception class.
@@ -34,7 +35,7 @@ class SpringyException extends RuntimeException
     public function __construct(
         string $message = null,
         int $code = E_USER_ERROR,
-        \Throwable $previous = null,
+        Throwable $previous = null,
         string $file = null,
         int $line = null
     ) {

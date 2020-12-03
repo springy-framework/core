@@ -36,7 +36,7 @@ class HttpError extends Error
     public function __construct(
         int $statusCode,
         string $message = null,
-        \Throwable $previous = null,
+        Throwable $previous = null,
         ?int $code = E_USER_ERROR,
         string $file = null,
         int $line = null

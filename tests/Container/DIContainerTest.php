@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test case for Springy\Container\DIContainer class.
  *
@@ -9,6 +10,7 @@
  *
  * @version   1.0.0
  */
+
 use PHPUnit\Framework\TestCase;
 use Springy\Container\DIContainer;
 
@@ -16,7 +18,7 @@ class DIContainerTest extends TestCase
 {
     private $data;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->data = [
             'key1' => 'value1',
@@ -26,11 +28,9 @@ class DIContainerTest extends TestCase
         ];
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testThatContainerCanStoreRawValues()
     {
+        $this->expectException(InvalidArgumentException::class);
         $DI = new DIContainer();
 
         //Basic
@@ -58,11 +58,9 @@ class DIContainerTest extends TestCase
         $DI->param('key4');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testThatContainerCanCreateObjectsOnTheFly()
     {
+        $this->expectException(InvalidArgumentException::class);
         $DI = new DIContainer();
 
         //Basic
@@ -128,11 +126,9 @@ class DIContainerTest extends TestCase
         $this->assertNotSame($extended1, $extended2);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testThatContainerCanBindObjectsAndShareInstances()
     {
+        $this->expectException(InvalidArgumentException::class);
         $DI = new DIContainer();
 
         $object1 = $this->getMockBuilder('MockedClass');

@@ -18,7 +18,7 @@ class CookieTest extends TestCase
 {
     public $cookie;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $_COOKIE['foo'] = 'bar';
         $_COOKIE['bar']['foo'] = 'foo';

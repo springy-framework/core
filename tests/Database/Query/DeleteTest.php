@@ -17,7 +17,7 @@ class DeleteTest extends TestCase
 {
     public $delete;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $connection = new Connection('mysql');
         $this->delete = new Delete($connection, 'test_spf');

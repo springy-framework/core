@@ -220,7 +220,7 @@ class DIContainer implements ArrayAccess
      *
      * @throws InvalidArgumentException
      *
-     * @return void
+     * @return mixed
      */
     public function shared($key)
     {
@@ -382,6 +382,6 @@ class DIContainer implements ArrayAccess
      */
     public static function newInstance()
     {
-        return new static();
+        return new static(); // @phpstan-ignore-line
     }
 }

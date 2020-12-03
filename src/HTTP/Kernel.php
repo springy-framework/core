@@ -12,6 +12,7 @@
 
 namespace Springy\HTTP;
 
+use Closure;
 use Springy\Core\Configuration;
 use Springy\Core\Copyright;
 use Springy\Core\Kernel as MainKernel;
@@ -186,6 +187,8 @@ class Kernel extends MainKernel
     protected function getNamespace(array $config, array &$segments): string
     {
         $uri = '/' . implode('/', $segments);
+        $matches = [];
+
         foreach (($config['segments'] ?? []) as $route => $namespace) {
             $pattern = sprintf('#^%s(/(.+))?$#', $route);
             if (preg_match_all($pattern, $uri, $matches, PREG_PATTERN_ORDER)) {

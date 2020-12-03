@@ -12,6 +12,7 @@
 
 namespace Springy\Database\Connectors;
 
+use Exception;
 use Memcached;
 use PDO;
 use Springy\Exceptions\SpringyException;
@@ -25,6 +26,10 @@ class Connector
     protected $charset;
     /** @var string name of the database */
     protected $database;
+    /** @var int connection tentative possible */
+    protected $retries;
+    /** @var int sleep time in seconds between each try connection */
+    protected $retrySleep;
     protected $encloseCharOpn = '`';
     protected $encloseCharCls = '`';
     /** @var array PDO constructor options */
@@ -53,11 +58,25 @@ class Connector
      */
     public function __construct(array $config)
     {
+        $this->retries = 0;
+        $this->retrySleep = 0;
         $this->timezone = $config['timezone'] ?? '';
         $this->setDatabase($config['database'] ?? '');
         $this->setUsername($config['username'] ?? '');
         $this->setPassword($config['password'] ?? '');
         $this->configRoundRobin($config['round_robin'] ?? []);
+    }
+
+    /**
+     * Configures database connection after the connection stablished.
+     *
+     * Must be implemented in child connector class.
+     *
+     * @return void
+     */
+    protected function afterConnectSettings()
+    {
+        // Do nothing
     }
 
     /**
@@ -239,6 +258,18 @@ class Connector
     public function getDatabase(): string
     {
         return $this->database;
+    }
+
+    /**
+     * Gets the DSN string.
+     *
+     * Must be implemented into child connector class.
+     *
+     * @return string
+     */
+    public function getDsn(): string
+    {
+        return '';
     }
 
     /**

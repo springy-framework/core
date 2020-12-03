@@ -25,6 +25,8 @@ class Input
 
     /** @var ArrayUtils array handler helper */
     protected $arrUtils;
+    /** @var array collection of data received */
+    protected $data;
     /** @var array collection of UploadedFile handlers */
     protected $files;
     /** @var array old data array saved to be used in next request */

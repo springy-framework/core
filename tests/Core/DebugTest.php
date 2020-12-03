@@ -18,7 +18,7 @@ class DebugTest extends TestCase
 {
     public $debug;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->debug = Debug::getInstance();
     }

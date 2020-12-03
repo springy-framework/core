@@ -16,6 +16,7 @@
 
 namespace Springy\Template\Drivers;
 
+use Closure;
 use Mustache_Engine as MustacheEngine;
 use Mustache_Loader_FilesystemLoader as FilesystemLoader;
 use Mustache_Logger_StreamLogger as StreamLogger;
@@ -28,6 +29,8 @@ class Mustache implements TemplateDriverInterface
 {
     use FileSystemUtils;
 
+    /** @var array */
+    protected $envOptions;
     /** @var array the list of template home directories */
     protected $templateDirs;
     /** @var string the template file name */
@@ -42,6 +45,7 @@ class Mustache implements TemplateDriverInterface
      */
     public function __construct()
     {
+        $this->envOptions = [];
         $this->templateDirs = [];
         $this->templateFile = '';
         $this->tplOptions = [
@@ -344,7 +348,7 @@ class Mustache implements TemplateDriverInterface
      *
      * @return void
      */
-    public function setCaching($cache = false)
+    public function setCaching($cache)
     {
         if ($cache !== false) {
             return;

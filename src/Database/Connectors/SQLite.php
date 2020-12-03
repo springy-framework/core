@@ -22,11 +22,6 @@ class SQLite extends Connector implements ConnectorInterface
     protected $encloseCharOpn = '"';
     protected $encloseCharCls = '"';
 
-    /** @var int turning off connection tentative possible */
-    protected $retries = 0;
-    /** @var int sleep time in seconds between each try connection */
-    protected $retrySleep = 0;
-
     /**
      * Returns the name of function to get current date and time from DBMS.
      *

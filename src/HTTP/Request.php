@@ -111,7 +111,7 @@ class Request
     /**
      * Gets raw body data.
      *
-     * @return void
+     * @return mixed
      */
     protected function getRawData()
     {

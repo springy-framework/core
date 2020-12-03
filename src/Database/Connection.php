@@ -39,6 +39,8 @@ class Connection
     protected $identity;
     /** @var string last query execution error */
     protected $lastError;
+    /** @var string last query executed */
+    protected $lastQuery;
     /** @var array last query execution prepare statements */
     protected $lastValues;
     /** @var PDOStatement|array the SQL statement */
@@ -58,6 +60,7 @@ class Connection
         $this->fetchStyle = PDO::FETCH_ASSOC;
         $this->identity = $identity ?? config_get('database.default');
         $this->lastValues = [];
+        $this->lastQuery = '';
 
         $this->connect();
     }

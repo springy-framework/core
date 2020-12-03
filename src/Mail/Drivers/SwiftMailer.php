@@ -32,7 +32,6 @@ namespace Springy\Mail\Drivers;
 
 use Springy\Exceptions\SpringyException;
 use Swift_Mailer;
-use Swift_MailTransport;
 use Swift_Message;
 use Swift_SendmailTransport;
 use Swift_SmtpTransport;
@@ -61,7 +60,7 @@ class SwiftMailer implements MailDriverInterface
         }
 
         $this->lastError = '';
-        $this->mailObj = Swift_Message::newInstance();
+        $this->mailObj = new Swift_Message();
         $this->mailObj->setCharset(config_get('main.charset', 'UTF-8'));
 
         $this->setProtocol($config);
@@ -83,7 +82,7 @@ class SwiftMailer implements MailDriverInterface
                 throw new SpringyException('Mail configuration "host" undefined');
             }
 
-            $this->transport = Swift_SmtpTransport::newInstance(
+            $this->transport = new Swift_SmtpTransport(
                 $config['host'],
                 $config['port'] ?? 25
             );
@@ -99,11 +98,7 @@ class SwiftMailer implements MailDriverInterface
 
             return;
         } elseif ($config['protocol'] == 'sendmail') {
-            $this->transport = Swift_SendmailTransport::newInstance($config['sendmail_path'] ?? null);
-
-            return;
-        } elseif ($config['protocol'] == 'mail') {
-            $this->transport = Swift_MailTransport::newInstance();
+            $this->transport = new Swift_SendmailTransport($config['sendmail_path'] ?? null);
 
             return;
         }
@@ -167,7 +162,7 @@ class SwiftMailer implements MailDriverInterface
      */
     public function addHeader(string $header, string $value)
     {
-        $this->mailObj->addTextHeader($header, $value);
+        $this->mailObj->getHeaders()->addTextHeader($header, $value);
     }
 
     /**
@@ -202,7 +197,7 @@ class SwiftMailer implements MailDriverInterface
     {
         $this->lastError = '';
 
-        $mailer = Swift_Mailer::newInstance($this->transport);
+        $mailer = new Swift_Mailer($this->transport);
         $mailer->send($this->mailObj, $this->lastError);
 
         return empty($this->lastError);

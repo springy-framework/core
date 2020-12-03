@@ -237,7 +237,7 @@ class Smarty implements TemplateDriverInterface
      *
      * @see https://www.smarty.net/docs/en/variable.caching.tpl
      */
-    public function setCaching($cache = 'current')
+    public function setCaching($cache)
     {
         if ($cache === false) {
             $this->tplObj->setCaching(SmartyTemplate::CACHING_OFF);
@@ -317,8 +317,7 @@ class Smarty implements TemplateDriverInterface
      */
     public function setOptimizations(int $optimizations)
     {
-        $this->optimizations = $optimizations;
-        unset($this->optimizations);
+        $optimizations = 0;
     }
 
     /**

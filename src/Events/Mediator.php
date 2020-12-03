@@ -344,6 +344,6 @@ class Mediator
      */
     public static function newInstance(DIContainer $container = null)
     {
-        return new static($container);
+        return new static($container); // @phpstan-ignore-line
     }
 }

@@ -26,10 +26,6 @@ class PostgreSQL extends Connector implements ConnectorInterface
     protected $host;
     /** @var int the database server port */
     protected $port;
-    /** @var int connection tentative possible */
-    protected $retries;
-    /** @var int sleep time in seconds between each try connection */
-    protected $retrySleep;
     /** @var string schema configuration */
     protected $schema;
     /** @var string the SSL options */
