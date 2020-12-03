@@ -2,4 +2,6 @@
 /vendor
 composer.lock
 phpmd.html
+phpstan.txt
 npm-debug.log
+*.cache
