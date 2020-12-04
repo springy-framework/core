@@ -324,18 +324,4 @@ class Kernel extends MainKernel
     {
         Response::getInstance()->send();
     }
-
-    /**
-     * Returns current instance.
-     *
-     * @return static
-     */
-    public static function getInstance($appConf = null): self
-    {
-        if (is_null(self::$instance)) {
-            new self($appConf);
-        }
-
-        return self::$instance;
-    }
 }

@@ -157,18 +157,4 @@ class Kernel extends MainKernel
     {
         return $this->exitStatus;
     }
-
-    /**
-     * Returns current instance.
-     *
-     * @return static
-     */
-    public static function getInstance($appConf = null): self
-    {
-        if (is_null(self::$instance)) {
-            new self($appConf);
-        }
-
-        return self::$instance;
-    }
 }
