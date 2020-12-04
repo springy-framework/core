@@ -44,7 +44,7 @@ class SessionMemcachedTest extends TestCase
 
     public function testGetId()
     {
-        $this->assertRegExp('/^[A-Za-z0-9\-]+$/', $this->session->getId());
+        $this->assertMatchesRegularExpression('/^[A-Za-z0-9\-]+$/', $this->session->getId());
     }
 
     public function testSet()
