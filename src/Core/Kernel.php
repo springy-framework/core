@@ -243,7 +243,7 @@ class Kernel
     {
         // Can be executed once
         if ($this->startime !== null) {
-            return self::$instance;
+            return static::$instance;
         }
 
         // Overwrites the application started time if defined
@@ -253,7 +253,7 @@ class Kernel
             $this->notFound();
         }
 
-        return self::$instance;
+        return static::$instance;
     }
 
     /**
@@ -337,7 +337,7 @@ class Kernel
         // $this->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);
         // self::path(self::PATH_APPLICATION, $conf['APP_PATH'] ?? realpath($conf['ROOT_PATH'].'/../app'));
 
-        return self::$instance;
+        return static::$instance;
     }
 
     /**
