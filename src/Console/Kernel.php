@@ -32,6 +32,18 @@ class Kernel extends MainKernel
     protected $output;
 
     /**
+     * Constructor.
+     *
+     * Is not allowed to call from outside to prevent from creating multiple instances.
+     */
+    protected function __construct($appConf = null)
+    {
+        parent::__construct($appConf);
+        parent::$instance = $this;
+        self::$instance = $this;
+    }
+
+    /**
      * Tries to discover a command line controller.
      *
      * @return bool
@@ -144,5 +156,19 @@ class Kernel extends MainKernel
     public function getExitStatus(): int
     {
         return $this->exitStatus;
+    }
+
+    /**
+     * Returns current instance.
+     *
+     * @return static
+     */
+    public static function getInstance($appConf = null): self
+    {
+        if (is_null(self::$instance)) {
+            new self($appConf);
+        }
+
+        return self::$instance;
     }
 }

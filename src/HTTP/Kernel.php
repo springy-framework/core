@@ -37,6 +37,18 @@ class Kernel extends MainKernel
     public const DEFAULT_NS = 'App\\Controllers\\Web\\';
 
     /**
+     * Constructor.
+     *
+     * Is not allowed to call from outside to prevent from creating multiple instances.
+     */
+    protected function __construct($appConf = null)
+    {
+        parent::__construct($appConf);
+        parent::$instance = $this;
+        self::$instance = $this;
+    }
+
+    /**
      * Checks if endpoint exists.
      *
      * @param string $endpoint
@@ -311,5 +323,19 @@ class Kernel extends MainKernel
     public function send()
     {
         Response::getInstance()->send();
+    }
+
+    /**
+     * Returns current instance.
+     *
+     * @return static
+     */
+    public static function getInstance($appConf = null): self
+    {
+        if (is_null(self::$instance)) {
+            new self($appConf);
+        }
+
+        return self::$instance;
     }
 }

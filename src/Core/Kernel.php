@@ -53,10 +53,10 @@ class Kernel
      *
      * Is not allowed to call from outside to prevent from creating multiple instances.
      */
-    private function __construct($appConf = null)
+    protected function __construct($appConf = null)
     {
         $this->errorHandler = new Handler();
-        static::$instance = $this;
+        self::$instance = $this;
 
         if ($appConf !== null) {
             $this->setUp($appConf);
@@ -355,10 +355,10 @@ class Kernel
      */
     public static function getInstance($appConf = null): self
     {
-        if (static::$instance === null) {
-            new static($appConf); // @phpstan-ignore-line
+        if (is_null(self::$instance)) {
+            new self($appConf);
         }
 
-        return static::$instance;
+        return self::$instance;
     }
 }
