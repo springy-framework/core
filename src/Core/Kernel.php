@@ -121,10 +121,9 @@ class Kernel
      */
     protected function normalizeNamePath(array $segments): string
     {
-        $count = count($segments) - 1;
         $normalized = [];
-        foreach ($segments as $index => $value) {
-            $normalized[] = $this->normalizeSegment($value, $index == $count);
+        foreach ($segments as $value) {
+            $normalized[] = $this->normalizeSegment($value);
         }
 
         return implode('\\', $normalized);
@@ -134,22 +133,15 @@ class Kernel
      * Normalizes the segment name to StudlyCaps.
      *
      * @param string $name
-     * @param bool   $last
      *
      * @return string
      */
-    protected function normalizeSegment(string $name, bool $last): string
+    protected function normalizeSegment(string $name): string
     {
         $normalized = [];
         $segments = explode('-', $name);
         foreach ($segments as $value) {
-            if ($last) {
-                $normalized[] = $value ? ucwords($value, '_') : '-';
-
-                continue;
-            }
-
-            $normalized[] = $value ?? '-';
+            $normalized[] = $value ? ucwords($value, '_') : '-';
         }
 
         return implode('', $normalized);
