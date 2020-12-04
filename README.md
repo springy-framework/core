@@ -7,7 +7,7 @@
 
 [![Latest Unstable Version](https://poser.pugx.org/springy-framework/core/v/unstable)](https://packagist.org/packages/springy-framework/core)
 [![Build Status](https://travis-ci.org/springy-framework/core.svg?branch=5.0.0)](https://travis-ci.org/springy-framework/core)
-[![StyleCI](https://github.styleci.io/repos/166688147/shield?style=flat?branch=5.0.0)](https://styleci.io/repos/166688147)
+[![StyleCI](https://github.styleci.io/repos/166688147/shield?style=flat&branch=5.0.0)](https://styleci.io/repos/166688147)
 
 # About Springy
 
