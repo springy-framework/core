@@ -366,6 +366,12 @@
 -   Removed `assetFile` pre-defined template function. The application must implements by it self using `Springy\Template\Template->addFunction()` method.
 -   Removed support to `sysconf.php` file inside public root folder
 
+### Auto-routing system
+
+The framework will try to discover the controller class even if the route configuration file is not defined. The controller name is built from URL segments.
+
+> **Warning!** File names with hyphens are not supported in PSR-4 by Composer 2. Then use the StudlyCaps file name for hyphen separated segment router.
+
 ### Configuration files
 
 #### The Application File Configuration: application.php
