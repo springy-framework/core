@@ -600,7 +600,7 @@ class Handler
         $responseCode = 500;
         $errCode = $this->exception->getCode();
         // Is a deprecated warning and is configured to ignore deprecations?
-        if (in_array($errCode, [E_DEPRECATED, E_USER_DEPRECATED])) {
+        if (in_array($errCode, [E_DEPRECATED, E_USER_DEPRECATED], true)) {
             return;
         }
 
