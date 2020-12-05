@@ -394,7 +394,7 @@ class Handler
     protected function shouldntReport()
     {
         return in_array(get_class($this->exception), $this->unreportable) ||
-            in_array($this->exception->getCode(), $this->unreportable);
+            in_array($this->exception->getCode(), $this->unreportable, true);
     }
 
     /**
