@@ -6,7 +6,7 @@
  * @copyright 2019 Fernando Val
  * @author    Allan Marques <allan.marques@ymail.com>
  * @author    Fernando Val <fernando.val@gmail.com>
- * @license   https://github.com/fernandoval/Springy/blob/master/LICENSE MIT
+ * @license   https://github.com/springy-framework/core/blob/master/LICENSE MIT
  *
  * @version   1.0
  */
