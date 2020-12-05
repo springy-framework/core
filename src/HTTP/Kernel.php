@@ -40,6 +40,9 @@ class Kernel extends MainKernel
      * Constructor.
      *
      * Is not allowed to call from outside to prevent from creating multiple instances.
+     *
+     * @param array|string $conf the array of configuration or
+     *                           the full path name of the configuration file.
      */
     protected function __construct($appConf = null)
     {
