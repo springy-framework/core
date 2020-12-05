@@ -194,7 +194,7 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
      */
     public function get(string $column = null)
     {
-        if ($column === null) {
+        if (is_null($column)) {
             return $this->conditions;
         }
 

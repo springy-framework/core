@@ -59,7 +59,7 @@ class MigratorCommand extends Controller
         $this->printTitle();
 
         $instruction = $this->input->getArgument('instruction');
-        if ($instruction === null) {
+        if (is_null($instruction)) {
             $this->printHelp();
 
             return 1;

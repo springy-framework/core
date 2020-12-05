@@ -590,7 +590,7 @@ class Handler
     public function trigger()
     {
         if (
-            $this->handlerType === null
+            is_null($this->handlerType)
             || $this->isIgnored($this->exception->getCode())
             || $this->isIgnored($this->exception)
         ) {

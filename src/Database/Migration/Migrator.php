@@ -46,7 +46,7 @@ class Migrator
         $path = config_get('database.connections.' . $identity . '.migration.dir');
         $namespace = config_get('database.connections.' . $identity . '.migration.namespace', 'App');
 
-        if ($path === null) {
+        if (is_null($path)) {
             throw new SpringyException(
                 'Migration path configuration missing for "' . $identity . '"'
             );
@@ -150,7 +150,7 @@ class Migrator
     {
         $revisions = $this->revisions->getApplied();
 
-        if ($version === null) {
+        if (is_null($version)) {
             $version = 0;
         }
 
@@ -257,7 +257,7 @@ class Migrator
             return 0;
         }
 
-        if ($version === null) {
+        if (is_null($version)) {
             $version = 0;
         }
 

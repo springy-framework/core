@@ -64,7 +64,7 @@ class Session
      */
     protected function checkConfig()
     {
-        if ($this->engine === null) {
+        if (is_null($this->engine)) {
             throw new SpringyException('Session not configurated yet.');
         }
     }
@@ -108,7 +108,7 @@ class Session
         $this->name = $config->get('session.name', 'SPSESSID');
 
         $engine = $config->get('session.engine');
-        if ($engine === null) {
+        if (is_null($engine)) {
             throw new SpringyException('Undefined session engine.');
         }
 
@@ -216,7 +216,7 @@ class Session
             return $this->started;
         }
 
-        if ($this->engine === null) {
+        if (is_null($this->engine)) {
             $this->configure();
         }
 
@@ -236,7 +236,7 @@ class Session
      */
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
+        if (is_null(self::$instance)) {
             new self();
         }
 

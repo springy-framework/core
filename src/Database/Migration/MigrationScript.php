@@ -200,7 +200,7 @@ class MigrationScript
      */
     public function migrate(Connection $connection, string $table): bool
     {
-        if ($this->mScript === null) {
+        if (is_null($this->mScript)) {
             $this->error = 'Migration script "' . $this->getIdentity() . '" has no migration method.';
 
             return false;
@@ -233,7 +233,7 @@ class MigrationScript
      */
     public function rollback(Connection $connection, string $table): bool
     {
-        if ($this->rScript === null) {
+        if (is_null($this->rScript)) {
             $this->error = 'Migration script "' . $this->getIdentity() . '" has no rollback method.';
 
             return false;

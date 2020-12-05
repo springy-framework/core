@@ -78,7 +78,7 @@ class Kernel
      */
     public function __destruct()
     {
-        if ($this->hook === null || !is_callable([$this->hook, 'shutdown'])) {
+        if (is_null($this->hook) || !is_callable([$this->hook, 'shutdown'])) {
             return;
         }
 

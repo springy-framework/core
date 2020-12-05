@@ -75,7 +75,7 @@ class ArrayUtils
         foreach ($array as $item) {
             $itemValue = is_object($item) ? $item->{$value} : $item[$value];
 
-            if ($key === null) {
+            if (is_null($key)) {
                 $results[] = $itemValue;
 
                 continue;

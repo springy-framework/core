@@ -121,7 +121,7 @@ class Connector
     protected function rRobinFile(array $config)
     {
         $file = $config['file'] ?? null;
-        if ($file === null) {
+        if (is_null($file)) {
             throw new SpringyException('Round robin file undefined');
         }
 
@@ -152,7 +152,7 @@ class Connector
     protected function rRobinMemcached(array $config)
     {
         $address = $config['address'] ?? null;
-        if ($address === null) {
+        if (is_null($address)) {
             throw new SpringyException('Round robin Memcached address undefined');
         }
 
@@ -210,7 +210,7 @@ class Connector
 
                 throw $exception;
             }
-        } while ($this->pdo === null);
+        } while (is_null($this->pdo));
 
         if (is_callable([$this, 'afterConnectSettings'])) {
             $this->afterConnectSettings();

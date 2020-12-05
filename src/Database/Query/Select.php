@@ -353,7 +353,7 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
      */
     public function setLimit(int $limit = null)
     {
-        if ($limit === null) {
+        if (is_null($limit)) {
             $this->limit = $limit;
         }
 

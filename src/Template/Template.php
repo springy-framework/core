@@ -90,7 +90,7 @@ class Template
     protected function startDriver()
     {
         $driver = config_get('template.driver');
-        if ($driver === null) {
+        if (is_null($driver)) {
             throw new SpringyException('Template driver undefined');
         }
 
@@ -415,7 +415,7 @@ class Template
     public function templateExists(string $templateName = null): bool
     {
         return $this->tplObj->templateExists(
-            $templateName === null
+            is_null($templateName)
             ? $this->tplObj->getTemplateName()
             : $templateName . $this->fileSufix
         );

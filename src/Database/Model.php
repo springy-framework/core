@@ -103,7 +103,7 @@ class Model extends RowsIterator
         $this->joins = [];
         $this->loaded = false;
 
-        if ($filter === null) {
+        if (is_null($filter)) {
             return;
         }
 
@@ -601,7 +601,7 @@ class Model extends RowsIterator
     {
         $current = false;
 
-        if ($where === null) {
+        if (is_null($where)) {
             $where = $this->getWhereFromRow();
             $current = true;
         }

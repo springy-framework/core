@@ -119,7 +119,7 @@ class Terminal
     protected function parseRpc(): void
     {
         $body = $this->request->getJsonBody();
-        if ($body === null) {
+        if (is_null($body)) {
             $this->sendError(400, 'Bad request');
 
             return;

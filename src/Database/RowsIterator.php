@@ -230,7 +230,7 @@ class RowsIterator implements Iterator
         $row = current($this->rows);
 
         foreach ($this->primaryKey as $column) {
-            if (!isset($row[$column]) || $row[$column] === null) {
+            if (!isset($row[$column]) || is_null($row[$column])) {
                 return $pkVal;
             }
 
@@ -446,7 +446,7 @@ class RowsIterator implements Iterator
      */
     public function get(string $column = null)
     {
-        if ($column === null) {
+        if (is_null($column)) {
             return $this->current();
         }
 

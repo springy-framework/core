@@ -74,7 +74,7 @@ class ValidationRule
      */
     protected function stringifyValue($value): string
     {
-        if ($value === null) {
+        if (is_null($value)) {
             return 'NULL';
         } elseif (is_bool($value)) {
             return '(bool)' . ($value ? 'True' : 'False');

@@ -98,7 +98,7 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
      */
     protected function getTableName(): string
     {
-        if ($this->table === null) {
+        if (is_null($this->table)) {
             throw new SpringyException('Table name can not be null');
         }
 

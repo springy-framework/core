@@ -138,7 +138,7 @@ class Connection
      */
     protected function checkMissingConnection()
     {
-        if ($this->getPdo() === null) {
+        if (is_null($this->getPdo())) {
             $this->connect();
         }
     }
@@ -321,7 +321,7 @@ class Connection
         ];
 
         $driver = $config->get('database.connections.' . $this->identity . '.driver');
-        if ($driver === null) {
+        if (is_null($driver)) {
             throw new SpringyException('Database driver undefined.');
         } elseif (!isset($drivers[$driver])) {
             throw new SpringyException('Database driver not supported.');

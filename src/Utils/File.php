@@ -79,7 +79,7 @@ class File extends SplFileInfo
         }
 
         $target = rtrim($directory, '/\\') . DS
-            . ($name === null ? $this->getBasename() : $this->getName($name));
+            . (is_null($name) ? $this->getBasename() : $this->getName($name));
 
         return new self($target, false);
     }

@@ -68,7 +68,7 @@ class Mailer
     protected function startDriver()
     {
         $driver = config_get('mail.driver');
-        if ($driver === null) {
+        if (is_null($driver)) {
             throw new SpringyException('Mail driver undefined');
         }
 
@@ -83,7 +83,7 @@ class Mailer
         }
 
         $config = config_get('mail.settings');
-        if ($config === null) {
+        if (is_null($config)) {
             throw new SpringyException('Mail driver configuration settings not defined');
         }
 

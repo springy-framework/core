@@ -319,7 +319,7 @@ class Configuration
      */
     public static function getInstance(string $path = null, string $env = null, string $host = null): self
     {
-        if (static::$instance === null) {
+        if (is_null(static::$instance)) {
             new static($path, $env, $host); // @phpstan-ignore-line
         }
 

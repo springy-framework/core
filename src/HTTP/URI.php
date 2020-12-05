@@ -187,7 +187,7 @@ class URI
      */
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
+        if (is_null(self::$instance)) {
             new self();
         }
 

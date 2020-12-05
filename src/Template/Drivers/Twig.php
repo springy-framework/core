@@ -429,7 +429,7 @@ class Twig implements TemplateDriverInterface
      */
     public function templateExists(string $templateFile = null): bool
     {
-        if ($templateFile === null) {
+        if (is_null($templateFile)) {
             $templateFile = $this->templateFile;
         }
 

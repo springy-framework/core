@@ -266,7 +266,7 @@ class Kernel extends MainKernel
     {
         $driver = Configuration::getInstance()->get('application.authentication.driver');
 
-        if ($driver === null) {
+        if (is_null($driver)) {
             app()->bind('user.auth.driver', function ($data) {
                 $hasher = $data['user.auth.hasher'];
                 $identity = $data['user.auth.identity'];
@@ -290,7 +290,7 @@ class Kernel extends MainKernel
     {
         $option = Configuration::getInstance()->get('application.authentication.' . $element, $default);
 
-        if ($option === null) {
+        if (is_null($option)) {
             return;
         } elseif ($option instanceof Closure || is_object($option)) {
             app()->bind('user.auth.' . $element, $option);

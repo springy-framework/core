@@ -129,7 +129,7 @@ class ErrorsCommand extends Controller
         $this->crc = $this->input->getArgument('crc');
         $this->stayInteractive = !$this->output->isQuiet() && $this->input->isInteractive();
 
-        if ($this->instruction === null) {
+        if (is_null($this->instruction)) {
             $this->printHelp();
 
             return 1;
@@ -269,7 +269,7 @@ class ErrorsCommand extends Controller
      */
     protected function getCrc(): void
     {
-        if ($this->crc === null) {
+        if (is_null($this->crc)) {
             $helper = new QuestionHelper();
             $question = new Question('Enter CRC: ');
             $this->crc = $helper->ask($this->input, $this->output, $question);
@@ -313,7 +313,7 @@ class ErrorsCommand extends Controller
      */
     protected function getInstruction(string $name = null)
     {
-        if ($name === null) {
+        if (is_null($name)) {
             return;
         }
 

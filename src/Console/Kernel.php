@@ -83,7 +83,7 @@ class Kernel extends MainKernel
      */
     protected function discoverInternals(string $command = null): bool
     {
-        if ($command === null) {
+        if (is_null($command)) {
             $command = 'help';
         }
 
