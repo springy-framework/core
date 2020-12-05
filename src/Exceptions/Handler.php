@@ -519,10 +519,10 @@ class Handler
     public function isIgnored($error): bool
     {
         if (is_object($error)) {
-            return in_array(get_class($error), $this->ignoredErrors);
+            return in_array(get_class($error), $this->ignoredErrors, true);
         }
 
-        return in_array($error, $this->ignoredErrors);
+        return in_array($error, $this->ignoredErrors, true);
     }
 
     /**
