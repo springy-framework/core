@@ -52,6 +52,9 @@ class Kernel
      * Constructor.
      *
      * Is not allowed to call from outside to prevent from creating multiple instances.
+     *
+     * @param array|string $conf the array of configuration or
+     *                           the full path name of the configuration file.
      */
     protected function __construct($appConf = null)
     {
@@ -302,9 +305,9 @@ class Kernel
      * @param array|string $conf the array of configuration or
      *                           the full path name of the configuration file.
      *
-     * @return self
+     * @return void
      */
-    public function setUp($conf): self
+    public function setUp($conf): void
     {
         if (!is_array($conf) && !is_string($conf)) {
             throw new SpringyException('Invalid application configuration set.');
@@ -336,12 +339,13 @@ class Kernel
         // Define the application paths
         // $this->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);
         // self::path(self::PATH_APPLICATION, $conf['APP_PATH'] ?? realpath($conf['ROOT_PATH'].'/../app'));
-
-        return static::$instance;
     }
 
     /**
      * Returns current instance.
+     *
+     * @param array|string $conf the array of configuration or
+     *                           the full path name of the configuration file.
      *
      * @return static
      */

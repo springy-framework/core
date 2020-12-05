@@ -29,7 +29,6 @@ class WebControllerTest extends TestCase
     protected function setUp(): void
     {
         $config = Configuration::getInstance();
-        $kernel = Kernel::getInstance();
 
         $config->set('application.authentication.hasher', 'Springy\Security\BasicHasher');
         $config->set('application.authentication.identity', 'TstUser');
@@ -40,7 +39,7 @@ class WebControllerTest extends TestCase
             return new AuthDriver($hasher, $user);
         });
 
-        $kernel->setUp(__DIR__ . '/../conf/main.php');
+        $kernel = Kernel::getInstance(__DIR__ . '/../conf/main.php');
 
         Session::getInstance()->configure($config);
 
