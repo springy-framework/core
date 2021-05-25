@@ -1,12 +1,12 @@
 [![Latest Stable Version](https://poser.pugx.org/springy-framework/core/v/stable)](https://packagist.org/packages/springy-framework/core)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/891fd880215449c5afa8a2a1e7e18e45)](https://www.codacy.com/gh/springy-framework/core/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=springy-framework/core&amp;utm_campaign=Badge_Grade)
-[![Build Status](https://travis-ci.org/springy-framework/core.svg?branch=master)](https://travis-ci.org/springy-framework/core)
+[![Build Status](https://travis-ci.com/springy-framework/core.svg?branch=master)](https://travis-ci.com/springy-framework/core)
 [![StyleCI](https://github.styleci.io/repos/166688147/shield?style=flat)](https://styleci.io/repos/166688147)
 [![Total Downloads](https://poser.pugx.org/springy-framework/core/downloads)](https://packagist.org/packages/springy-framework/core)
 [![License](https://poser.pugx.org/springy-framework/core/license)](https://packagist.org/packages/springy-framework/core)
 
 [![Latest Unstable Version](https://poser.pugx.org/springy-framework/core/v/unstable)](https://packagist.org/packages/springy-framework/core)
-[![Build Status](https://travis-ci.org/springy-framework/core.svg?branch=5.0.0)](https://travis-ci.org/springy-framework/core)
+[![Build Status](https://travis-ci.com/springy-framework/core.svg?branch=5.0.0)](https://travis-ci.com/springy-framework/core)
 [![StyleCI](https://github.styleci.io/repos/166688147/shield?style=flat&branch=5.0.0)](https://styleci.io/repos/166688147)
 
 # About Springy
