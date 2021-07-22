@@ -22,18 +22,16 @@ use Springy\Utils\ArrayUtils;
 class Configuration
 {
     /** @var self globally singleton instance */
-    protected static $instance;
+    private static $instance;
 
-    /** @var array the array of configuration */
-    protected $confs;
     /** @var string the configuration root path */
-    protected $configPath;
+    private $configPath;
     /** @var array the configuration sets */
-    protected $configSets;
+    private $configSets;
     /** @var string the configuration environment path */
-    protected $envDir;
+    private $envDir;
     /** @var string the host for configurations overwrite */
-    protected $host;
+    private $host;
 
     public const LC_DB = 'db';
     public const LC_MAIL = 'mail';
@@ -50,7 +48,6 @@ class Configuration
         $this->configPath = $path ?? __DIR__ . '/../../../../conf';
         $this->envDir = $env ?? 'production';
         $this->host = $host ?? '';
-        self::$instance = $this;
     }
 
     /**
@@ -76,7 +73,7 @@ class Configuration
      *
      * @return string
      */
-    protected function getSettingsName(string $entry): string
+    private function getSettingsName(string $entry): string
     {
         if (preg_match('/[\/?*:;{}\\\|"\'\[\]<>]+/', $entry)) {
             throw new SpringyException('Configuration key invalid. Space found.');
@@ -130,7 +127,7 @@ class Configuration
      *
      * @return void
      */
-    protected function loadScript($file, $set)
+    private function loadScript($file, $set)
     {
         if (!file_exists($file . '.php')) {
             return;
@@ -150,7 +147,7 @@ class Configuration
      *
      * @return void
      */
-    protected function prepareSetting(string $set)
+    private function prepareSetting(string $set)
     {
         if (isset($this->configSets[$set])) {
             return;
@@ -319,20 +316,20 @@ class Configuration
      */
     public static function getInstance(string $path = null, string $env = null, string $host = null): self
     {
-        if (is_null(static::$instance)) {
-            new static($path, $env, $host);
+        if (is_null(self::$instance)) {
+            self::$instance = new self($path, $env, $host);
         }
 
         if (null !== $path) {
-            static::$instance->setPath($path);
+            self::$instance->setPath($path);
         }
         if (null !== $env) {
-            static::$instance->setEnvironment($env);
+            self::$instance->setEnvironment($env);
         }
         if (null !== $host) {
-            static::$instance->configHost($host);
+            self::$instance->configHost($host);
         }
 
-        return static::$instance;
+        return self::$instance;
     }
 }
