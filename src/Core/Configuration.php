@@ -44,7 +44,7 @@ class Configuration
     /**
      * Constructor.
      */
-    private function __construct(string $path = null, string $env = null, string $host = null)
+    final private function __construct(string $path = null, string $env = null, string $host = null)
     {
         $this->configSets = [];
         $this->configPath = $path ?? __DIR__ . '/../../../../conf';
@@ -320,7 +320,7 @@ class Configuration
     public static function getInstance(string $path = null, string $env = null, string $host = null): self
     {
         if (is_null(static::$instance)) {
-            new static($path, $env, $host); // @phpstan-ignore-line
+            new static($path, $env, $host);
         }
 
         if (null !== $path) {

@@ -82,7 +82,7 @@ class Connection
      *
      * @return void
      */
-    protected function bindParameters()
+    protected function bindParameters(): void
     {
         if (!count($this->lastValues)) {
             return;
@@ -120,7 +120,7 @@ class Connection
      *
      * @return void
      */
-    protected function bindValue($key, $value, $param, &$counter)
+    protected function bindValue($key, $value, $param, &$counter): void
     {
         if (is_numeric($key)) {
             $this->statement->bindValue(++$counter, $value, $param);
@@ -136,7 +136,7 @@ class Connection
      *
      * @return void
      */
-    protected function checkMissingConnection()
+    protected function checkMissingConnection(): void
     {
         if (is_null($this->getPdo())) {
             $this->connect();
@@ -152,7 +152,7 @@ class Connection
      *
      * @return void
      */
-    protected function executeAgainIfLostConnection(Throwable $err)
+    protected function executeAgainIfLostConnection(Throwable $err): void
     {
         if (!$this->isLostConnection($err)) {
             throw $err;
@@ -173,7 +173,7 @@ class Connection
      *
      * @return void
      */
-    protected function executeQuery()
+    protected function executeQuery(): void
     {
         try {
             $this->statement = $this->getPdo()->prepare(
@@ -214,7 +214,7 @@ class Connection
      *
      * @return void
      */
-    protected function loadCache()
+    protected function loadCache(): void
     {
         // Clears the cache statement
         $this->statement = null;
@@ -243,7 +243,7 @@ class Connection
      *
      * @return void
      */
-    protected function saveCache()
+    protected function saveCache(): void
     {
         if ($this->cacheLifeTime <= 0 || $this->cache['driver'] != 'memcached') {
             return;
@@ -274,7 +274,7 @@ class Connection
      *
      * @return void
      */
-    protected function setLastQuery(string $query)
+    protected function setLastQuery(string $query): void
     {
         if (
             $this->cacheLifeTime > 0
@@ -299,9 +299,9 @@ class Connection
      *
      * @throws SpringyException
      *
-     * @return PDO|bool
+     * @return void
      */
-    public function connect()
+    public function connect(): void
     {
         // Is a connector to the identity?
         if (
@@ -344,7 +344,7 @@ class Connection
      *
      * @return void
      */
-    public function disconnect()
+    public function disconnect(): void
     {
         if (!isset(self::$conectionIds[$this->identity])) {
             return;
@@ -382,7 +382,7 @@ class Connection
      *
      * @return void
      */
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         $this->getPdo()->beginTransaction();
     }
@@ -392,7 +392,7 @@ class Connection
      *
      * @return void
      */
-    public function commit()
+    public function commit(): void
     {
         $this->getPdo()->commit();
     }
@@ -402,7 +402,7 @@ class Connection
      *
      * @return void
      */
-    public function rollBack()
+    public function rollBack(): void
     {
         $this->getPdo()->rollBack();
     }
@@ -415,7 +415,7 @@ class Connection
      *
      * @return void
      */
-    public function run(string $query, array $params = [])
+    public function run(string $query, array $params = []): void
     {
         $this->lastError = null;
         $this->statement = null;
