@@ -36,13 +36,6 @@ class DebugTest extends TestCase
         );
     }
 
-    public function testBacktrace()
-    {
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
-
-        $this->assertStringStartsWith('<ul>', $this->debug->backtrace($backtrace));
-    }
-
     public function testGet()
     {
         $this->debug->add('Bar', false);
@@ -58,17 +51,6 @@ class DebugTest extends TestCase
         $this->debug->add('Foo', true, false);
 
         $this->assertCount(2, $this->debug->getSimpleData());
-    }
-
-    public function testHighlight()
-    {
-        $intVar = 0;
-        $stringVar = 'Foo';
-        $arrayVar = ['Foo', 'Bar'];
-
-        $this->assertEquals('0', $this->debug->highligh($intVar));
-        $this->assertEquals('"Foo"', $this->debug->highligh($stringVar));
-        $this->assertStringStartsWith('array(2)', $this->debug->highligh($arrayVar));
     }
 
     public function testInject()

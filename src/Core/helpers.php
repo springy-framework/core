@@ -139,6 +139,25 @@ function dd($var, $die = true)
 }
 
 /**
+ * A helper to set a debug data.
+ *
+ * @param mixed $data
+ * @param bool  $revert
+ * @param bool  $saveBacktrace
+ * @param int   $backtraceLimit
+ *
+ * @return void
+ */
+function debug(
+    $data,
+    bool $revert = true,
+    bool $saveBacktrace = true,
+    int $backtraceLimit = 3
+) {
+    Springy\Core\Debug::getInstance()->add($data, $revert, $saveBacktrace, $backtraceLimit, 1);
+}
+
+/**
  * Gets an environment variable.
  *
  * @param string $key
@@ -164,20 +183,25 @@ function env(string $key, $default = null)
 }
 
 /**
- * A helper to set a debug data.
+ * Gets a string of memory usage representation.
  *
- * @param mixed $data
- * @param bool  $revert
- * @param bool  $saveBacktrace
- * @param int   $backtraceLimit
+ * @param int $memory
  *
- * @return void
+ * @return string
  */
-function debug(
-    $data,
-    bool $revert = true,
-    bool $saveBacktrace = true,
-    int $backtraceLimit = 3
-) {
-    Springy\Core\Debug::getInstance()->add($data, $revert, $saveBacktrace, $backtraceLimit, 1);
+function memory_string(int $memory): string
+{
+    $unit = [
+        'B',
+        'KiB',
+        'MiB',
+        'GiB',
+        'TiB',
+        'PiB',
+    ];
+
+    return round(
+        $memory / pow(1024, ($idx = floor(log($memory, 1024)))),
+        2
+    ) . ' ' . $unit[$idx];
 }
