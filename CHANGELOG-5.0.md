@@ -12,6 +12,7 @@
 
 #### Test cases to do
 
+-   Springy\Core\DebugFormat\*
 -   Springy\Database\RowsIteratPodor->getWritableColumns()
 -   Springy\Exceptions\Handler->setLogDir()
 -   Springy\Exceptions\Handler->setUnreportable()
