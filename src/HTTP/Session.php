@@ -38,7 +38,6 @@ class Session
     private function __construct()
     {
         $this->started = false;
-        self::$instance = $this;
     }
 
     /**
@@ -237,7 +236,7 @@ class Session
     public static function getInstance(): self
     {
         if (is_null(self::$instance)) {
-            new self();
+            self::$instance = new self();
         }
 
         return self::$instance;

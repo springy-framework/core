@@ -42,7 +42,7 @@ class Request
      *
      * Is not allowed to call from outside to prevent from creating multiple instances.
      */
-    private function __construct()
+    final private function __construct()
     {
         $this->method = $_SERVER['REQUEST_METHOD'] ?? null;
         $this->headers = $this->parseHeaders();
@@ -52,8 +52,6 @@ class Request
         $this->jsonErrorMsg = json_last_error_msg();
         $this->requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
         $this->bearerToken = $this->parseBearerToken();
-
-        self::$instance = $this;
     }
 
     /**
@@ -329,7 +327,7 @@ class Request
     public static function getInstance(): self
     {
         if (is_null(self::$instance)) {
-            new self();
+            self::$instance = new self();
         }
 
         return self::$instance;

@@ -25,9 +25,8 @@ class Cookie
      *
      * Is not allowed to call from outside to prevent from creating multiple instances.
      */
-    private function __construct()
+    final private function __construct()
     {
-        self::$instance = $this;
     }
 
     /**
@@ -218,7 +217,7 @@ class Cookie
     public static function getInstance(): self
     {
         if (is_null(self::$instance)) {
-            new self();
+            self::$instance = new self();
         }
 
         return self::$instance;

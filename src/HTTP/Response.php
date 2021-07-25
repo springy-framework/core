@@ -105,11 +105,10 @@ class Response
      *
      * Is not allowed to call from outside to prevent from creating multiple instances.
      */
-    private function __construct()
+    final private function __construct()
     {
         $this->header = new Header();
         $this->body = '';
-        self::$instance = $this;
     }
 
     /**
@@ -183,7 +182,7 @@ class Response
     public static function getInstance(): self
     {
         if (is_null(self::$instance)) {
-            new self();
+            self::$instance = new self();
         }
 
         return self::$instance;
