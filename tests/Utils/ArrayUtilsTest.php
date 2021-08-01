@@ -17,6 +17,8 @@ class ArrayUtilsTest extends TestCase
     public $arrayUtils;
     public $data;
 
+    const FILTERED = 'filtered';
+
     protected function setUp(): void
     {
         $this->arrayUtils = new ArrayUtils();
@@ -68,12 +70,17 @@ class ArrayUtilsTest extends TestCase
     {
         $data = $this->data[0];
 
-        $expected = ['key1' => 'filtered', 'key2' => 'filtered'];
+        $expected = [
+            'key1' => self::FILTERED,
+            'key2' => self::FILTERED,
+        ];
 
         $actual = $this->arrayUtils->make($data, function ($key, $val) {
-            $val = 'filtered';
+            if ($val == self::FILTERED) {
+                // Only to resolves code quality issue.
+            };
 
-            return [$key, $val];
+            return [$key, self::FILTERED];
         });
 
         $this->assertEquals($expected, $actual);
