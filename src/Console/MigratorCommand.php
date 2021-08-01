@@ -68,22 +68,27 @@ class MigratorCommand extends Controller
         $this->database = $this->input->getParameterOption('database', null);
         $this->revTarget = $this->input->getParameterOption('revision', null);
 
+        $result = 1;
+
         switch ($instruction) {
             case 'migrate':
-                return $this->doMigrate();
+                $result = $this->doMigrate();
+                break;
             case 'rollback':
-                return $this->doRollback();
+                $result = $this->doRollback();
+                break;
             case 'status':
-                return $this->doStatus();
+                $result = $this->doStatus();
+                break;
+            default:
+                $this->output->writeln([
+                    sprintf('<error>Invalid instruction %s</>', $instruction),
+                    '',
+                ]);
+                $this->printHelp();
         }
 
-        $this->output->writeln([
-            sprintf('<error>Invalid instruction %s</>', $instruction),
-            '',
-        ]);
-        $this->printHelp();
-
-        return 1;
+        return $result;
     }
 
     /**
