@@ -78,7 +78,7 @@ class ArrayUtilsTest extends TestCase
         $actual = $this->arrayUtils->make($data, function ($key, $val) {
             if ($val == self::FILTERED) {
                 // Only to resolves code quality issue.
-            };
+            }
 
             return [$key, self::FILTERED];
         });
