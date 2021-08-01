@@ -15,6 +15,7 @@ namespace Springy\Console;
 use DateTime;
 use DirectoryIterator;
 use Springy\Core\Configuration;
+use stdClass;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -41,7 +42,7 @@ class ErrorsCommand extends Controller
     protected $commingCli;
     /** @var string the errors log directory */
     protected $logDir;
-    /** @var null|string|bool|stdClass the instruction */
+    /** @var null|string|stdClass the instruction */
     protected $instruction;
     /** @var string parameter to the instruction */
     protected $parameter;
@@ -125,16 +126,18 @@ class ErrorsCommand extends Controller
     {
         $this->printTitle();
 
-        $this->commingCli = true;
-        $this->instruction = $this->getInstruction($this->input->getArgument('instruction'));
-        $this->crc = $this->input->getArgument('crc');
-        $this->stayInteractive = !$this->output->isQuiet() && $this->input->isInteractive();
+        $receivedInstruction = $this->input->getArgument('instruction');
 
-        if (is_null($this->instruction)) {
+        if (is_null($receivedInstruction)) {
             $this->printHelp();
 
             return 1;
         }
+
+        $this->commingCli = true;
+        $this->getInstruction($receivedInstruction);
+        $this->crc = $this->input->getArgument('crc');
+        $this->stayInteractive = !$this->output->isQuiet() && $this->input->isInteractive();
 
         $result = $this->runInstruction();
         if ($result > 0) {
@@ -306,25 +309,29 @@ class ErrorsCommand extends Controller
     }
 
     /**
-     * Gets the instruction object by given name.
+     * Finds the instruction object by given name and sets internal property.
      *
      * @param string $name
      *
-     * @return object|bool|null
+     * @return void
      */
-    protected function getInstruction(string $name = null)
+    protected function getInstruction(string $name = null): void
     {
-        if (is_null($name)) {
-            return;
-        }
+        $this->instruction = null;
 
         foreach ($this->commandInstructions as $instruction => $obj) {
             if ($instruction === $name || $obj->alias === $name) {
-                return $obj;
+                $this->instruction = $obj;
+
+                return;
             }
         }
 
-        return false;
+        $this->output->writeln([
+            sprintf('Invalid instruction <error>%s</>', $name),
+            '',
+        ]);
+        // $this->printHelp();
     }
 
     /**
@@ -370,10 +377,10 @@ class ErrorsCommand extends Controller
 
             $parts = explode(' ', $input);
 
-            $this->instruction = $this->getInstruction($parts[0]);
+            $this->getInstruction($parts[0]);
             $this->crc = $parts[1] ?? null;
 
-            if ($this->instruction !== false && $this->instruction->terminator) {
+            if (!is_null($this->instruction) && $this->instruction->terminator) {
                 break;
             }
 
@@ -499,13 +506,7 @@ class ErrorsCommand extends Controller
      */
     protected function runInstruction(): int
     {
-        if ($this->instruction === false) {
-            $this->output->writeln([
-                sprintf('Invalid instruction <error>%s</>', $this->instruction),
-                '',
-            ]);
-            // $this->printHelp();
-
+        if (is_null($this->instruction)) {
             return 1;
         }
 
