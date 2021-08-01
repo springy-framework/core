@@ -18,8 +18,17 @@ namespace Springy\Security;
  */
 class BasicHasher implements HasherInterface
 {
-    // Salt to difficult the hash to be broken
-    public const SALT = '865516de75706d3e9f8cdae8f66f0e0c15d6ceed';
+    protected $salt;
+
+    /**
+     * Constructor.
+     *
+     * @param string $salt Salt to difficult the hash to be broken
+     */
+    public function __construct(string $salt = '865516de75706d3e9f8cdae8f66f0e0c15d6ceed')
+    {
+        $this->salt = $salt;
+    }
 
     /**
      * Creates and returns the generated hash of the entered string.
@@ -31,10 +40,9 @@ class BasicHasher implements HasherInterface
      */
     public function make(string $stringToHash, int $times = 0): string
     {
-        $md5 = md5(strtolower(self::SALT . $stringToHash));
-
-        // Not used
-        $times = null;
+        do {
+            $md5 = md5(strtolower($this->salt . $stringToHash));
+        } while (--$times > 0);
 
         return base64_encode($md5 ^ md5($stringToHash));
     }
@@ -49,10 +57,7 @@ class BasicHasher implements HasherInterface
      */
     public function needsRehash(string $hash, int $times = 0): bool
     {
-        // Not used
-        $times = null;
-
-        return $hash === '';
+        return is_int($times) && strlen($hash) < 32;
     }
 
     /**

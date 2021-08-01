@@ -14,31 +14,29 @@ use Springy\Security\BasicHasher;
 class BasicHasherTest extends TestCase
 {
     public $hasher;
+    public $hash;
 
     protected function setUp(): void
     {
         $this->hasher = new BasicHasher();
+        $this->hash = $this->hasher->make('password', 1);
     }
 
     public function testGenerateHash()
     {
-        $hash = $this->hasher->make('password', 1);
 
-        $this->assertGreaterThanOrEqual(44, strlen($hash));
-        $this->assertStringEndsWith('=', $hash);
+
+        $this->assertGreaterThanOrEqual(44, strlen($this->hash));
+        $this->assertStringEndsWith('=', $this->hash);
     }
 
     public function testNeedsRehash()
     {
-        $hash = $this->hasher->make('password', 1);
-
-        $this->assertFalse($this->hasher->needsRehash($hash, 1));
+        $this->assertFalse($this->hasher->needsRehash($this->hash, 1));
     }
 
     public function testVerify()
     {
-        $hash = $this->hasher->make('password', 1);
-
-        $this->assertTrue($this->hasher->verify('password', $hash));
+        $this->assertTrue($this->hasher->verify('password', $this->hash));
     }
 }
