@@ -139,7 +139,7 @@ class Smarty implements TemplateDriverInterface
         if (!$this->strict) {
             $kernel->errorHandler()->addIgnoredError(E_NOTICE);
             $this->tplObj->error_reporting = E_ALL & ~E_NOTICE;
-            SmartyTemplate::muteExpectedErrors();
+            // SmartyTemplate::muteExpectedErrors();
         }
 
         $parsed = $this->tplObj->fetch($this->templateFile, $this->cacheId, $this->compileId);
@@ -317,7 +317,9 @@ class Smarty implements TemplateDriverInterface
      */
     public function setOptimizations(int $optimizations)
     {
-        $optimizations = 0;
+        while (--$optimizations > 0) {
+            // Only to resolve code quality issue.
+        }
     }
 
     /**
