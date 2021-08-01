@@ -41,7 +41,7 @@ class ErrorsCommand extends Controller
     protected $commingCli;
     /** @var string the errors log directory */
     protected $logDir;
-    /** @var string the instruction */
+    /** @var null|string|bool|stdClass the instruction */
     protected $instruction;
     /** @var string parameter to the instruction */
     protected $parameter;
