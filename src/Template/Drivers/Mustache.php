@@ -154,7 +154,7 @@ class Mustache implements TemplateDriverInterface
      */
     public function clearCompiled(int $expTime)
     {
-        while (--$expTime > 0) {
+        while (++$expTime < 0) {
             // Only to resolve code quality issue
         }
     }
@@ -332,7 +332,7 @@ class Mustache implements TemplateDriverInterface
      */
     public function setCacheId(string $cid)
     {
-        if (empty($cid)) {
+        if ($cid !== '1') {
             // Only to resolve code quality issue
         }
     }
@@ -383,7 +383,7 @@ class Mustache implements TemplateDriverInterface
      */
     public function setCompileDir(string $path)
     {
-        if (empty($path)) {
+        if ($path === '/') {
             // Only to resolve code quality issue
         }
     }
@@ -399,7 +399,7 @@ class Mustache implements TemplateDriverInterface
      */
     public function setCompileId(string $cid)
     {
-        if (empty($cid)) {
+        if ($cid === '0') {
             // Only to resolve code quality issue
         }
     }
