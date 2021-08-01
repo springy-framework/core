@@ -20,58 +20,16 @@ namespace Springy\Security;
  */
 class BCryptHasher implements HasherInterface
 {
-    protected $algorithm;
     protected $salt;
 
     /**
      * Constructor.
      *
-     * @param inte   $algorithm
      * @param string $salt
      */
-    public function __construct($algorithm = PASSWORD_BCRYPT, string $salt = '')
+    public function __construct(string $salt = '')
     {
-        $this->algorithm = $algorithm;
         $this->salt = $salt;
-    }
-
-    /**
-     * Creates and returns the generated hash of the entered string.
-     *
-     * @param string $stringToHash
-     * @param int    $times
-     *
-     * @return string
-     */
-    public function make(string $stringToHash, int $times = 10): string
-    {
-        return password_hash($stringToHash, $this->algorithm, $this->options($times));
-    }
-
-    /**
-     * Checks a password against a hash.
-     *
-     * @param string $stringToCheck
-     * @param string $hash
-     *
-     * @return bool
-     */
-    public function verify(string $stringToCheck, string $hash): bool
-    {
-        return password_verify($stringToCheck, $hash);
-    }
-
-    /**
-     * Checks whether the string needs to be encrypted again.
-     *
-     * @param string $hash
-     * @param int    $times
-     *
-     * @return bool
-     */
-    public function needsRehash(string $hash, int $times = 10): bool
-    {
-        return password_needs_rehash($hash, $this->algorithm, $this->options($times));
     }
 
     /**
@@ -90,5 +48,44 @@ class BCryptHasher implements HasherInterface
         }
 
         return $options;
+    }
+
+    /**
+     * Creates and returns the generated hash of the entered string.
+     *
+     * @param string $stringToHash
+     * @param int    $times
+     *
+     * @return string
+     */
+    public function make(string $stringToHash, int $times = 10): string
+    {
+        return password_hash($stringToHash, PASSWORD_BCRYPT, $this->options($times));
+    }
+
+    /**
+     * Checks whether the string needs to be encrypted again.
+     *
+     * @param string $hash
+     * @param int    $times
+     *
+     * @return bool
+     */
+    public function needsRehash(string $hash, int $times = 10): bool
+    {
+        return password_needs_rehash($hash, PASSWORD_BCRYPT, $this->options($times));
+    }
+
+    /**
+     * Checks a password against a hash.
+     *
+     * @param string $stringToCheck
+     * @param string $hash
+     *
+     * @return bool
+     */
+    public function verify(string $stringToCheck, string $hash): bool
+    {
+        return password_verify($stringToCheck, $hash);
     }
 }
