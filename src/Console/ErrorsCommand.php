@@ -101,18 +101,20 @@ class ErrorsCommand extends Controller
 
         $this->logDir = Configuration::getInstance()->get('main.errors_log');
 
-        $this->addInstruction('cookie', 'showCookie', '<CRC>', 'Display the $_COOKIE var content for the error.');
-        $this->addInstruction('debug', 'showDebug', '<CRC>', 'Display the debug content for the error.');
-        $this->addInstruction('delete', 'doDelete', '<CRC>|all', 'Delete one or all application errors.');
-        $this->addInstruction('details', 'showDetails', '<CRC>', 'Display the details for the error.', false, 'show');
+        $crc = '<CRC>';
+
+        $this->addInstruction('cookie', 'showCookie', $crc, 'Display the $_COOKIE var content for the error.');
+        $this->addInstruction('debug', 'showDebug', $crc, 'Display the debug content for the error.');
+        $this->addInstruction('delete', 'doDelete', $crc . '|all', 'Delete one or all application errors.');
+        $this->addInstruction('details', 'showDetails', $crc, 'Display the details for the error.', false, 'show');
         $this->addInstruction('exit', '', '', 'Exit from interactive mmode.', true, 'quit', false, true);
-        $this->addInstruction('get', 'showGet', '<CRC>', 'Display the $_GET var content for the error.');
+        $this->addInstruction('get', 'showGet', $crc, 'Display the $_GET var content for the error.');
         $this->addInstruction('help', 'printHelp', '', 'Display this help messagem.', false, '?');
         $this->addInstruction('list', 'doList', '', 'Display the list of application errors.');
-        $this->addInstruction('post', 'showPost', '<CRC>', 'Display the $_POST var content for the error.');
-        $this->addInstruction('server', 'showServer', '<CRC>', 'Display the $_SERVER var content for the error.');
-        $this->addInstruction('session', 'showSession', '<CRC>', 'Display the $_SESSION var content for the error.');
-        $this->addInstruction('trace', 'showTrace', '<CRC>', 'Display the stack trace content for the error.');
+        $this->addInstruction('post', 'showPost', $crc, 'Display the $_POST var content for the error.');
+        $this->addInstruction('server', 'showServer', $crc, 'Display the $_SERVER var content for the error.');
+        $this->addInstruction('session', 'showSession', $crc, 'Display the $_SESSION var content for the error.');
+        $this->addInstruction('trace', 'showTrace', $crc, 'Display the stack trace content for the error.');
     }
 
     /**
