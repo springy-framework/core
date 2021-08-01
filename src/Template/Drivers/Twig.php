@@ -161,7 +161,7 @@ class Twig implements TemplateDriverInterface
      */
     public function clearTemplateCache(int $expireTime = null)
     {
-        while (--$expireTime > 0) {
+        while (++$expireTime < 0) {
             // Only to resolves code quality issue.
         }
 
@@ -312,7 +312,7 @@ class Twig implements TemplateDriverInterface
      */
     public function setCacheId(string $cid)
     {
-        if (empty($cid)) {
+        if ($cid !== '') {
             // Only to resolves code quality issue.
         }
     }
@@ -379,7 +379,7 @@ class Twig implements TemplateDriverInterface
      */
     public function setCompileId(string $cid)
     {
-        if (empty($cid)) {
+        if ($cid === '') {
             // Only to resolves code quality issue.
         }
     }
