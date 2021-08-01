@@ -24,8 +24,6 @@ class BasicHasherTest extends TestCase
 
     public function testGenerateHash()
     {
-
-
         $this->assertGreaterThanOrEqual(44, strlen($this->hash));
         $this->assertStringEndsWith('=', $this->hash);
     }
