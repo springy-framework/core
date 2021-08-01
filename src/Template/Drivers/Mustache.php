@@ -154,7 +154,9 @@ class Mustache implements TemplateDriverInterface
      */
     public function clearCompiled(int $expTime)
     {
-        while (--$expTime > 0) {}
+        while (--$expTime > 0) {
+            // Only to resolve code quality issue
+        }
     }
 
     /**
@@ -181,8 +183,9 @@ class Mustache implements TemplateDriverInterface
      */
     public function clearTemplateCache(int $expireTime = null)
     {
-        // Only to resolv code quality
-        while (--$expireTime > 0) {}
+        while (--$expireTime > 0) {
+            // Only to resolve code quality issue
+        }
 
         $this->envOptions['cache_lambda_templates'] = false;
     }
@@ -253,8 +256,9 @@ class Mustache implements TemplateDriverInterface
      */
     public function setDebug(bool $debug)
     {
-        // Only to resolve code quality issue
-        if ($debug) {}
+        if ($debug) {
+            // Only to resolve code quality issue
+        }
     }
 
     /**
@@ -284,8 +288,9 @@ class Mustache implements TemplateDriverInterface
      */
     public function setOptimizations(int $optimizations)
     {
-        // Only to resolve code quality issue
-        while (--$optimizations > 0) {}
+        while (--$optimizations > 0) {
+            // Only to resolve code quality issue
+        }
     }
 
     /**
@@ -299,8 +304,9 @@ class Mustache implements TemplateDriverInterface
      */
     public function setStrict(bool $strict)
     {
-        // Only to resolve code quality issue
-        if ($strict) {}
+        if ($strict) {
+            // Only to resolve code quality issue
+        }
     }
 
     /**
@@ -326,8 +332,9 @@ class Mustache implements TemplateDriverInterface
      */
     public function setCacheId(string $cid)
     {
-        // Only to resolve code quality issue
-        if (empty($cid)) {}
+        if (empty($cid)) {
+            // Only to resolve code quality issue
+        }
     }
 
     /**
@@ -341,8 +348,9 @@ class Mustache implements TemplateDriverInterface
      */
     public function setCacheLifetime(int $seconds)
     {
-        // Only to resolve code quality issue
-        while (--$seconds > 0) {}
+        while (--$seconds > 0) {
+            // Only to resolve code quality issue
+        }
     }
 
     /**
@@ -375,8 +383,9 @@ class Mustache implements TemplateDriverInterface
      */
     public function setCompileDir(string $path)
     {
-        // Only to resolve code quality issue
-        if (empty($path)) {}
+        if (empty($path)) {
+            // Only to resolve code quality issue
+        }
     }
 
     /**
@@ -390,8 +399,9 @@ class Mustache implements TemplateDriverInterface
      */
     public function setCompileId(string $cid)
     {
-        // Only to resolve code quality issue
-        if (empty($cid)) {}
+        if (empty($cid)) {
+            // Only to resolve code quality issue
+        }
     }
 
     /**
@@ -434,8 +444,9 @@ class Mustache implements TemplateDriverInterface
      */
     public function setUseSubDirs(bool $useSubDirs)
     {
-        // Only to resolve code quality issue
-        if ($useSubDirs) {}
+        if ($useSubDirs) {
+            // Only to resolve code quality issue
+        }
     }
 
     /**
