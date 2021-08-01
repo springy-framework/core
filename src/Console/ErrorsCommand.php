@@ -42,7 +42,7 @@ class ErrorsCommand extends Controller
     protected $commingCli;
     /** @var string the errors log directory */
     protected $logDir;
-    /** @var null|string|stdClass the instruction */
+    /** @var stdClass|null the instruction */
     protected $instruction;
     /** @var string parameter to the instruction */
     protected $parameter;
@@ -510,71 +510,61 @@ class ErrorsCommand extends Controller
             return 1;
         }
 
-        return call_user_func([$this, $this->instruction->caller]);
+        $error = $this->getError();
+
+        if ($error === false) {
+            return 1;
+        }
+
+        $this->printInfo($error);
+        call_user_func([$this, $this->instruction->caller], $error);
+        $this->output->writeln('');
+
+        return 0;
     }
 
     /**
      * Shows the error $_COOKIE var content.
      *
-     * @return int
+     * @param array $error
+     *
+     * @return void
      */
-    protected function showCookie(): int
+    protected function showCookie(array $error): void
     {
-        $error = $this->getError();
-        if ($error == false) {
-            return 1;
-        }
-
-        $this->printInfo($error);
         $this->output->writeln('<comment>$_COOKIE:</>');
         $this->printVar($error['php_vars']['cookie']);
-        $this->output->writeln('');
-
-        return 0;
     }
 
     /**
      * Shows the debug data.
      *
-     * @return int
+     * @param array $error
+     *
+     * @return void
      */
-    protected function showDebug(): int
+    protected function showDebug(array $error): void
     {
-        $error = $this->getError();
-        if ($error == false) {
-            return 1;
-        }
-
-        $this->printInfo($error);
         $this->output->writeln('<comment>Debug data:</>');
         $this->printVar($error['debug']);
-        $this->output->writeln('');
-
-        return 0;
     }
 
     /**
      * Shows the error details.
      *
-     * @return int
+     * @param array $error
+     *
+     * @return void
      */
-    protected function showDetails(): int
+    protected function showDetails(array $error): void
     {
-        $error = $this->getError();
-        if ($error == false) {
-            return 1;
-        }
-
         $this->output->writeln([
-            sprintf('Error ID:     <info>%s</>', $this->crc),
             sprintf('Occurrences:  <info>%d</>', $error['occurrences'] ?? ''),
             sprintf('Last:         <info>%s</>', $error['date'] ?? ''),
             '',
             '<comment>Error Informations:</>',
-            sprintf('  Code:       <info>%s</>', $error['informations']['code'] ?? ''),
             sprintf('  File:       <info>%s</>', $error['informations']['file'] ?? 'unknow'),
             sprintf('  Line:       <info>%d</>', $error['informations']['line'] ?? ''),
-            sprintf('  Message:    <info>%s</>', $error['informations']['message'] ?? ''),
             sprintf('  First time: <info>%s</>', $error['informations']['first'] ?? ''),
             sprintf('  System:     <info>%s</>', $error['informations']['uname'] ?? ''),
             sprintf('  Safe mode:  <info>%s</>', $error['informations']['safe_mode'] ?? ''),
@@ -601,105 +591,70 @@ class ErrorsCommand extends Controller
                 count($error['php_vars']['session']),
                 count($error['php_vars']['cookie'])
             ),
-            '',
         ]);
-
-        return 0;
     }
 
     /**
      * Shows the error $_GET var content.
      *
+     * @param array $error
+     *
      * @return int
      */
-    protected function showGet(): int
+    protected function showGet(array $error): void
     {
-        $error = $this->getError();
-        if ($error == false) {
-            return 1;
-        }
-
-        $this->printInfo($error);
         $this->output->writeln('<comment>$_GET:</>');
         $this->printVar($error['php_vars']['get']);
-        $this->output->writeln('');
-
-        return 0;
     }
 
     /**
      * Shows the error $_POST var content.
      *
+     * @param array $error
+     *
      * @return int
      */
-    protected function showPost(): int
+    protected function showPost(array $error): void
     {
-        $error = $this->getError();
-        if ($error == false) {
-            return 1;
-        }
-
-        $this->printInfo($error);
         $this->output->writeln('<comment>$_POST:</>');
         $this->printVar($error['php_vars']['post']);
-        $this->output->writeln('');
-
-        return 0;
     }
 
     /**
      * Shows the error $_SERVER var content.
      *
+     * @param array $error
+     *
      * @return int
      */
-    protected function showServer(): int
+    protected function showServer(array $error): void
     {
-        $error = $this->getError();
-        if ($error == false) {
-            return 1;
-        }
-
-        $this->printInfo($error);
         $this->output->writeln('<comment>$_SERVER:</>');
         $this->printVar($error['php_vars']['server']);
-        $this->output->writeln('');
-
-        return 0;
     }
 
     /**
      * Shows the error $_SESSION var content.
      *
+     * @param array $error
+     *
      * @return int
      */
-    protected function showSession(): int
+    protected function showSession(array $error): void
     {
-        $error = $this->getError();
-        if ($error == false) {
-            return 1;
-        }
-
-        $this->printInfo($error);
         $this->output->writeln('<comment>$_SESSION:</>');
         $this->printVar($error['php_vars']['session']);
-        $this->output->writeln('');
-
-        return 0;
     }
 
     /**
      * Shows the error stack trace.
      *
+     * @param array $error
+     *
      * @return int
      */
-    protected function showTrace(): int
+    protected function showTrace(array $error): void
     {
-        $error = $this->getError();
-        if ($error == false) {
-            return 1;
-        }
-
-        $this->printInfo($error);
         $this->output->writeln('Stack trace:');
 
         foreach ($error['trace'] as $index => $trace) {
@@ -710,9 +665,5 @@ class ErrorsCommand extends Controller
                 $trace['line'] ?? ''
             ));
         }
-
-        $this->output->writeln('');
-
-        return 0;
     }
 }
