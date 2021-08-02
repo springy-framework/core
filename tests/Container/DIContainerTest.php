@@ -136,27 +136,27 @@ class DIContainerTest extends TestCase
         $object3 = $this->getMockBuilder('MockedInstance');
         $object4 = $this->getMockBuilder('AnotherMockedInstance');
 
-        //Basic
+        // Basic
         $DI->instance('object1', $object1);
         $this->assertSame($object1, $DI->shared('object1'));
 
-        //Array like
+        // Array like
         $DI['object2'] = $object2;
         $this->assertSame($object2, $DI['object2']);
 
-        //Function filter #1
+        // Function filter #1
         $DI['object3'] = $DI->instance(function ($container) use ($object3) {
             return $object3;
         });
         $this->assertSame($object3, $DI->shared('object3'));
 
-        //Function filter #2
+        // Function filter #2
         $DI->instance('object4', function ($container) use ($object4) {
             return $object4;
         });
         $this->assertSame($object4, $DI->shared('object4'));
 
-        //Forgeting
+        // Forgeting
         $DI->forget('object4');
         $DI->shared('object4');
     }

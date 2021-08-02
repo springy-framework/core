@@ -39,6 +39,8 @@ class Configuration
     public const LC_TEMPLATE = 'template';
     public const LC_URI = 'uri';
 
+    private const JSON_EXTENSION = '.json';
+
     /**
      * Constructor.
      */
@@ -98,17 +100,17 @@ class Configuration
      */
     private function loadJson($file, $set)
     {
-        if (!file_exists($file . '.json')) {
+        if (!file_exists($file . self::JSON_EXTENSION)) {
             return;
         }
 
         // Initializes the config set if needed
         $this->prepareSetting($set);
 
-        $str = file_get_contents($file . '.json');
+        $str = file_get_contents($file . self::JSON_EXTENSION);
 
         if (!$str) {
-            throw new SpringyException('Can not open the configuration file ' . $file . '.json');
+            throw new SpringyException('Can not open the configuration file ' . $file . self::JSON_EXTENSION);
         }
 
         $conf = json_decode($str, true);
@@ -257,7 +259,9 @@ class Configuration
      */
     public function save(string $set)
     {
-        $fileName = $this->configPath . DS . ($this->envDir ? $this->envDir . DS : '') . $set . '.json';
+        $fileName = $this->configPath . DS
+            . ($this->envDir ? $this->envDir . DS : '')
+            . $set . self::JSON_EXTENSION;
 
         if (!file_put_contents($fileName, json_encode($this->configSets[$set], JSON_PRETTY_PRINT))) {
             throw new SpringyException('Can not write to ' . $fileName);
