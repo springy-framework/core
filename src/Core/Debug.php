@@ -12,6 +12,7 @@
 
 namespace Springy\Core;
 
+use Springy\Exceptions\SpringyException;
 use Springy\HTTP\Response;
 
 /**
@@ -69,11 +70,15 @@ class Debug
         int $backtraceLimit = 3,
         int $jumptrace = 0
     ): void {
+        if ($jumptrace < 0) {
+            throw new SpringyException('Jumptrade parameter can not be negative');
+        }
+
         $backtrace = [];
         if ($saveBacktrace) {
             $backtrace = debug_backtrace(
                 DEBUG_BACKTRACE_PROVIDE_OBJECT,
-                $backtraceLimit ? $backtraceLimit + 1 + ($jumptrace > 0 ? $jumptrace : 0) : $backtraceLimit
+                $backtraceLimit ? $backtraceLimit + 1 + $jumptrace : $backtraceLimit
             );
             array_shift($backtrace);
             while ($jumptrace) {
@@ -82,7 +87,7 @@ class Debug
             }
         }
 
-        $debug = [
+        $new = [
             memory_get_usage(true),
             Kernel::getInstance()->runTime(),
             $data,
@@ -91,12 +96,12 @@ class Debug
         ];
 
         if ($revert) {
-            array_unshift($this->debug, $debug);
+            array_unshift($this->debug, $new);
 
             return;
         }
 
-        $this->debug[] = $debug;
+        $this->debug[] = $new;
     }
 
     /**
@@ -113,8 +118,8 @@ class Debug
 
         /** @var Springy\Core\DebugFormat\Plain */
         $formater = new $className();
-        foreach ($this->debug as $debug) {
-            $formater->add($debug);
+        foreach ($this->debug as $item) {
+            $formater->add($item);
         }
 
         return $formater->get();
@@ -127,16 +132,16 @@ class Debug
      */
     public function getSimpleData(): array
     {
-        $debug = [];
+        $simplified = [];
         foreach ($this->debug as $data) {
-            $debug[] = [
+            $simplified[] = [
                 'memory' => $data[0],
                 'time'   => $data[1],
                 'data'   => $data[2],
             ];
         }
 
-        return $debug;
+        return $simplified;
     }
 
     /**
