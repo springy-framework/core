@@ -23,8 +23,6 @@ class Copyright
      */
     public function content(): string
     {
-        $html = file_get_contents(__DIR__ . DS . 'assets' . DS . 'copyright.html');
-
-        return $html;
+        return file_get_contents(__DIR__ . DS . 'assets' . DS . 'copyright.html');
     }
 }
