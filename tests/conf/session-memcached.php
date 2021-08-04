@@ -7,4 +7,5 @@ return [
     'expires' => 60,
     'host'    => 'localhost',
     'port'    => 11211,
+    'secure'  => false,
 ];

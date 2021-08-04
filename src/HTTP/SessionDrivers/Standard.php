@@ -12,8 +12,6 @@
 
 namespace Springy\HTTP\SessionDrivers;
 
-use Springy\Core\Configuration;
-
 /**
  * Driver for standard session store handler.
  */
@@ -31,9 +29,8 @@ class Standard implements SessionDriverInterface
      */
     public function __construct()
     {
-        $config = Configuration::getInstance();
         $this->data = [];
-        $this->domain = $config->get('session.domain', '');
+        $this->domain = config_get('session.domain', '');
     }
 
     /**
@@ -121,7 +118,13 @@ class Standard implements SessionDriverInterface
      */
     public function start(): bool
     {
-        session_set_cookie_params(0, '/', $this->domain, false, false);
+        session_set_cookie_params(
+            0,
+            '/',
+            $this->domain,
+            config_get('session.secure', true),
+            true
+        );
 
         $started = session_start();
         $this->data = $_SESSION['_'] ?? [];

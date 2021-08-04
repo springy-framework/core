@@ -109,8 +109,8 @@ class Memcached extends Standard implements SessionDriverInterface
             0,
             '/',
             $this->domain,
-            false,
-            false
+            config_get('session.secure', true),
+            true
         );
 
         $memcached = $this->getMemcacheD();

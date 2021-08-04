@@ -100,7 +100,7 @@ class Session
     {
         $config = Configuration::getInstance();
 
-        if ($this->engine !== null) {
+        if (!is_null($this->engine)) {
             throw new SpringyException('Session already configurated.');
         }
 

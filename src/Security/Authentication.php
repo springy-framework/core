@@ -56,7 +56,8 @@ class Authentication
             '',
             time() - 3600,
             '/',
-            config_get('session.domain')
+            config_get('session.domain'),
+            config_get('session.secure', true)
         );
         $cookie->delete($this->driver->getIdentitySessionKey());
     }
@@ -161,7 +162,8 @@ class Authentication
                 $this->user->getId(),                   // User id
                 5184000,                                // 60 days
                 '/',
-                config_get('session.domain')
+                config_get('session.domain'),
+                config_get('session.secure', true)
             );
         }
     }
