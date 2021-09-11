@@ -164,11 +164,10 @@ class Plain
 
         foreach ($backtrace as &$value) {
             $file = $value['file'] ?? null;
-            $line = $value['line'] ?? 1;
+            $line = $value['line'] ?? null;
 
-            $lines = $file
-                ? (
-                    $clean
+            if (!is_null($file)) {
+                $lines = $clean
                     ? file($file)
                     : explode(
                         '<br />',
@@ -177,14 +176,16 @@ class Plain
                             '</span><br />',
                             highlight_file($file, true)
                         )
-                    )
-                ) : ['unknown file'];
+                    );
+            }
 
             $translated[] = [
                 'file'    => $file,
                 'line'    => $line,
                 'args'    => $value['args'] ?? [],
-                'content' => trim(preg_replace('/^(&nbsp;)+/', '', $lines[$line - 1])),
+                'content' => (is_null($file) || is_null($line))
+                    ? 'unknown file'
+                    : trim(preg_replace('/^(&nbsp;)+/', '', $lines[$line - 1])),
             ];
 
             // Releasing memory
