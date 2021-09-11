@@ -100,21 +100,29 @@ class Embed
      */
     protected function matches($left, $right, $operator): bool
     {
-        switch ($operator) {
+        $result = false;
+
+        switch (mb_strtolower($operator)) {
             case '=':
-                return $left == $right;
+                $result = $left == $right;
+                break;
             case '>':
-                return $left > $right;
+                $result = $left > $right;
+                break;
             case '<':
-                return $left < $right;
+                $result = $left < $right;
+                break;
             case '!=':
-                return $left != $right;
+                $result = $left != $right;
+                break;
             case 'in':
-            case 'IN':
-                return is_array($right) && in_array($left, $right);
+                $result = is_array($right) && in_array($left, $right);
+                break;
+            default:
+                // No changes needed to the result
         }
 
-        return false;
+        return $result;
     }
 
     /**
