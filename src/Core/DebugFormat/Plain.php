@@ -113,12 +113,14 @@ class Plain
      */
     protected function format(array $debug): string
     {
+        $btCount = $debug[4] > 0 ? 'last ' . $debug[4] : 'all';
+
         return '> Time: ' . sprintf('%.6f s', $debug[1])
             . ' Memory: ' . memory_string($debug[0]) . LF
             . '> ' . $this->highligh($debug[2]) . LF
             . (
                 $debug[4] > 0
-                ? '> Backtrace (' . ($debug[4] > 0 ? 'last ' . $debug[4] : 'all') . '):' . LF
+                ? '> Backtrace (' . $btCount . '):' . LF
                     . $this->backtrace($debug[3]) . LF . LF
                 : ''
             );
