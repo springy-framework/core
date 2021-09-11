@@ -147,8 +147,6 @@ class Debug
     /**
      * Injects the debug data into HTML page.
      *
-     * @SuppressWarnings(PHPMD.IfStatementAssignment)
-     *
      * @param string $content
      *
      * @return string
@@ -169,22 +167,29 @@ class Debug
 
         // Injects into a JSON
         if ($cType == 'application/json') {
-            $json = json_decode($content);
-            if ($json === false || strlen($content) < 2 || substr($content, -1, 1) !== '}') {
-                return $content;
-            }
-
-            return substr_replace($content, ',"springy_debug":' . $this->get('json'), -1, 0);
-        }
-
-        // Others content types than HTML
-        if ($cType != 'text/html') {
+            return $this->injectJson($content);
+        } elseif ($cType != 'text/html') {
+            // Others content types than HTML
             return $content;
         }
 
-        // Injects into a HTML
+        return $this->injectHtml($content);
+    }
+
+    /**
+     * Returns content to inject into a HTML response.
+     *
+     * @SuppressWarnings(PHPMD.IfStatementAssignment)
+     *
+     * @param string $content
+     *
+     * @return string
+     */
+    private function injectHtml(string $content): string
+    {
         $htmlDebug = '';
         $debugTemplate = __DIR__ . DS . 'assets' . DS . 'debug.html';
+
         if (file_exists($debugTemplate) && $htmlDebug = file_get_contents($debugTemplate)) {
             $htmlDebug = preg_replace(
                 [
@@ -226,6 +231,24 @@ class Debug
         }
 
         return preg_replace('/^(.*?)$/', $htmlDebug . '\\1', $content);
+    }
+
+    /**
+     * Returns content to inject debug data into a JSON response.
+     *
+     * @param string $content
+     *
+     * @return string
+     */
+    private function injectJson(string $content): string
+    {
+        $json = json_decode($content);
+
+        if ($json === false || strlen($content) < 2 || substr($content, -1, 1) !== '}') {
+            return $content;
+        }
+
+        return substr_replace($content, ',"springy_debug":' . $this->get('json'), -1, 0);
     }
 
     /**
