@@ -128,11 +128,11 @@ class Migrator
 
     public function countRevisionsUntil($version): int
     {
-        $revisions = $this->revisions->getNotApplied();
+        $unapplied = $this->revisions->getNotApplied();
 
         // Count revisions to apply
         $toApply = 0;
-        foreach ($revisions as $key) {
+        foreach ($unapplied as $key) {
             $migration = $this->revisions->get($key);
 
             if ($version !== null && $migration->getVersion() > $version) {
@@ -207,7 +207,7 @@ class Migrator
      */
     public function migrate($version = null, Closure $callback = null): int
     {
-        $revisions = $this->revisions->getNotApplied();
+        $unapplied = $this->revisions->getNotApplied();
 
         // Count revisions to apply
         $toApply = $this->countRevisionsUntil($version);
@@ -217,7 +217,7 @@ class Migrator
 
         // Apply revisions
         $counter = 0;
-        foreach ($revisions as $key) {
+        foreach ($unapplied as $key) {
             $migration = $this->revisions->get($key);
 
             if ($version !== null && $migration->getVersion() > $version) {
@@ -248,7 +248,7 @@ class Migrator
      */
     public function rollback($version = null, Closure $callback = null): int
     {
-        $revisions = $this->revisions->getApplied();
+        $unapplied = $this->revisions->getApplied();
 
         // Count revisions to apply
         $toUndo = $this->countRollbackUntil($version);
@@ -262,7 +262,7 @@ class Migrator
 
         // Rolls back revisions
         $counter = 0;
-        foreach ($revisions as $key) {
+        foreach ($unapplied as $key) {
             $migration = $this->revisions->get($key);
 
             if ($migration->getVersion() < $version) {
