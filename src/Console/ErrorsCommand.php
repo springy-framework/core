@@ -331,7 +331,6 @@ class ErrorsCommand extends Controller
             sprintf('Invalid instruction <error>%s</>', $name),
             '',
         ]);
-        // $this->printHelp();
     }
 
     /**
