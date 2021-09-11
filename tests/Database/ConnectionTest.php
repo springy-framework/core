@@ -64,6 +64,9 @@ class ConnectionTest extends TestCase
 
         $result = $connection->execute('UPDATE `test_spf` SET `name` = ? WHERE `id` = ?', ['Grampa', 6]);
         $this->assertEquals(1, $result);
+
+        $result = $connection->execute('DELETE FROM `test_spf` WHERE `id` = ?', [7]);
+        $this->assertEquals(1, $result);
     }
 
     public function testMySqlConnectionWithFileRoundRobin()
