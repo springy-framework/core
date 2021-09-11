@@ -89,11 +89,11 @@ class MigrationScript
      */
     private function loadScript()
     {
-        $namespace = $this->namespace
+        $classname = $this->namespace
             . '\\Migrations\\Rev' . $this->version
             . '\\' . pathinfo($this->script, PATHINFO_FILENAME);
 
-        $script = new $namespace();
+        $script = new $classname();
 
         if (is_callable([$script, 'migrate'])) {
             $this->mScript = function (Connection $connection) use ($script) {
