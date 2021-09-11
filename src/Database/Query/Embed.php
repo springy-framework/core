@@ -67,6 +67,7 @@ class Embed
         $this->limit = 0;
         $this->refColumn = $refColumn;
         $this->type = $resultType;
+        $this->when = [];
     }
 
     /**
