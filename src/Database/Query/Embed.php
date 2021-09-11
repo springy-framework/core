@@ -19,7 +19,7 @@ class Embed
 {
     /** @var string the name for embeded attribute */
     protected $embedName;
-    /** @var string the list of keys to find */
+    /** @var array the list of keys to find */
     protected $filter;
     /** @var string the name of foreign key in embedded model */
     protected $foreignKey;
@@ -35,7 +35,7 @@ class Embed
     protected $orderBy;
     /** @var int the type of embedding */
     protected $type;
-    /** @var string the condition to embed */
+    /** @var array the condition to embed */
     protected $when;
 
     // Embeding type constants
@@ -206,7 +206,7 @@ class Embed
      */
     public function isEligible(array $row): bool
     {
-        if (!$this->when) {
+        if (!count($this->when)) {
             return true;
         }
 
