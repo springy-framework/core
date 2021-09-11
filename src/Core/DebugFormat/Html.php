@@ -26,6 +26,8 @@ class Html extends Plain
      */
     protected function format(array $debug): string
     {
+        $btcount = $debug[4] > 0 ? 'last ' . $debug[4] : 'all';
+
         return '<div class="springy-debug-info">'
             . '<div class="springy-debug-time"><strong>Time:</strong> '
             . sprintf('%.6f', $debug[1])
@@ -38,7 +40,7 @@ class Html extends Plain
             . (
                 $debug[4] > 0
                 ? '<a class="spring-debug-backtrace-btn">Backtrace ('
-                    . ($debug[4] > 0 ? 'last ' . $debug[4] : 'all')
+                    . $btcount
                     . ') <i class="springy-arrow down"></i></a>'
                     . '<div class="spring-debug-backtrace-data">'
                     . $this->backtrace($debug[3])
