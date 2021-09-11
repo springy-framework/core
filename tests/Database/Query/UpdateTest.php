@@ -16,6 +16,7 @@ use Springy\Exceptions\SpringyException;
 
 class UpdateTest extends TestCase
 {
+    /** @var Update */
     public $update;
 
     protected function setUp(): void
@@ -72,7 +73,7 @@ class UpdateTest extends TestCase
         $this->update->addValue('name', 'Ape');
         $this->update->addCondition('id', 6);
 
-        $rows = $this->update->run();
+        $rows = $this->update->execute();
         $this->assertEquals(1, $rows);
     }
 }

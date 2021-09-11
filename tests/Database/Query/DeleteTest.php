@@ -15,6 +15,7 @@ use Springy\Exceptions\SpringyException;
 
 class DeleteTest extends TestCase
 {
+    /** @var Delete */
     public $delete;
 
     protected function setUp(): void
@@ -51,7 +52,7 @@ class DeleteTest extends TestCase
     {
         $this->delete->addCondition('id', 1);
 
-        $rows = $this->delete->run();
+        $rows = $this->delete->execute();
         $this->assertEquals(1, $rows);
     }
 }

@@ -17,6 +17,7 @@ use Springy\Exceptions\SpringyException;
 
 class SelectTest extends TestCase
 {
+    /** @var Select */
     public $select;
 
     protected function setUp(): void
@@ -183,7 +184,7 @@ class SelectTest extends TestCase
         $where->add('id', 4, Where::OP_LESS_EQUAL);
         $this->select->setWhere($where);
 
-        $rows = $this->select->run();
+        $rows = $this->select->execute();
         $this->assertEquals([
             ['name' => 'Marge'],
             ['name' => 'Lisa'],

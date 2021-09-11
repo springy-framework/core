@@ -179,6 +179,7 @@ class UserModelTest extends TestCase
         $embed = new Embed('tstEmbed', $mdEmb, 'id', 'id');
         $model->addEmbed($embed);
 
+        /** @var array */
         $rows = $model->select(new Where());
 
         $result = [];

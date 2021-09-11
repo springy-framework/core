@@ -16,6 +16,7 @@ use Springy\Exceptions\SpringyException;
 
 class InsertTest extends TestCase
 {
+    /** @var Insert */
     public $insert;
 
     protected function setUp(): void
@@ -130,7 +131,7 @@ class InsertTest extends TestCase
             new Value('created', 'NOW()', true),
         ]);
 
-        $rows = $this->insert->run();
+        $rows = $this->insert->execute();
         $this->assertEquals(4, $rows);
     }
 }

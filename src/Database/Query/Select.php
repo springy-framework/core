@@ -27,7 +27,7 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
     protected $connection;
     /** @var array the GROUP BY columns list */
     protected $groupBy;
-    /** @var array the HAVING conditions statement */
+    /** @var Conditions the HAVING conditions statement */
     protected $having;
     /** @var array the array of Join objects */
     protected $joins;
@@ -301,13 +301,13 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
     }
 
     /**
-     * Runs the SELECT command and returns the found rows.
+     * Executes the SELECT command and returns the found rows.
      *
      * @param bool $paginated
      *
      * @return array
      */
-    public function run(bool $paginated = false): array
+    public function execute(bool $paginated = false): array
     {
         $select = ($paginated ? $this->parsePaginated() : $this->__toString());
 

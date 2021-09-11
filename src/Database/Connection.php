@@ -162,6 +162,7 @@ class Connection
             $this->lastError = null;
             $this->executeQuery();
         } catch (Throwable $err) {
+            debug($err->getMessage());
             throw $err;
         }
     }
@@ -374,7 +375,7 @@ class Connection
     {
         $connection = self::$conectionIds[$this->identity] ?? null;
 
-        return ($connection !== null) and ($connection->getPdo() instanceof PDO);
+        return ($connection !== null) && ($connection->getPdo() instanceof PDO);
     }
 
     /**
@@ -395,6 +396,21 @@ class Connection
     public function commit(): void
     {
         $this->getPdo()->commit();
+    }
+
+    /**
+     * Executes a query and returns the quantity of rows affected.
+     *
+     * @param string $query
+     * @param array  $params
+     *
+     * @return int
+     */
+    public function execute(string $query, array $params = []): int
+    {
+        $this->run($query, $params);
+
+        return $this->affectedRows();
     }
 
     /**
@@ -441,36 +457,6 @@ class Connection
     }
 
     /**
-     * Runs an delete query and returns the quantity of rows affected.
-     *
-     * @param string $query
-     * @param array  $params
-     *
-     * @return int
-     */
-    public function delete(string $query, array $params = []): int
-    {
-        $this->run($query, $params);
-
-        return $this->affectedRows();
-    }
-
-    /**
-     * Runs a insert query and returns the quantity of rows inserted.
-     *
-     * @param string $query
-     * @param array  $params
-     *
-     * @return int
-     */
-    public function insert(string $query, array $params = []): int
-    {
-        $this->run($query, $params);
-
-        return $this->affectedRows();
-    }
-
-    /**
      * Runs a select query and returns the array of found rows.
      *
      * @param string $query
@@ -493,21 +479,6 @@ class Connection
         $this->cacheLifeTime = 0;
 
         return $this->statement ?? [];
-    }
-
-    /**
-     * Runs an update query and returns the quantity of rows affected.
-     *
-     * @param string $query
-     * @param array  $params
-     *
-     * @return int
-     */
-    public function update(string $query, array $params = []): int
-    {
-        $this->run($query, $params);
-
-        return $this->affectedRows();
     }
 
     /**

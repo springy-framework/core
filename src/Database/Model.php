@@ -164,7 +164,7 @@ class Model extends RowsIterator
         if ($this->bypassTriggers || !$this->hasAnyTrigger($triggers)) {
             $delete = $this->buildDelete($where);
 
-            return $delete->run();
+            return $delete->execute();
         }
 
         // Navigate through found rows and deletes it
@@ -325,7 +325,7 @@ class Model extends RowsIterator
 
         $this->setCmdValues($insert);
 
-        $res = $insert->run();
+        $res = $insert->execute();
 
         if ($res === 1) {
             $lid = $connection->getLastInsertedId();
@@ -468,7 +468,7 @@ class Model extends RowsIterator
 
         $this->setCmdValues($update);
 
-        $res = $update->run();
+        $res = $update->execute();
 
         if ($res === 1) {
             $clone = new static($pkVal); // @phpstan-ignore-line
@@ -583,7 +583,7 @@ class Model extends RowsIterator
         $select = new Select(new Connection($this->dbIdentity), $this->table);
         $select->addCount('0', 'rowscount');
         $this->setSelectStruc($select, $where);
-        $rows = $select->run(false);
+        $rows = $select->execute(false);
 
         return (int) $rows[0]['rowscount'];
     }
@@ -619,7 +619,7 @@ class Model extends RowsIterator
             return 0;
         }
 
-        $result = $delete->run();
+        $result = $delete->execute();
 
         $this->checkTrigger(static::TG_AFT_DEL);
 
@@ -706,7 +706,7 @@ class Model extends RowsIterator
 
         $select = $this->getSelect($where, $orderby ?? [], $offset, $limit);
 
-        $this->rows = $select->run(true);
+        $this->rows = $select->execute(true);
         $this->foundRows = $select->foundRows();
 
         $this->computeRows();

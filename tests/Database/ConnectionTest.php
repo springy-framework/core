@@ -34,7 +34,7 @@ class ConnectionTest extends TestCase
         $connection->run($sql);
         $connection->run('TRUNCATE TABLE `test_spf`');
 
-        $result = $connection->insert(
+        $result = $connection->execute(
             'INSERT INTO `test_spf`(`name`,`created`) VALUES (?, NOW()), (?, NOW()), (?, NOW()), (?, NOW()), (?, NOW()), (?, NOW()), (?, NOW())',
             ['Homer', 'Marge', 'Lisa', 'Bart', 'Meggy', 'Santa\'\'s Helper', 'Cat']
         );
@@ -62,10 +62,7 @@ class ConnectionTest extends TestCase
         $row = $connection->getCurrent();
         $this->assertEquals(5, $row['id'] ?? null);
 
-        $result = $connection->update('UPDATE `test_spf` SET `name` = ? WHERE `id` = ?', ['Grampa', 6]);
-        $this->assertEquals(1, $result);
-
-        $result = $connection->delete('DELETE FROM `test_spf` WHERE `id` = ?', [7]);
+        $result = $connection->execute('UPDATE `test_spf` SET `name` = ? WHERE `id` = ?', ['Grampa', 6]);
         $this->assertEquals(1, $result);
     }
 
@@ -97,7 +94,7 @@ class ConnectionTest extends TestCase
         );
         $this->assertEquals('', $connection->getError());
 
-        $result = $connection->insert(
+        $result = $connection->execute(
             'INSERT INTO test_spf("name","created") VALUES '
             . '(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
             . '(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '

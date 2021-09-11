@@ -197,13 +197,13 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
     }
 
     /**
-     * Runs the UPDATE command and returns the quantity of affected rows.
+     * Executes the UPDATE command and returns the quantity of affected rows.
      *
      * @return int
      */
-    public function run(): int
+    public function execute(): int
     {
-        return $this->connection->update($this->__toString(), $this->parameters);
+        return $this->connection->execute($this->__toString(), $this->parameters);
     }
 
     /**

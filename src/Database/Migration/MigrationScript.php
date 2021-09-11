@@ -214,7 +214,7 @@ class MigrationScript
 
         $now = new DateTime();
 
-        $connection->insert($command, [
+        $connection->execute($command, [
             $this->getIdentity(),
             $now->format('Y-m-d H:i:s.u'),
             $connection->affectedRows() . ' affected rows',
@@ -245,7 +245,7 @@ class MigrationScript
 
         $command = 'DELETE FROM ' . $table . ' WHERE migration = ?';
 
-        $connection->delete($command, [
+        $connection->execute($command, [
             $this->getIdentity(),
         ]);
 
