@@ -27,8 +27,7 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
      */
     public function __construct()
     {
-        $this->conditions = [];
-        $this->parameters = [];
+        $this->clear();
     }
 
     /**
@@ -61,7 +60,7 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
     public function __toString()
     {
         $this->parameters = [];
-        $conditions = '';
+        $result = '';
 
         foreach ($this->conditions as $condition) {
             $condStr = '';
@@ -84,10 +83,10 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
                 $this->parameters = array_merge($this->parameters, $condition[0]->params());
             }
 
-            $conditions .= ' ' . $condStr;
+            $result .= ' ' . $condStr;
         }
 
-        return trim($conditions);
+        return trim($result);
     }
 
     /**
