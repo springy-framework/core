@@ -51,9 +51,7 @@ class Delete extends CommandBase implements OperatorComparationInterface, Operat
     {
         $this->parameters = [];
 
-        $update = 'DELETE FROM ' . $this->getTableNameAndAlias() . $this->strWhere();
-
-        return $update;
+        return 'DELETE FROM ' . $this->getTableNameAndAlias() . $this->strWhere();;
     }
 
     /**
