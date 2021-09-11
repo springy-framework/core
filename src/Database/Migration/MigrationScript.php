@@ -73,8 +73,6 @@ class MigrationScript
 
             $this->mScript = $yaml['migrate'] ?? null;
             $this->rScript = $yaml['rollback'] ?? null;
-
-            return;
         } elseif ($ext === 'sql') {
             $this->mScript = file_get_contents($path);
         } elseif ($ext === 'php') {
