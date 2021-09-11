@@ -686,9 +686,9 @@ class Model extends RowsIterator
      * @param int   $offset
      * @param int   $limit
      *
-     * @return void
+     * @return array
      */
-    public function select(Where $where = null, array $orderby = null, int $offset = 0, int $limit = null)
+    public function select(Where $where = null, array $orderby = null, int $offset = 0, int $limit = null): array
     {
         $this->changed = [];
         $this->loaded = false;
@@ -698,7 +698,7 @@ class Model extends RowsIterator
         $limit = $limit ?? $this->defaultLimit ?? 0;
 
         if ($this->abortOnEmptyFilter && !$where->count() && !$limit) {
-            return;
+            return [];
         }
 
         if ($this->deletedColumn && !$where->get($this->deletedColumn)) {
