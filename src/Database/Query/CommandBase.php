@@ -102,13 +102,13 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
             throw new SpringyException('Table name can not be null');
         }
 
-        $table = trim($this->table);
+        $tbname = trim($this->table);
 
-        if ($table === '') {
+        if ($tbname === '') {
             throw new SpringyException('Empty table name');
         }
 
-        return $table;
+        return $tbname;
     }
 
     /**
@@ -118,14 +118,14 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
      */
     protected function getTableNameAndAlias(): string
     {
-        $table = $this->getTableName();
+        $tbname = $this->getTableName();
         $alias = $this->getTableAlias();
 
-        if ($alias !== $table) {
-            $table .= ' AS ' . $alias;
+        if ($alias !== $tbname) {
+            $tbname .= ' AS ' . $alias;
         }
 
-        return $table;
+        return $tbname;
     }
 
     /**
