@@ -163,6 +163,7 @@ class Connection
             $this->executeQuery();
         } catch (Throwable $err) {
             debug($err->getMessage());
+
             throw $err;
         }
     }
