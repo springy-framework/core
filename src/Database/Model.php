@@ -660,18 +660,19 @@ class Model extends RowsIterator
      */
     public function save(): int
     {
-        if (!$this->valid() || !isset($this->changed[key($this->rows)])) {
-            return 0;
-        }
-
-        if (!$this->validate()) {
+        if (!$this->valid()) {
+            throw new SpringyException('Trying to save invalid row.');
+        } elseif (
+            !isset($this->changed[key($this->rows)])
+            || !$this->validate()
+        ) {
             return 0;
         }
 
         if ($this->newRecord) {
             return $this->insertRow();
         } elseif (!$this->hasPK()) {
-            return 0;
+            throw new SpringyException('Can not save row without primary key.');
         }
 
         return $this->updateRow();
