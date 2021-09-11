@@ -81,7 +81,7 @@ class MySQL extends Connector implements ConnectorInterface
      */
     protected function setHost(array $config)
     {
-        if (($config['socket'] ?? false)) {
+        if ($config['socket'] ?? false) {
             $this->setSocket($config);
 
             return;
