@@ -67,7 +67,7 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
 
             if ($condition instanceof Condition) {
                 $condStr = (
-                    empty($conditions)
+                    empty($result)
                     ? ''
                     : $condition->expression . ' '
                 ) . $condition;
@@ -75,7 +75,7 @@ class Conditions implements OperatorComparationInterface, OperatorGroupInterface
                 $this->addParameters($condition);
             } elseif (is_array($condition) && $condition[0] instanceof self) {
                 $condStr = (
-                    empty($conditions)
+                    empty($result)
                     ? ''
                     : $condition[1] . ' '
                 ) . '(' . $condition[0]->parse() . ')';
