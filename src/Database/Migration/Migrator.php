@@ -42,9 +42,10 @@ class Migrator
      */
     public function __construct(string $dbIdentity = null)
     {
+        $prefix = 'database.connections.';
         $identity = $dbIdentity ?? config_get('database.default');
-        $path = config_get('database.connections.' . $identity . '.migration.dir');
-        $namespace = config_get('database.connections.' . $identity . '.migration.namespace', 'App');
+        $path = config_get($prefix . $identity . '.migration.dir');
+        $namespace = config_get($prefix . $identity . '.migration.namespace', 'App');
 
         if (is_null($path)) {
             throw new SpringyException(
@@ -57,7 +58,7 @@ class Migrator
         $this->connection = new Connection($identity);
         $this->revisions = new Revisions($path, $namespace);
         $this->controlTable = config_get(
-            'database.connections.' . $identity . '.migration_table',
+            $prefix . $identity . '.migration_table',
             '_migration_control'
         );
 
@@ -106,24 +107,22 @@ class Migrator
     {
         try {
             $this->connection->select('SELECT done_at FROM ' . $this->controlTable . ' LIMIT 1');
-
-            return;
         } catch (Throwable $err) {
-        }
+            // Table does not existis then try to creates it
+            $command = 'CREATE TABLE ' . $this->controlTable . '('
+                . 'migration VARCHAR(255) NOT NULL,'
+                . 'done_at DATETIME NOT NULL,'
+                . 'result_message VARCHAR(255),'
+                . 'PRIMARY KEY (migration)'
+                . ')';
 
-        $command = 'CREATE TABLE ' . $this->controlTable . '('
-            . 'migration VARCHAR(255) NOT NULL,'
-            . 'done_at DATETIME NOT NULL,'
-            . 'result_message VARCHAR(255),'
-            . 'PRIMARY KEY (migration)'
-            . ')';
-
-        try {
-            $this->connection->run($command);
-        } catch (Throwable $th) {
-            throw new SpringyException(
-                'Can not create control table (' . $this->connection->getError() . ')'
-            );
+            try {
+                $this->connection->run($command);
+            } catch (Throwable $th) {
+                throw new SpringyException(
+                    'Can not create control table (' . $this->connection->getError() . ')'
+                );
+            }
         }
     }
 
