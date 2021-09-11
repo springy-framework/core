@@ -93,17 +93,17 @@ class MigrationScript
             . '\\Migrations\\Rev' . $this->version
             . '\\' . pathinfo($this->script, PATHINFO_FILENAME);
 
-        $script = new $classname();
+        $classobj = new $classname();
 
-        if (is_callable([$script, 'migrate'])) {
-            $this->mScript = function (Connection $connection) use ($script) {
-                return call_user_func([$script, 'migrate'], $connection);
+        if (is_callable([$classobj, 'migrate'])) {
+            $this->mScript = function (Connection $connection) use ($classobj) {
+                return call_user_func([$classobj, 'migrate'], $connection);
             };
         }
 
-        if (is_callable([$script, 'rollback'])) {
-            $this->rScript = function (Connection $connection) use ($script) {
-                return call_user_func([$script, 'rollback'], $connection);
+        if (is_callable([$classobj, 'rollback'])) {
+            $this->rScript = function (Connection $connection) use ($classobj) {
+                return call_user_func([$classobj, 'rollback'], $connection);
             };
         }
     }
