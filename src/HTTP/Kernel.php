@@ -96,9 +96,9 @@ class Kernel extends MainKernel
     /**
      * Executes the controller and returs the result.
      *
-     * @throws HttpErrorForbidden
-     *
      * @param URI $uri
+     *
+     * @throws HttpErrorForbidden
      *
      * @return bool
      */
