@@ -237,7 +237,7 @@ class Handler
 
         $remoteAddr = $this->getRealRemoteAddr();
 
-        $error = [
+        return [
             'crc'          => $this->getCrc(),
             'occurrences'  => 0,
             'date'         => (new DateTime())->format('c'),
@@ -276,8 +276,6 @@ class Handler
             'debug' => Debug::getInstance()->getSimpleData(),
             'trace' => $this->exception->getTrace(),
         ];
-
-        return $error;
     }
 
     /**
