@@ -59,15 +59,13 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
     {
         $this->parameters = [];
 
-        $insert = $this->fetchIgnoreError(
+        return $this->fetchIgnoreError(
             'INSERT '
             . ($this->priority ? $this->priority . ' ' : '')
             . 'INTO ' . $this->getTableName()
             . '(' . $this->strColumns() . ') VALUES '
             . $this->strValues()
         );
-
-        return $insert;
     }
 
     /**
