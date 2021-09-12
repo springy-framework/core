@@ -103,7 +103,6 @@ class Handler
 
             echo $trace['file'] . ': ' . $trace['line'] . LF;
         }
-        // echo $this->exception->getTraceAsString();
 
         exit(1);
     }
