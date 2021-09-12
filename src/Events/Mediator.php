@@ -20,16 +20,16 @@ use Springy\Container\DIContainer;
  */
 class Mediator
 {
-    /// Container para injeção de dependência de objetos
+    /** @var DIContainer to inject object depentencies */
     protected $container;
 
-    /// Array que armazena os handlers registrados
+    /** @var array registeres handlers */
     protected $handlers;
-    /// Array que armazena os handlers masters (wildcards)
+    /** @var array master (wildcards) handlers */
     protected $masterHandlers;
-    /// Array que armazena todos os handlers ordenados por ordem de prioridade
+    /** @var array all handlers ordered by priority */
     protected $orderedHandlers;
-    /// Armazena o valor do evento atualmente sendo disparado
+    /** @var array|null current event handler been triggered */
     protected $currentEvent;
 
     /**
