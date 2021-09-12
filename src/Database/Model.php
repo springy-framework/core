@@ -599,15 +599,10 @@ class Model extends RowsIterator
      */
     public function delete($where = null): int
     {
-        $current = false;
-
-        if (is_null($where)) {
-            $where = $this->getWhereFromRow();
-            $current = true;
-        }
-
-        $filter = $this->getWhere($where);
-        $current = $this->isCurrent($current);
+        $current = is_null($where) || $this->isCurrent();
+        $filter = $this->getWhere(
+            is_null($where) ? $this->getWhereFromRow() : $where
+        );
 
         if (!$current) {
             return $this->deleteRows($filter);

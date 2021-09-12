@@ -304,16 +304,10 @@ class RowsIterator implements Iterator
     /**
      * Checks if current key corresponds to current row.
      *
-     * @param bool $current ignores the verification and assumes as true.
-     *
      * @return bool
      */
-    protected function isCurrent(bool $current): bool
+    protected function isCurrent(): bool
     {
-        if ($current) {
-            return true;
-        }
-
         if (!count($this->currentKey) || !$this->valid() || !$this->hasPK()) {
             return false;
         }
@@ -450,13 +444,13 @@ class RowsIterator implements Iterator
             return $this->current();
         }
 
-        $columns = current($this->rows);
+        $row = current($this->rows);
 
-        if (!isset($columns[$column]) && $this->errorIfColNotExists) {
+        if (!isset($row[$column]) && $this->errorIfColNotExists) {
             throw new SpringyException('Column "' . $column . '" does not exists.');
         }
 
-        return $columns[$column] ?? null;
+        return $row[$column] ?? null;
     }
 
     /**
