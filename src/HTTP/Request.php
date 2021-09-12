@@ -77,12 +77,12 @@ class Request
      */
     protected function parseHeaders()
     {
-        $headers = [];
+        $headerlist = [];
 
         if (function_exists('getallheaders')) {
-            $headers = getallheaders();
-            if ($headers !== false) {
-                return $headers;
+            $headerlist = getallheaders();
+            if ($headerlist !== false) {
+                return $headerlist;
             }
         }
 
@@ -93,7 +93,7 @@ class Request
                 || ($name == 'CONTENT_LENGTH')
                 || ($name == 'AUTHORIZATION')
             ) {
-                $headers[
+                $headerlist[
                     str_replace(
                         [' ', 'Http'],
                         ['-', 'HTTP'],
@@ -103,7 +103,7 @@ class Request
             }
         }
 
-        return $headers;
+        return $headerlist;
     }
 
     /**
@@ -142,13 +142,13 @@ class Request
      */
     protected function parseBearerToken(): ?string
     {
-        $headers = $this->getHeaders();
+        $headerlist = $this->getHeaders();
 
-        if (!isset($headers['Authorization'])) {
+        if (!isset($headerlist['Authorization'])) {
             return null;
         }
 
-        return trim(str_replace('Bearer', '', $headers['Authorization']));
+        return trim(str_replace('Bearer', '', $headerlist['Authorization']));
     }
 
     /**

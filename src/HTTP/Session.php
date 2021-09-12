@@ -106,13 +106,13 @@ class Session
 
         $this->name = $config->get('session.name', 'SPSESSID');
 
-        $engine = $config->get('session.engine');
-        if (is_null($engine)) {
+        $sessengine = $config->get('session.engine');
+        if (is_null($sessengine)) {
             throw new SpringyException('Undefined session engine.');
         }
 
-        $engine = 'Springy\\HTTP\\SessionDrivers\\' . $engine;
-        $this->engine = new $engine();
+        $sessengine = 'Springy\\HTTP\\SessionDrivers\\' . $sessengine;
+        $this->engine = new $sessengine();
 
         return self::getInstance();
     }

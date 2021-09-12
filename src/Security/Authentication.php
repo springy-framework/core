@@ -178,10 +178,10 @@ class Authentication
      */
     public function loginWithId($uid, bool $remember = false)
     {
-        $user = $this->driver->getIdentityById($uid);
+        $identity = $this->driver->getIdentityById($uid);
 
-        if ($user) {
-            $this->login($user, $remember);
+        if ($identity) {
+            $this->login($identity, $remember);
         }
     }
 
