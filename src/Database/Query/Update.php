@@ -87,14 +87,14 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
      */
     protected function strJoins(): string
     {
-        $joins = '';
+        $joinStr = '';
         foreach ($this->joins as $join) {
-            $joins .= ' ' . $join;
+            $joinStr .= ' ' . $join;
 
             $this->parameters = array_merge($this->parameters, $join->params());
         }
 
-        return $joins;
+        return $joinStr;
     }
 
     /**
@@ -110,21 +110,21 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
             throw new SpringyException('Empty values set.');
         }
 
-        $values = ' SET ';
+        $setValues = ' SET ';
         foreach ($this->values as $value) {
-            $values .= $value->getColumn() . ' = ';
+            $setValues .= $value->getColumn() . ' = ';
 
             if ($value->isExpression()) {
-                $values .= $value->getValue() . ',';
+                $setValues .= $value->getValue() . ',';
 
                 continue;
             }
 
-            $values .= '?, ';
+            $setValues .= '?, ';
             $this->parameters[] = $value->getValue();
         }
 
-        return rtrim($values, ', ');
+        return rtrim($setValues, ', ');
     }
 
     /**

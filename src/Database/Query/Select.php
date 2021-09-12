@@ -105,10 +105,10 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
      */
     protected function strHaving(): string
     {
-        $having = $this->having->parse();
+        $havingStr = $this->having->parse();
         $this->parameters = array_merge($this->parameters, $this->having->params());
 
-        return $having ? ' HAVING ' . $this->having : '';
+        return strlen($havingStr) > 0 ? ' HAVING ' . $havingStr : '';
     }
 
     /**
@@ -118,14 +118,14 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
      */
     protected function strJoins(): string
     {
-        $joins = '';
+        $joinStr = '';
         foreach ($this->joins as $join) {
-            $joins .= ' ' . $join;
+            $joinStr .= ' ' . $join;
 
             $this->parameters = array_merge($this->parameters, $join->params());
         }
 
-        return $joins;
+        return $joinStr;
     }
 
     /**
