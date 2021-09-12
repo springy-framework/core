@@ -50,9 +50,7 @@ class Join extends CommandBase implements OperatorComparationInterface, Operator
      */
     public function __toString()
     {
-        $join = $this->joinType . ' ' . $this->getTableNameAndAlias() . $this->getOn();
-
-        return $join;
+        return $this->joinType . ' ' . $this->getTableNameAndAlias() . $this->getOn();
     }
 
     /**

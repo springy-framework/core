@@ -73,7 +73,7 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
     {
         $this->parameters = [];
 
-        $select = 'SELECT ' . $this->strColumns()
+        return 'SELECT ' . $this->strColumns()
             . ' FROM ' . $this->getTableNameAndAlias()
             . $this->strJoins()
             . $this->strWhere()
@@ -82,8 +82,6 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
             . $this->strHaving()
             . ($this->limit ? ' LIMIT ' . $this->limit : '')
             . ($this->offset ? ' OFFSET ' . $this->offset : '');
-
-        return $select;
     }
 
     /**

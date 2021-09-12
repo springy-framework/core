@@ -57,12 +57,10 @@ class Update extends CommandBase implements OperatorComparationInterface, Operat
     {
         $this->parameters = [];
 
-        $update = 'UPDATE ' . $this->getTableNameAndAlias()
+        return 'UPDATE ' . $this->getTableNameAndAlias()
             . $this->strJoins()
             . $this->strSet()
             . $this->strWhere();
-
-        return $update;
     }
 
     /**
