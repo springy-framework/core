@@ -119,15 +119,15 @@ class Header
 
     public function headers(): array
     {
-        $headers = [];
+        $headerslist = [];
 
         foreach ($this->headers as $string => $values) {
             foreach ($values as $value) {
-                $headers[] = $string . ': ' . $value;
+                $headerslist[] = $string . ': ' . $value;
             }
         }
 
-        return $headers;
+        return $headerslist;
     }
 
     public function httpResponseCode(int $httpResponseCode = null): int
