@@ -128,6 +128,7 @@ class RowsIterator implements Iterator
 
         $this->bypassTriggers = false;
         $this->changed = [];
+        $this->currentKey = [];
         $this->columns = static::$strucs[$structure];
         $this->foundRows = 0;
         $this->newRecord = false;
