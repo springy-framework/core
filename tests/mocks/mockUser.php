@@ -8,11 +8,10 @@
  *
  * @version   1.0.0
  */
-use Springy\Security\AclUserInterface;
 use Springy\Security\BasicHasher;
 use Springy\Security\IdentityInterface;
 
-class User implements IdentityInterface, AclUserInterface
+class User implements IdentityInterface
 {
     public $uuid;
     public $email;

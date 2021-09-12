@@ -19,17 +19,6 @@ namespace Springy\Security;
 interface IdentityInterface
 {
     /**
-     * Loads the identity data by given credential.
-     *
-     * This method is executed when the user is loaded by a given array of conditions for a query.
-     *
-     * @param array $data the array with the condition to load the data.
-     *
-     * @return void
-     */
-    public function loadByCredentials(array $data);
-
-    /**
      * Loads the identity class from the session.
      *
      * @param array $data the array with the identity data.
@@ -74,4 +63,24 @@ interface IdentityInterface
      * @return array the array with credential data.
      */
     public function getCredentials(): array;
+
+    /**
+     * Get the user permission for the given ACL.
+     *
+     * @param string $aclObjectName the name of the ACL.
+     *
+     * @return bool True if the user has permission to access or false if not.
+     */
+    public function hasPermissionFor(string $aclObjectName): bool;
+
+    /**
+     * Loads the identity data by given credential.
+     *
+     * This method is executed when the user is loaded by a given array of conditions for a query.
+     *
+     * @param array $data the array with the condition to load the data.
+     *
+     * @return void
+     */
+    public function loadByCredentials(array $data);
 }

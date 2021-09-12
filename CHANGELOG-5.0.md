@@ -185,7 +185,7 @@
 -   Method `Springy\Model->validationErrors()` renamed to `Springy\Database\RowsIterator->getValidationErrors()`
 -   Method `Springy\Security\AclManager->isPermitted` renamed to `Springy\Security\AclManager->hasPermission()`
 -   Method `Springy\Security\Strings::validateEmailAddress` moved and renamed to `Springy\Utils\StringUtils->isValidEmailAddress()`
--   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `Springy\Security\AclUserInterface->hasPermissionFor()`
+-   Method `Springy\Security\AclUserInterface->getPermissionFor` renamed to `Springy\Security\IdentityInterface->hasPermissionFor()`
 -   Method `Springy\Session::setSessionId()` is no more static and was renamed to `Springy\HTTP\Session->setId()`
 -   Method `Springy\Session::unregister()` is no more static and was renamed to `Springy\HTTP\Session->forget()`
 -   Method `Springy\Template->clearCache()` was renamed to `Springy\Template\Template->clearTemplateCache()`
@@ -300,6 +300,7 @@
 -   Removed `Springy\Security\AclManager->setModulePrefix()` method
 -   Removed `Springy\Security\AclManager->setDefaultModule()` method
 -   Removed `Springy\Security\AclManager->setupCurrentAclObject()` method
+-   Removed `Springy\Security\AclUserInterface` interface
 -   Removed `Springy\Security\BasicHasher->generateHash()` method
 -   Removed `Springy\SOAP` class
 -   Removed `Springy\Template->clearConfig()` method

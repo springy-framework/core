@@ -24,16 +24,16 @@ class AclManager
     protected $module = [];
     /** @var string the permission module name separator character */
     protected $separator = '|';
-    /** @var AclUserInterface the current user object */
+    /** @var IdentityInterface the current user object */
     protected $user;
 
     /**
      * Constructor.
      *
-     * @param AclUserInterface $user
-     * @param array            $segments
+     * @param IdentityInterface $user
+     * @param array             $segments
      */
-    public function __construct(AclUserInterface $user, ControllerInterface $controller, array $segments)
+    public function __construct(IdentityInterface $user, ControllerInterface $controller, array $segments)
     {
         $this->user = $user;
         $this->module = array_merge(
@@ -55,9 +55,9 @@ class AclManager
     /**
      * Gets the user object.
      *
-     * @return AclUserInterface object
+     * @return IdentityInterface object
      */
-    public function getAclUser(): AclUserInterface
+    public function getAclUser(): IdentityInterface
     {
         return $this->user;
     }
@@ -85,11 +85,11 @@ class AclManager
     /**
      * Defines the user object.
      *
-     * @param AclUserInterface $user
+     * @param IdentityInterface $user
      *
      * @return void
      */
-    public function setAclUser(AclUserInterface $user)
+    public function setAclUser(IdentityInterface $user)
     {
         $this->user = $user;
     }
