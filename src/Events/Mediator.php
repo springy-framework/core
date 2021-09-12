@@ -236,16 +236,14 @@ class Mediator
      */
     protected function createHandler(string $handler)
     {
-        $container = $this->container;
-
-        return function () use ($handler, $container) {
+        return function () use ($handler) {
             $parts = explode('@', $handler);
 
             // If there is no action, the default is 'handle'
             $method = count($parts) == 2 ? $parts[1] : 'handle';
 
             // Creates callable as event handler
-            $service = [$container[$parts[0]], $method];
+            $service = [$this->container[$parts[0]], $method];
 
             return call_user_func_array($service, func_get_args());
         };
@@ -308,15 +306,15 @@ class Mediator
      */
     protected function getMasterHandlersFor(string $event): array
     {
-        $masterHandlers = [];
+        $handlersFor = [];
 
         foreach ($this->masterHandlers as $masterKey => $handlers) {
             if (strpos($event, $masterKey) === 0) { //Se nome do master handler estiver contido no nomedo do evento
-                $masterHandlers = array_merge($masterHandlers, $handlers);
+                $handlersFor = array_merge($handlersFor, $handlers);
             }
         }
 
-        return $masterHandlers;
+        return $handlersFor;
     }
 
     /**
