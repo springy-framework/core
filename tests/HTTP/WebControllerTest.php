@@ -33,8 +33,8 @@ class WebControllerTest extends TestCase
         $config->set('application.authentication.hasher', 'Springy\Security\BasicHasher');
         $config->set('application.authentication.identity', 'TstUser');
         $config->set('application.authentication.driver', function ($c) {
-            $hasher = $c['user.auth.hasher'];
-            $user = $c['user.auth.identity'];
+            $hasher = $c[USER_AUTH_HASHER];
+            $user = $c[USER_AUTH_IDENTITY];
 
             return new AuthDriver($hasher, $user);
         });
@@ -45,9 +45,9 @@ class WebControllerTest extends TestCase
 
         $kernel->setAuthDriver();
         // Login the user
-        $driver = app('user.auth.driver');
+        $driver = app(USER_AUTH_DRIVE);
         $user = $driver->getIdentityById('0001');
-        app('user.auth.manager')->login($user, false);
+        app(USER_AUTH_MANAGER)->login($user, false);
 
         $this->controller = new TstController([
             'test',

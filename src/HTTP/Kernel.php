@@ -52,6 +52,32 @@ class Kernel extends MainKernel
     }
 
     /**
+     * Checks the segments and calls magic cotnroller if exists.
+     *
+     * @param array $segments
+     *
+     * @return bool
+     */
+    protected function callMagic(array $segments): bool
+    {
+        array_shift($segments);
+        $response = Response::getInstance();
+
+        if (Request::getInstance()->isGet() && $segments[0] == 'about') {
+            $copyright = new Copyright();
+            $response->body($copyright->content());
+
+            return true;
+        } elseif ($segments[0] == 'terminal') {
+            $this->controller = new Terminal($segments);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Checks if endpoint exists.
      *
      * @param string $endpoint
@@ -65,6 +91,33 @@ class Kernel extends MainKernel
         }
 
         return 'index';
+    }
+
+    /**
+     * Executes the controller and returs the result.
+     *
+     * @throws HttpErrorForbidden
+     *
+     * @param URI $uri
+     *
+     * @return bool
+     */
+    protected function controllerCall(URI $uri): bool
+    {
+        // Updates the configuration host
+        Configuration::getInstance()->configHost($uri->getHost());
+
+        if (!$this->hasController($uri->getSegments())) {
+            return $this->discoverMagic();
+        } elseif (!is_callable([$this->controller, $this->endpoint])) {
+            return false;
+        } elseif (!$this->controller->hasPermission()) {
+            throw new HttpErrorForbidden();
+        }
+
+        call_user_func([$this->controller, $this->endpoint], $this->params);
+
+        return true;
     }
 
     /**
@@ -88,20 +141,7 @@ class Kernel extends MainKernel
             return true;
         }
 
-        // Updates the configuration host
-        Configuration::getInstance()->configHost($uri->getHost());
-
-        if (!$this->hasController($uri->getSegments())) {
-            return $this->discoverMagic();
-        } elseif (!is_callable([$this->controller, $this->endpoint])) {
-            return false;
-        } elseif (!$this->controller->hasPermission()) {
-            throw new HttpErrorForbidden();
-        }
-
-        call_user_func([$this->controller, $this->endpoint], $this->params);
-
-        return true;
+        return $this->controllerCall($uri);
     }
 
     /**
@@ -121,21 +161,7 @@ class Kernel extends MainKernel
             return false;
         }
 
-        array_shift($segments);
-        $response = Response::getInstance();
-
-        if (Request::getInstance()->isGet() && $segments[0] == 'about') {
-            $copyright = new Copyright();
-            $response->body($copyright->content());
-
-            return true;
-        } elseif ($segments[0] == 'terminal') {
-            $this->controller = new Terminal($segments);
-
-            return true;
-        }
-
-        return false;
+        $this->callMagic($segments);
     }
 
     /**
@@ -162,16 +188,19 @@ class Kernel extends MainKernel
         $this->params = [];
         $arguments = $segments;
         $namespace = $this->getNamespace($config, $arguments);
-        $endpoint = 'index';
+        $pagename = 'index';
+        $result = false;
+
         do {
             // Adds and finds an Index controller in current $arguments path
             $arguments[] = 'Index';
             if (
                 $this->loadController($namespace . $this->normalizeNamePath($arguments), $segments)
             ) {
-                $this->endpoint = $this->checkEndpoint($endpoint);
+                $this->endpoint = $this->checkEndpoint($pagename);
+                $result = true;
 
-                return true;
+                break;
             }
 
             // Removes Index and finds the full qualified name controller
@@ -180,16 +209,17 @@ class Kernel extends MainKernel
                 count($arguments)
                 && $this->loadController($namespace . $this->normalizeNamePath($arguments), $segments)
             ) {
-                $this->endpoint = $this->checkEndpoint($endpoint);
+                $this->endpoint = $this->checkEndpoint($pagename);
+                $result = true;
 
-                return true;
+                break;
             }
 
-            $endpoint = array_pop($arguments);
-            array_unshift($this->params, $endpoint);
+            $pagename = array_pop($arguments);
+            array_unshift($this->params, $pagename);
         } while (count($arguments));
 
-        return false;
+        return $result;
     }
 
     /**
@@ -267,14 +297,14 @@ class Kernel extends MainKernel
         $driver = Configuration::getInstance()->get('application.authentication.driver');
 
         if (is_null($driver)) {
-            app()->bind('user.auth.driver', function ($data) {
-                $hasher = $data['user.auth.hasher'];
-                $identity = $data['user.auth.identity'];
+            app()->bind(USER_AUTH_DRIVE, function ($data) {
+                $hasher = $data[USER_AUTH_HASHER];
+                $identity = $data[USER_AUTH_IDENTITY];
 
                 return new AuthDriver($hasher, $identity);
             });
         } elseif ($driver instanceof Closure || is_object($driver)) {
-            app()->bind('user.auth.driver', $driver);
+            app()->bind(USER_AUTH_DRIVE, $driver);
         }
     }
 
@@ -312,7 +342,7 @@ class Kernel extends MainKernel
             $this->setupAuthEvt('hasher', 'Springy\Security\BCryptHasher');
             $this->setupAuthEvt('identity');
             $this->setupAuthDrv();
-            app()->instance('user.auth.manager', function ($data) {
+            app()->instance(USER_AUTH_MANAGER, function ($data) {
                 return new Authentication($data['user.auth.driver']);
             });
         }

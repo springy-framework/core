@@ -32,7 +32,7 @@ class Controller implements ControllerInterface
     protected $hasPermission;
     /** @var mixed */
     protected $redirectUnsigned = false;
-    /** @var \Springy\Security\AclUserInterface the current user object */
+    /** @var \Springy\Security\IdentityInterface the current user object */
     protected $user;
     /** @var array */
     protected $uriSegments;
@@ -72,20 +72,21 @@ class Controller implements ControllerInterface
      *
      * @throws SpringyException
      *
-     * @return \Springy\Security\AclUserInterface
+     * @return \Springy\Security\IdentityInterface
      */
     protected function getAuthManager()
     {
         try {
-            $authManager = app('user.auth.manager');
+            $authManager = app(USER_AUTH_MANAGER);
             if ($authManager->check()) {
                 return $authManager->user();
             }
         } catch (Throwable $th) {
+            // There is no user logged in
         }
 
         try {
-            $authIdentity = app('user.auth.identity');
+            $authIdentity = app(USER_AUTH_IDENTITY);
         } catch (Throwable $th) {
             throw new SpringyException('Authentication driver not configured');
         }

@@ -20,6 +20,18 @@ if (!defined('DS')) {
 if (!defined('LF')) {
     define('LF', "\n");
 }
+if (!defined('USER_AUTH_DRIVE')) {
+    define('USER_AUTH_DRIVE', 'user.auth.driver');
+}
+if (!defined('USER_AUTH_HASHER')) {
+    define('USER_AUTH_HASHER', 'user.auth.hasher');
+}
+if (!defined('USER_AUTH_IDENTITY')) {
+    define('USER_AUTH_IDENTITY', 'user.auth.identity');
+}
+if (!defined('USER_AUTH_MANAGER')) {
+    define('USER_AUTH_MANAGER', 'user.auth.manager');
+}
 
 /**
  * Get shared container application instance.
