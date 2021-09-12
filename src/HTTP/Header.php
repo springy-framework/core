@@ -106,9 +106,7 @@ class Header
         $header = $this->getHeader('Content-Type');
 
         if (count($header)) {
-            $cType = explode('; ', $header[0])[0];
-
-            return $cType;
+            return explode('; ', $header[0])[0];
         }
 
         return '';
