@@ -99,10 +99,10 @@ class ConnectionTest extends TestCase
 
         $result = $connection->execute(
             'INSERT INTO test_spf("name","created") VALUES '
-            . '(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
-            . '(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
-            . '(?, CURRENT_TIMESTAMP), (?, CURRENT_TIMESTAMP), '
-            . '(?, CURRENT_TIMESTAMP)',
+            . implode(
+                ', ',
+                array_fill(0, 7, '(?, CURRENT_TIMESTAMP)')
+            ),
             ['Homer', 'Marge', 'Lisa', 'Bart', 'Meggy', 'Santa\'\'s Helper', 'Cat']
         );
         $this->assertEquals(7, $result);
