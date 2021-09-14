@@ -206,7 +206,9 @@ class TestSpf extends Model
 
     protected function myHook($value)
     {
-        return $value === '' ? '' : $value . ($this->newRecord ? '' : ' Foo');
+        $new = $this->newRecord ? '' : ' Foo';
+
+        return $value === '' ? '' : $value . $new;
     }
 
     protected function person($row)
