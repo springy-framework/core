@@ -60,6 +60,7 @@ class InsertTest extends TestCase
 
         $this->insert->setPriority(Insert::MYSQL_LOW_PRIORITY);
         $sql = 'INSERT LOW_PRIORITY IGNORE INTO test_spf(name) VALUES (?)';
+        $this->assertEquals($sql, (string) $this->insert);
     }
 
     public function testInsertIgnoreSqlite()
