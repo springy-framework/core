@@ -68,14 +68,14 @@ class ArrayUtilsTest extends TestCase
 
     public function testMakesAnArrayWithAFilterFunction()
     {
-        $data = $this->data[0];
+        $list = $this->data[0];
 
         $expected = [
             'key1' => self::FILTERED,
             'key2' => self::FILTERED,
         ];
 
-        $actual = $this->arrayUtils->make($data, function ($key, $val) {
+        $actual = $this->arrayUtils->make($list, function ($key, $val) {
             if ($val == self::FILTERED) {
                 // Only to resolves code quality issue.
             }
@@ -88,29 +88,29 @@ class ArrayUtilsTest extends TestCase
 
     public function testPluckElementsOfAnArray()
     {
-        $data = $this->data[1];
+        $list = $this->data[1];
 
         $expected = ['php', 'python', 'ruby'];
 
-        $actual = $this->arrayUtils->pluck($data, 'language');
+        $actual = $this->arrayUtils->pluck($list, 'language');
 
         $this->assertEquals($expected, $actual);
 
         $expected = ['Name 1' => 'php', 'Name 2' => 'python', 'Name 3' => 'ruby'];
 
-        $actual = $this->arrayUtils->pluck($data, 'language', 'name');
+        $actual = $this->arrayUtils->pluck($list, 'language', 'name');
 
         $this->assertEquals($expected, $actual);
     }
 
     public function testSplitsAnArrayIntoTwo()
     {
-        $data = $this->data[0];
+        $list = $this->data[0];
 
         $expectedKeys = ['key1', 'key2'];
         $expectedValues = ['val1', 'val2'];
 
-        list($actualKeys, $actualValues) = $this->arrayUtils->split($data);
+        list($actualKeys, $actualValues) = $this->arrayUtils->split($list);
 
         $this->assertEquals($expectedKeys, $actualKeys);
         $this->assertEquals($expectedValues, $actualValues);
@@ -118,33 +118,33 @@ class ArrayUtilsTest extends TestCase
 
     public function testReturnsOnlyTheValuesThatMatchesTheGivenKeys()
     {
-        $data = $this->data[0];
+        $list = $this->data[0];
 
         $expected = ['key2' => 'val2'];
 
-        $actual = $this->arrayUtils->only($data, ['key2']);
+        $actual = $this->arrayUtils->only($list, ['key2']);
 
         $this->assertEquals($expected, $actual);
     }
 
     public function testReturnsEveryValueExcpectTheOnesThatMatchesTheGivenKeys()
     {
-        $data = $this->data[0];
+        $list = $this->data[0];
 
         $expected = ['key2' => 'val2'];
 
-        $actual = $this->arrayUtils->except($data, ['key1']);
+        $actual = $this->arrayUtils->except($list, ['key1']);
 
         $this->assertEquals($expected, $actual);
     }
 
     public function testSortsTheArrayValuesUsingAUserDefinedFunction()
     {
-        $data = $this->data[2];
+        $list = $this->data[2];
 
         $expected = [2, 5, 14, 23, 36, 56, 74];
 
-        $actual = $this->arrayUtils->sort($data, function ($val1, $val2) {
+        $actual = $this->arrayUtils->sort($list, function ($val1, $val2) {
             if ($val1 == $val2) {
                 return 0;
             }
@@ -157,11 +157,11 @@ class ArrayUtilsTest extends TestCase
 
     public function testReturnsTheFirstValueThatPassTheTestFunction()
     {
-        $data = $this->data[1];
+        $list = $this->data[1];
 
         $expected = ['name' => 'Name 2', 'language' => 'python'];
 
-        $actual = $this->arrayUtils->firstThatPasses($data, function ($key, $val) {
+        $actual = $this->arrayUtils->firstThatPasses($list, function ($key, $val) {
             return $key == 1 && $val['language'] == 'python';
         });
 
@@ -170,11 +170,11 @@ class ArrayUtilsTest extends TestCase
 
     public function testReturnsTheLastValueThatPassTheTestFunction()
     {
-        $data = $this->data[2];
+        $list = $this->data[2];
 
         $expected = 74;
 
-        $actual = $this->arrayUtils->lastThatPasses($data, function ($key, $val) {
+        $actual = $this->arrayUtils->lastThatPasses($list, function ($key, $val) {
             return $val > 50;
         });
 
@@ -183,11 +183,11 @@ class ArrayUtilsTest extends TestCase
 
     public function testReturnsAllTheValuesThatPAssesTheTestFunction()
     {
-        $data = $this->data[2];
+        $list = $this->data[2];
 
         $expected = [56, 74];
 
-        $actual = $this->arrayUtils->allThatPasses($data, function ($key, $val) {
+        $actual = $this->arrayUtils->allThatPasses($list, function ($key, $val) {
             return $val > 50;
         });
 
@@ -196,22 +196,22 @@ class ArrayUtilsTest extends TestCase
 
     public function testItFlattensAMultidimensionalArray()
     {
-        $data = $this->data[3];
+        $list = $this->data[3];
 
         $expected = ['mysql', 'A login', 'A password', 'postgre', 'A login', 'A password'];
 
-        $actual = $this->arrayUtils->flatten($data['config']['db']);
+        $actual = $this->arrayUtils->flatten($list['config']['db']);
 
         $this->assertEquals($expected, $actual);
     }
 
     public function testFlattensTheArrayKeepingTheHierarchyUsingTheDotNotation()
     {
-        $data = $this->data[3];
+        $list = $this->data[3];
 
-        $flattenedArray = $this->arrayUtils->dottedMake($data);
+        $flattenedArray = $this->arrayUtils->dottedMake($list);
 
-        $expected = $data['config']['db']['mysql']['name'];
+        $expected = $list['config']['db']['mysql']['name'];
 
         $actual = $flattenedArray['config.db.mysql.name'];
 
@@ -220,67 +220,67 @@ class ArrayUtilsTest extends TestCase
 
     public function testGetsAValueFromAMultidimensionalArrayUsingTheDotNotationWihoutChangingTheArray()
     {
-        $data = $this->data[3];
+        $list = $this->data[3];
 
-        $expected = $data['config']['session']['type'];
+        $expected = $list['config']['session']['type'];
 
-        $actual = $this->arrayUtils->dottedGet($data, 'config.session.type');
+        $actual = $this->arrayUtils->dottedGet($list, 'config.session.type');
 
         $this->assertEquals($expected, $actual);
     }
 
     public function testPullsAValueFromAMultidimensionalArrayUsingTheDotNotationRemovingItFromTheArray()
     {
-        $data = $this->data[3];
+        $list = $this->data[3];
 
-        $expected = $data['config']['session']['type'];
+        $expected = $list['config']['session']['type'];
 
-        $actual = $this->arrayUtils->dottedPull($data, 'config.session.type');
+        $actual = $this->arrayUtils->dottedPull($list, 'config.session.type');
 
         $this->assertEquals($expected, $actual);
 
-        $this->assertFalse(isset($data['config']['session']['type']));
+        $this->assertFalse(isset($list['config']['session']['type']));
     }
 
     public function testSetsOrChangesAValueFromAMultidimensionalArrayUsingTheDotNotation()
     {
-        $data = $this->data[3];
+        $list = $this->data[3];
 
         //Changing
         $expected = 'cookie';
 
-        $this->arrayUtils->dottedSet($data, 'config.session.type', $expected);
+        $this->arrayUtils->dottedSet($list, 'config.session.type', $expected);
 
-        $actual = $data['config']['session']['type'];
+        $actual = $list['config']['session']['type'];
 
         $this->assertEquals($expected, $actual);
 
         //Adding
         $expected = 'redis';
 
-        $this->arrayUtils->dottedSet($data, 'config.cache.driver.type', $expected);
+        $this->arrayUtils->dottedSet($list, 'config.cache.driver.type', $expected);
 
-        $actual = $data['config']['cache']['driver']['type'];
+        $actual = $list['config']['cache']['driver']['type'];
 
         $this->assertEquals($expected, $actual);
     }
 
     public function testUnsetsAValueFromAMuiltidimensionalArrayUsingTheDotNotation()
     {
-        $data = $this->data[3];
+        $list = $this->data[3];
 
-        $this->arrayUtils->dottedUnset($data, 'config.db.postgre');
+        $this->arrayUtils->dottedUnset($list, 'config.db.postgre');
 
-        $this->assertFalse(isset($data['config']['db']['postgre']));
+        $this->assertFalse(isset($list['config']['db']['postgre']));
     }
 
     public function testFetchesAPartOfAnArrayAndFlattenItUsingTheDotNotation()
     {
-        $data = $this->data[3];
+        $list = $this->data[3];
 
-        $expected = [$data['config']['db']['mysql']];
+        $expected = [$list['config']['db']['mysql']];
 
-        $actual = $this->arrayUtils->dottedFetch($data, 'db.mysql');
+        $actual = $this->arrayUtils->dottedFetch($list, 'db.mysql');
 
         $this->assertEquals($expected, $actual);
     }
