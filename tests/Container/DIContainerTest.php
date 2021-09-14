@@ -42,13 +42,13 @@ class DIContainerTest extends TestCase
         $this->assertEquals($this->data['key2'], $DI['key2']);
 
         //Function filter #1
-        $DI['key3'] = $DI->raw(function ($container) {
+        $DI['key3'] = $DI->raw(function () {
             return $this->data['key3'];
         });
         $this->assertEquals($this->data['key3'], $DI->param('key3'));
 
         //Function filter #2
-        $DI->raw('key4', function ($container) {
+        $DI->raw('key4', function () {
             return $this->data['key4'];
         });
         $this->assertEquals($this->data['key4'], $DI->param('key4'));
@@ -108,11 +108,11 @@ class DIContainerTest extends TestCase
     {
         $DI = new DIContainer();
 
-        $DI['some.service'] = function ($container) {
+        $DI['some.service'] = function () {
             return $this->getMockBuilder('someService');
         };
 
-        $DI->extend('some.service', function ($someService, $container) {
+        $DI->extend('some.service', function ($someService) {
             $someService->someAttribute = 'someValue';
 
             return $someService;
@@ -145,13 +145,13 @@ class DIContainerTest extends TestCase
         $this->assertSame($object2, $DI['object2']);
 
         // Function filter #1
-        $DI['object3'] = $DI->instance(function ($container) use ($object3) {
+        $DI['object3'] = $DI->instance(function () use ($object3) {
             return $object3;
         });
         $this->assertSame($object3, $DI->shared('object3'));
 
         // Function filter #2
-        $DI->instance('object4', function ($container) use ($object4) {
+        $DI->instance('object4', function () use ($object4) {
             return $object4;
         });
         $this->assertSame($object4, $DI->shared('object4'));
