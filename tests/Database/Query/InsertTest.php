@@ -112,24 +112,26 @@ class InsertTest extends TestCase
 
     public function testRun()
     {
+        $nowFunc = 'NOW()';
+
         $this->insert->addValues([
             new Value('name', 'Millhouse'),
-            new Value('created', 'NOW()', true),
+            new Value('created', $nowFunc, true),
         ]);
 
         $this->insert->addValues([
             new Value('name', 'Nad'),
-            new Value('created', 'NOW()', true),
+            new Value('created', $nowFunc, true),
         ]);
 
         $this->insert->addValues([
             new Value('name', 'Lenny'),
-            new Value('created', 'NOW()', true),
+            new Value('created', $nowFunc, true),
         ]);
 
         $this->insert->addValues([
             new Value('name', 'Krusty'),
-            new Value('created', 'NOW()', true),
+            new Value('created', $nowFunc, true),
         ]);
 
         $rows = $this->insert->execute();
