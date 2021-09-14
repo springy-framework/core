@@ -81,11 +81,11 @@ class ConditionsTest extends TestCase
 
     public function testSubConditions()
     {
-        $conditions = new Conditions();
-        $conditions->add('column_c', 3, Condition::OP_GREATER_EQUAL);
-        $conditions->add('column_c', 8, Condition::OP_LESS_EQUAL);
+        $subcond = new Conditions();
+        $subcond->add('column_c', 3, Condition::OP_GREATER_EQUAL);
+        $subcond->add('column_c', 8, Condition::OP_LESS_EQUAL);
 
-        $this->conditions->addSubConditions($conditions);
+        $this->conditions->addSubConditions($subcond);
 
         $string = (string) $this->conditions;
         $this->assertEquals('column_a = ? AND column_b = ? AND (column_c >= ? AND column_c <= ?)', $string);
