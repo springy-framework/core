@@ -24,6 +24,7 @@ class ApplicationTest extends TestCase
     public function testThatApplicationCanRegisterEvents()
     {
         $this->app->on('event', function () {
+            // Do nothing
         });
 
         $this->assertTrue($this->app['events']->hasHandlersFor('event'));
@@ -32,6 +33,7 @@ class ApplicationTest extends TestCase
     public function testThatApplicationCanUnRegisterEvents()
     {
         $this->app->on('event', function () {
+            // Do nothing
         });
 
         $this->app->off('event');
