@@ -13,12 +13,14 @@ use Springy\Utils\UUID;
 
 class UUIDTest extends TestCase
 {
+    protected const UUID_REGEX = '/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/';
+
     public function testRandomUUID()
     {
         $uuid1 = UUID::random();
         $uuid2 = UUID::random();
-        $this->assertMatchesRegularExpression('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $uuid1);
-        $this->assertMatchesRegularExpression('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $uuid2);
+        $this->assertMatchesRegularExpression(self::UUID_REGEX, $uuid1);
+        $this->assertMatchesRegularExpression(self::UUID_REGEX, $uuid2);
         $this->assertNotEquals($uuid1, $uuid2);
     }
 
@@ -29,8 +31,8 @@ class UUIDTest extends TestCase
         $v3_1 = UUID::v3($uuid, $name);
         $v3_2 = UUID::v3($uuid, $name);
 
-        $this->assertMatchesRegularExpression('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $v3_1);
-        $this->assertMatchesRegularExpression('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $v3_2);
+        $this->assertMatchesRegularExpression(self::UUID_REGEX, $v3_1);
+        $this->assertMatchesRegularExpression(self::UUID_REGEX, $v3_2);
         $this->assertEquals($v3_1, $v3_2);
     }
 
@@ -38,8 +40,8 @@ class UUIDTest extends TestCase
     {
         $uuid1 = UUID::v4();
         $uuid2 = UUID::v4();
-        $this->assertMatchesRegularExpression('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $uuid1);
-        $this->assertMatchesRegularExpression('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $uuid2);
+        $this->assertMatchesRegularExpression(self::UUID_REGEX, $uuid1);
+        $this->assertMatchesRegularExpression(self::UUID_REGEX, $uuid2);
         $this->assertNotEquals($uuid1, $uuid2);
     }
 }
