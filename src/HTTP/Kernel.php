@@ -161,7 +161,7 @@ class Kernel extends MainKernel
             return false;
         }
 
-        $this->callMagic($segments);
+        return $this->callMagic($segments);
     }
 
     /**
