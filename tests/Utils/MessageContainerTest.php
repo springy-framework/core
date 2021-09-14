@@ -14,6 +14,8 @@ use Springy\Utils\MessageContainer;
 
 class MessageContainerTest extends TestCase
 {
+    protected const LI_TPL = '<li>:msg</li>';
+
     protected $msgContainer;
 
     protected function setUp(): void
@@ -24,44 +26,44 @@ class MessageContainerTest extends TestCase
     public function testMessageGetsFormated()
     {
         $this->msgContainer->setMessages(['errors' => 'Erro!']);
-        $msg = $this->msgContainer->get('errors', '<li>:msg</li>');
+        $msg = $this->msgContainer->get('errors', self::LI_TPL);
 
         $this->assertEquals(['<li>Erro!</li>'], $msg);
     }
 
     public function testMultipleMessagesGetsFormated()
     {
-        $this->msgContainer->add('errors', 'Erro1');
-        $this->msgContainer->add('errors', 'Erro2');
-        $this->msgContainer->add('errors', 'Erro3');
+        $this->msgContainer->add('errors', 'Error1');
+        $this->msgContainer->add('errors', 'Error2');
+        $this->msgContainer->add('errors', 'Error3');
 
-        $msg = $this->msgContainer->get('errors', '<li>:msg</li>');
+        $msg = $this->msgContainer->get('errors', self::LI_TPL);
 
-        $this->assertEquals(['<li>Erro1</li>', '<li>Erro2</li>', '<li>Erro3</li>'], $msg);
+        $this->assertEquals(['<li>Error1</li>', '<li>Error2</li>', '<li>Error3</li>'], $msg);
     }
 
     public function testGetJustFirstMessageOfAType()
     {
-        $this->msgContainer->add('errors', 'Erro1');
-        $this->msgContainer->add('errors', 'Erro2');
-        $this->msgContainer->add('errors', 'Erro3');
+        $this->msgContainer->add('errors', 'Error1');
+        $this->msgContainer->add('errors', 'Error2');
+        $this->msgContainer->add('errors', 'Error3');
 
-        $msg = $this->msgContainer->first('errors', '<li>:msg</li>');
+        $msg = $this->msgContainer->first('errors', self::LI_TPL);
 
-        $this->assertEquals('<li>Erro1</li>', $msg);
+        $this->assertEquals('<li>Error1</li>', $msg);
     }
 
     public function testGetsAllMessages()
     {
-        $this->msgContainer->add('errors', 'Erro');
+        $this->msgContainer->add('errors', 'Error');
         $this->msgContainer->add('success', 'Success');
         $this->msgContainer->add('warning', 'Warning');
 
-        $msg = $this->msgContainer->all('<li>:msg</li>');
+        $msg = $this->msgContainer->all(self::LI_TPL);
 
         $this->assertEquals(
             [
-                '<li>Erro</li>',
+                '<li>Error</li>',
                 '<li>Success</li>',
                 '<li>Warning</li>',
             ],
