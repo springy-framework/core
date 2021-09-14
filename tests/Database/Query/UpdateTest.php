@@ -16,6 +16,8 @@ use Springy\Exceptions\SpringyException;
 
 class UpdateTest extends TestCase
 {
+    protected const HOMER = 'Homer Simpson';
+
     /** @var Update */
     public $update;
 
@@ -27,7 +29,7 @@ class UpdateTest extends TestCase
 
     public function testUpdateWithoutWhere()
     {
-        $this->update->addValue('name', 'Homer Simpson');
+        $this->update->addValue('name', self::HOMER);
 
         $this->expectException(SpringyException::class);
         $this->update->parse();
@@ -35,22 +37,22 @@ class UpdateTest extends TestCase
 
     public function testUpdateWithoutSafeMode()
     {
-        $this->update->addValue('name', 'Homer Simpson');
+        $this->update->addValue('name', self::HOMER);
         $this->update->setSafeMode(false);
 
         $sql = 'UPDATE test_spf SET name = ?';
         $this->assertEquals($sql, (string) $this->update);
-        $this->assertEquals(['Homer Simpson'], $this->update->params());
+        $this->assertEquals([self::HOMER], $this->update->params());
     }
 
     public function testSimpleUpdate()
     {
-        $this->update->addValue('name', 'Homer Simpson');
+        $this->update->addValue('name', self::HOMER);
         $this->update->addCondition('id', 1);
 
         $sql = 'UPDATE test_spf SET name = ? WHERE id = ?';
         $this->assertEquals($sql, $this->update->parse());
-        $this->assertEquals(['Homer Simpson', 1], $this->update->params());
+        $this->assertEquals([self::HOMER, 1], $this->update->params());
     }
 
     public function testUpdateWithJoin()
