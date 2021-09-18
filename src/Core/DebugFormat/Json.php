@@ -61,6 +61,6 @@ class Json extends Plain
      */
     public function get(): string
     {
-        return json_decode('[' . json_encode($this->data) . ']');
+        return json_encode(json_decode('[' . $this->data . ']'));
     }
 }
