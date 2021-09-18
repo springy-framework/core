@@ -29,6 +29,7 @@ class MediatorTest extends TestCase
         $event = 'global.someevent';
         // Normal
         $this->mediator->registerHandlerFor($event, function () {
+            // Do nothing
         });
         $this->assertTrue($this->mediator->hasHandlersFor($event));
 
@@ -37,6 +38,7 @@ class MediatorTest extends TestCase
 
         // Alternative
         $this->mediator->on($event, function () {
+            // Do nothing
         });
         $this->assertTrue($this->mediator->hasHandlersFor($event), 'message');
 
@@ -168,37 +170,37 @@ class MediatorTest extends TestCase
 
     public function testThatMediatorCanReturnTHeCurrentEvent()
     {
-        $this->mediator->on('event.subevent1', function () {
+        $event1 = 'event.subevent1';
+        $event2 = 'event.subevent2';
+        $event3 = 'event.subevent3';
+        $this->mediator->on($event1, function () {
             return 5;
         });
-        $this->mediator->on('event.subevent2', function () {
+        $this->mediator->on($event2, function () {
             return -5;
         });
-        $this->mediator->on('event.subevent3', function () {
+        $this->mediator->on($event3, function () {
             return 10;
         });
 
-        $this->mediator->on('event.*', function () {
-            switch ($this->mediator->current()) {
-                case 'event.subevent1':
-                    return 5;
-                case 'event.subevent2':
-                    return 10;
-                case 'event.subevent3':
-                    return 15;
-            }
+        $this->mediator->on('event.*', function () use ($event1, $event2, $event3) {
+            $result = [
+                $event1 => 5,
+                $event2 => 10,
+                $event3 => 15,
+            ];
+
+            return $result[$this->mediator->current()] ?? 0;
         });
 
-        $results = 0;
+        $result = $this->mediator->fire($event1)[0];
+        $result += $this->mediator->fire($event1)[1];
+        $result += $this->mediator->fire($event2)[0];
+        $result += $this->mediator->fire($event2)[1];
+        $result += $this->mediator->fire($event3)[0];
+        $result += $this->mediator->fire($event3)[1];
 
-        $results += $this->mediator->fire('event.subevent1')[0];
-        $results += $this->mediator->fire('event.subevent1')[1];
-        $results += $this->mediator->fire('event.subevent2')[0];
-        $results += $this->mediator->fire('event.subevent2')[1];
-        $results += $this->mediator->fire('event.subevent3')[0];
-        $results += $this->mediator->fire('event.subevent3')[1];
-
-        $this->assertEquals(40, $results);
+        $this->assertEquals(40, $result);
     }
 
     public function testThatMediatorStopsEventPropagationAfterAHandlerReturnsFalse()
