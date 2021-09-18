@@ -112,6 +112,35 @@ class Terminal
     }
 
     /**
+     * Checks if given method is an internal function.
+     *
+     * @param string $method
+     *
+     * @return bool
+     */
+    protected function isInternalMethod(string $method): bool
+    {
+        $commands = [
+            'system.describe' => function () {
+                $this->serviceDescription();
+            },
+            'login' => function () {
+                $this->serviceLogin();
+            },
+            'logout' => function () {
+                $this->serviceLogout();
+            },
+        ];
+        $hasMethod = isset($commands[$method]);
+
+        if ($hasMethod) {
+            call_user_func($commands[$method]);
+        }
+
+        return $hasMethod;
+    }
+
+    /**
      * Parses the JSON-RPC request.
      *
      * @return void
@@ -131,17 +160,7 @@ class Terminal
         $cred = array_shift($params);
         $sessId = Session::getInstance()->get(self::TERM_SESSION_ID, false);
 
-        if ($method === 'system.describe') {
-            $this->serviceDescription();
-
-            return;
-        } elseif ($method === 'login') {
-            $this->serviceLogin();
-
-            return;
-        } elseif ($method === 'logout') {
-            $this->serviceLogout();
-
+        if ($this->isInternalMethod($method)) {
             return;
         } elseif (!$sessId || $sessId !== $cred) {
             $this->sendError(401, 'Session terminated. Please login again.');
@@ -173,19 +192,16 @@ class Terminal
             'id'        => 'urn:md5:' . md5(current_url()),
             'procs'     => [
                 [
-                    'name'   => 'errors',
-                    'help'   => 'Show application errors.',
-                    // 'params' => ['command', 'parameter'],
+                    'name' => 'errors',
+                    'help' => 'Show application errors.',
                 ],
                 [
-                    'name'   => 'migrator',
-                    'help'   => 'Database migrator.',
-                    // 'params' => ['command', 'parameter'],
+                    'name' => 'migrator',
+                    'help' => 'Database migrator.',
                 ],
                 [
-                    'name'   => 'logout',
-                    'help'   => 'Ends terminal session.',
-                    // 'params' => ['command', 'parameter'],
+                    'name' => 'logout',
+                    'help' => 'Ends terminal session.',
                 ],
             ],
         ]);
