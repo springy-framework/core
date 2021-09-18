@@ -41,4 +41,26 @@ class Json extends Plain
 
         return json_encode($result);
     }
+
+    /**
+     * Adds debug data.
+     *
+     * @param array $debug
+     *
+     * @return void
+     */
+    public function add(array $debug): void
+    {
+        $this->data .= (empty($this->data) ? '' : ',') . $this->format($debug);
+    }
+
+    /**
+     * Gets debug formated data.
+     *
+     * @return string
+     */
+    public function get(): string
+    {
+        return json_decode('[' . json_encode($this->data) . ']');
+    }
 }
