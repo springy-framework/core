@@ -248,18 +248,14 @@ class ArrayUtils
     /**
      * Returns the value of an array using dot notation.
      *
-     * @param array       $array
-     * @param string|null $key
-     * @param mixed       $default
+     * @param array  $array
+     * @param string $key
+     * @param mixed  $default
      *
      * @return mixed
      */
-    public function dottedGet(array $array, $key = null, $default = null)
+    public function dottedGet(array $array, string $key, $default = null)
     {
-        if (is_null($key)) {
-            return $array;
-        }
-
         if (isset($array[$key])) {
             return $array[$key];
         }
