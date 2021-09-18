@@ -23,6 +23,10 @@ use Springy\Validation\Validator;
  */
 class RowsIterator implements Iterator
 {
+    // Erro messages
+    protected const ERR_MSG_COLUMN_NOT_EXISTS = 'Column "%s" does not exists.';
+    protected const ERR_MSG_COLUMN_READ_ONLY = 'Column "%s" is read only.';
+
     /**
      * The columns structure.
      *
@@ -448,7 +452,9 @@ class RowsIterator implements Iterator
         $row = current($this->rows);
 
         if (!isset($row[$column]) && $this->errorIfColNotExists) {
-            throw new SpringyException('Column "' . $column . '" does not exists.');
+            throw new SpringyException(
+                sprintf(self::ERR_MSG_COLUMN_NOT_EXISTS, $column)
+            );
         }
 
         return $row[$column] ?? null;
@@ -527,9 +533,13 @@ class RowsIterator implements Iterator
     public function set(string $column, $value = null)
     {
         if (!isset($this->columns->$column)) {
-            throw new SpringyException('Column "' . $column . '" does not exists.');
+            throw new SpringyException(
+                sprintf(self::ERR_MSG_COLUMN_NOT_EXISTS, $column)
+            );
         } elseif (!in_array($column, $this->writableColumns)) {
-            throw new SpringyException('Column "' . $column . '" is not writable.');
+            throw new SpringyException(
+                sprintf(self::ERR_MSG_COLUMN_READ_ONLY, $column)
+            );
         }
 
         if (empty($this->rows)) {
