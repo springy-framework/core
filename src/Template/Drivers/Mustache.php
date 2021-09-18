@@ -78,7 +78,6 @@ class Mustache implements TemplateDriverInterface
                 'extension' => '',
             ]
         );
-        // $options['partials_loader'] = new FilesystemLoader($this->templateDirs[0]);
         $options['helpers'] = [];
         foreach ($functions as $name => $callback) {
             $options['helpers'][$name] = $callback;
