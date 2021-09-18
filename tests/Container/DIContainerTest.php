@@ -106,23 +106,24 @@ class DIContainerTest extends TestCase
 
     public function testThatContainerCanExtendFactories()
     {
+        $service = 'some.service';
         $DI = new DIContainer();
 
-        $DI['some.service'] = function () {
+        $DI[$service] = function () {
             return $this->getMockBuilder('someService');
         };
 
-        $DI->extend('some.service', function ($someService) {
+        $DI->extend($service, function ($someService) {
             $someService->someAttribute = 'someValue';
 
             return $someService;
         });
 
-        $this->assertObjectHasAttribute('someAttribute', $DI['some.service']);
-        $this->assertEquals('someValue', $DI['some.service']->someAttribute);
+        $this->assertObjectHasAttribute('someAttribute', $DI[$service]);
+        $this->assertEquals('someValue', $DI[$service]->someAttribute);
 
-        $extended1 = $DI['some.service'];
-        $extended2 = $DI['some.service'];
+        $extended1 = $DI[$service];
+        $extended2 = $DI[$service];
         $this->assertNotSame($extended1, $extended2);
     }
 
