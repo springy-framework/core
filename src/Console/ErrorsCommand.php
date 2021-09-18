@@ -69,6 +69,7 @@ class ErrorsCommand extends Controller
         string $name,
         string $function,
         string $parameter,
+        bool $showInfo,
         string $description,
         bool $onlyInteractive = false,
         string $alias = '',
@@ -79,6 +80,7 @@ class ErrorsCommand extends Controller
             'description'     => $description,
             'caller'          => $function,
             'parameter'       => $parameter,
+            'showInfo'        => $showInfo,
             'onlyInteractive' => $onlyInteractive,
             'alias'           => $alias,
             'hidden'          => $hidden,
@@ -103,18 +105,18 @@ class ErrorsCommand extends Controller
         $this->logDir = Configuration::getInstance()->get('main.errors_log');
 
         $crcStr = '<CRC>';
-        $this->addInstruction('cookie', 'showCookie', $crcStr, 'Display the $_COOKIE var content for the error.');
-        $this->addInstruction('debug', 'showDebug', $crcStr, 'Display the debug content for the error.');
-        $this->addInstruction('delete', 'doDelete', $crcStr . '|all', 'Delete one or all application errors.');
-        $this->addInstruction('details', 'showDetails', $crcStr, 'Display the details for the error.', false, 'show');
-        $this->addInstruction('exit', '', '', 'Exit from interactive mmode.', true, 'quit', false, true);
-        $this->addInstruction('get', 'showGet', $crcStr, 'Display the $_GET var content for the error.');
-        $this->addInstruction('help', 'printHelp', '', 'Display this help messagem.', false, '?');
-        $this->addInstruction('list', 'doList', '', 'Display the list of application errors.');
-        $this->addInstruction('post', 'showPost', $crcStr, 'Display the $_POST var content for the error.');
-        $this->addInstruction('server', 'showServer', $crcStr, 'Display the $_SERVER var content for the error.');
-        $this->addInstruction('session', 'showSession', $crcStr, 'Display the $_SESSION var content for the error.');
-        $this->addInstruction('trace', 'showTrace', $crcStr, 'Display the stack trace content for the error.');
+        $this->addInstruction('cookie', 'showCookie', $crcStr, true, 'Display the $_COOKIE var content for the error.');
+        $this->addInstruction('debug', 'showDebug', $crcStr, true, 'Display the debug content for the error.');
+        $this->addInstruction('delete', 'doDelete', $crcStr . '|all', false, 'Delete one or all application errors.');
+        $this->addInstruction('details', 'showDetails', $crcStr, false, 'Display the details for the error.', false, 'show');
+        $this->addInstruction('exit', '', '', false, 'Exit from interactive mmode.', true, 'quit', false, true);
+        $this->addInstruction('get', 'showGet', $crcStr, true, 'Display the $_GET var content for the error.');
+        $this->addInstruction('help', 'printHelp', '', false, 'Display this help messagem.', false, '?');
+        $this->addInstruction('list', 'doList', '', false, 'Display the list of application errors.');
+        $this->addInstruction('post', 'showPost', $crcStr, true, 'Display the $_POST var content for the error.');
+        $this->addInstruction('server', 'showServer', $crcStr, true, 'Display the $_SERVER var content for the error.');
+        $this->addInstruction('session', 'showSession', $crcStr, true, 'Display the $_SESSION var content for the error.');
+        $this->addInstruction('trace', 'showTrace', $crcStr, true, 'Display the stack trace content for the error.');
     }
 
     /**
@@ -157,12 +159,6 @@ class ErrorsCommand extends Controller
      */
     protected function delete(string $file, bool $silent = false): int
     {
-        if (!is_file($file)) {
-            $this->output->writeln('<error>CRC error not found.</>');
-
-            return 1;
-        }
-
         $deleted = unlink($file);
         if (!$deleted) {
             $this->output->writeln('<error>Can not delete the error.</>');
@@ -200,17 +196,12 @@ class ErrorsCommand extends Controller
     }
 
     /**
-     * Deletes an application error.
+     * Deletes one or all application errors.
      *
      * @return int
      */
     protected function doDelete(): int
     {
-        $this->getCrc();
-        if (!$this->crc) {
-            return 1;
-        }
-
         if ($this->crc === 'all') {
             return $this->deleteAll();
         }
@@ -221,9 +212,9 @@ class ErrorsCommand extends Controller
     /**
      * Shows the list of application errors.
      *
-     * @return int
+     * @return void
      */
-    protected function doList(): int
+    protected function doList(): void
     {
         $table = new Table($this->output);
         $table->setStyle('box');
@@ -262,8 +253,6 @@ class ErrorsCommand extends Controller
         }
 
         $table->render();
-
-        return 0;
     }
 
     /**
@@ -281,7 +270,7 @@ class ErrorsCommand extends Controller
     }
 
     /**
-     * Gets the error data.
+     * Gets the error crc.
      *
      * @return array|bool
      */
@@ -291,21 +280,11 @@ class ErrorsCommand extends Controller
 
         if (!$this->crc) {
             return false;
+        } elseif ($this->instruction->caller === 'doDelete' && $this->crc === 'all') {
+            return true;
         }
 
-        $file = $this->logDir . DS . $this->crc . '.yml';
-
-        if (!is_file($file)) {
-            $this->output->writeln(
-                '<error>Error identified by <comment>'
-                . $this->crc
-                . '</> CRC not found.</>'
-            );
-
-            return false;
-        }
-
-        return Yaml::parseFile($file);
+        return $this->loadErrorYml();
     }
 
     /**
@@ -352,6 +331,28 @@ class ErrorsCommand extends Controller
     }
 
     /**
+     * Gets requested parameter if needed.
+     *
+     * @return array|bool
+     */
+    protected function getParameter()
+    {
+        if (empty($this->instruction->parameter)) {
+            return true;
+        }
+
+        $error = $this->getError();
+
+        if ($error === false) {
+            return false;
+        } elseif ($this->instruction->showInfo) {
+            $this->printInfo($error);
+        }
+
+        return $error;
+    }
+
+    /**
      * Gets the instruction from standard IO.
      *
      * @return int
@@ -387,6 +388,28 @@ class ErrorsCommand extends Controller
         }
 
         return 0;
+    }
+
+    /**
+     * Gets the error data.
+     *
+     * @return array|bool
+     */
+    protected function loadErrorYml()
+    {
+        $file = $this->logDir . DS . $this->crc . '.yml';
+
+        if (!is_file($file)) {
+            $this->output->writeln(
+                '<error>Error identified by <comment>'
+                . $this->crc
+                . '</> CRC not found.</>'
+            );
+
+            return false;
+        }
+
+        return Yaml::parseFile($file);
     }
 
     /**
@@ -509,17 +532,16 @@ class ErrorsCommand extends Controller
             return 1;
         }
 
-        $error = $this->getError();
+        $error = $this->getParameter();
 
         if ($error === false) {
             return 1;
         }
 
-        $this->printInfo($error);
-        call_user_func([$this, $this->instruction->caller], $error);
+        $result = call_user_func([$this, $this->instruction->caller], $error);
         $this->output->writeln('');
 
-        return 0;
+        return is_int($result) ? $result : 0;
     }
 
     /**
