@@ -16,43 +16,47 @@ use Springy\HTTP\Cookie;
  */
 class CookieTest extends TestCase
 {
+    protected const BAR = 'bar';
+    protected const BARFOO = 'bar[foo]';
+    protected const FOO = 'foo';
+
     public $cookie;
 
     protected function setUp(): void
     {
-        $_COOKIE['foo'] = 'bar';
-        $_COOKIE['bar']['foo'] = 'foo';
+        $_COOKIE[self::FOO] = self::BAR;
+        $_COOKIE[self::BAR][self::FOO] = self::FOO;
 
         $this->cookie = Cookie::getInstance();
     }
 
     public function testDelete()
     {
-        $this->cookie->delete('foo');
-        $this->assertFalse(isset($_COOKIE['foo']));
-        $this->cookie->delete('bar');
-        $this->assertFalse(isset($_COOKIE['bar']['foo']));
-        $this->assertFalse(isset($_COOKIE['bar']));
+        $this->cookie->delete(self::FOO);
+        $this->assertFalse(isset($_COOKIE[self::FOO]));
+        $this->cookie->delete(self::BAR);
+        $this->assertFalse(isset($_COOKIE[self::BAR][self::FOO]));
+        $this->assertFalse(isset($_COOKIE[self::BAR]));
     }
 
     public function testExists()
     {
-        $this->assertTrue($this->cookie->exists('foo'));
-        $this->assertTrue($this->cookie->exists('bar[foo]'));
-        $this->assertTrue($this->cookie->exists(['bar' => 'foo']));
+        $this->assertTrue($this->cookie->exists(self::FOO));
+        $this->assertTrue($this->cookie->exists(self::BARFOO));
+        $this->assertTrue($this->cookie->exists([self::BAR => self::FOO]));
     }
 
     public function testGet()
     {
-        $this->assertEquals('bar', $this->cookie->get('foo'));
-        $this->assertEquals('foo', $this->cookie->get('bar[foo]'));
-        $this->assertEquals('foo', $this->cookie->get(['bar' => 'foo']));
+        $this->assertEquals(self::BAR, $this->cookie->get(self::FOO));
+        $this->assertEquals(self::FOO, $this->cookie->get(self::BARFOO));
+        $this->assertEquals(self::FOO, $this->cookie->get([self::BAR => self::FOO]));
     }
 
     public function testSet()
     {
-        $this->assertTrue($this->cookie->set('foo', 'bar'));
-        $this->assertTrue($this->cookie->set('bar[foo]', 'foo'));
-        $this->assertTrue($this->cookie->set(['bar' => 'foo'], 'foo'));
+        $this->assertTrue($this->cookie->set(self::FOO, self::BAR));
+        $this->assertTrue($this->cookie->set(self::BARFOO, self::FOO));
+        $this->assertTrue($this->cookie->set([self::BAR => self::FOO], self::FOO));
     }
 }
