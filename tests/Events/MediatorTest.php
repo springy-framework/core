@@ -26,21 +26,22 @@ class MediatorTest extends TestCase
 
     public function testThatMediatorCanRegisterAndForgetHandlers()
     {
+        $event = 'global.someevent';
         // Normal
-        $this->mediator->registerHandlerFor('global.someevent', function () {
+        $this->mediator->registerHandlerFor($event, function () {
         });
-        $this->assertTrue($this->mediator->hasHandlersFor('global.someevent'));
+        $this->assertTrue($this->mediator->hasHandlersFor($event));
 
-        $this->mediator->forget('global.someevent');
-        $this->assertFalse($this->mediator->hasHandlersFor('global.someevent'));
+        $this->mediator->forget($event);
+        $this->assertFalse($this->mediator->hasHandlersFor($event));
 
         // Alternative
-        $this->mediator->on('global.someevent', function () {
+        $this->mediator->on($event, function () {
         });
-        $this->assertTrue($this->mediator->hasHandlersFor('global.someevent'), 'message');
+        $this->assertTrue($this->mediator->hasHandlersFor($event), 'message');
 
-        $this->mediator->off('global.someevent');
-        $this->assertFalse($this->mediator->hasHandlersFor('global.someevent'));
+        $this->mediator->off($event);
+        $this->assertFalse($this->mediator->hasHandlersFor($event));
     }
 
     public function testThatMediatorFiresASingleRegisteredEvent()
