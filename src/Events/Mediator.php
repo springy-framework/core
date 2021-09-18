@@ -29,7 +29,7 @@ class Mediator
     protected $masterHandlers;
     /** @var array all handlers ordered by priority */
     protected $orderedHandlers;
-    /** @var array|null current event handler been triggered */
+    /** @var string|null current event handler been triggered */
     protected $currentEvent;
 
     /**
