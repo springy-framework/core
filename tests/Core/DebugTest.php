@@ -41,7 +41,7 @@ class DebugTest extends TestCase
         $this->debug->add('Bar', false);
         $this->debug->add('Foo', true, false);
         $this->assertStringStartsWith('> Time:', $this->debug->get('plain'));
-        $this->assertStringStartsWith('{"Time":', $this->debug->get('json'));
+        $this->assertStringStartsWith('[{"Time":', $this->debug->get('json'));
         $this->assertStringStartsWith('<div class="springy-debug-info">', $this->debug->get('html'));
     }
 
