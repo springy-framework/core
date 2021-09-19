@@ -74,8 +74,6 @@ class TemplateTest extends TestCase
         $this->assertTrue($template->templateExists());
         $this->assertEquals('Mustache Foo Bar', $template->fetch());
 
-        // $template->clearCache();
-
         $dir = scandir(config_get('template.paths.cache'));
         $this->assertEquals(['.', '..'], $dir);
     }
