@@ -51,10 +51,9 @@ class Kernel
      * @param array|string $conf the array of configuration or
      *                           the full path name of the configuration file.
      */
-    protected function __construct($appConf = null)
+    final private function __construct($appConf = null)
     {
         $this->errorHandler = new Handler();
-        // self::$instance = $this;
 
         if ($appConf !== null) {
             $this->setUp($appConf);

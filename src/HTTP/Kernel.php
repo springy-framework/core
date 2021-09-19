@@ -29,9 +29,6 @@ use Springy\Security\Authentication;
  */
 class Kernel extends SystemBase implements SystemInterface
 {
-    /** @var static Kernel globally instance */
-    // protected static $instance;
-
     /** @var string|null */
     protected $endpoint;
     /** @var array */
@@ -49,9 +46,6 @@ class Kernel extends SystemBase implements SystemInterface
      */
     protected function __construct($appConf = null)
     {
-        // parent::__construct($appConf);
-        // parent::$instance = $this;
-        // self::$instance = $this;
     }
 
     /**

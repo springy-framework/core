@@ -24,9 +24,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Kernel extends SystemBase implements SystemInterface
 {
-    /** @var static Kernel globally instance */
-    // protected static $instance;
-
     /** @var int exit status code */
     protected $exitStatus;
     /** @var OutputInterface the console output interface */
@@ -42,9 +39,6 @@ class Kernel extends SystemBase implements SystemInterface
      */
     protected function __construct($appConf = null)
     {
-        // parent::__construct($appConf);
-        // parent::$instance = $this;
-        // self::$instance = $this;
     }
 
     /**
