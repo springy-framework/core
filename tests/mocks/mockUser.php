@@ -40,6 +40,7 @@ class User implements IdentityInterface
 
     public function fillFromSession(array $data)
     {
+        // Do nothing
     }
 
     public function getId()
