@@ -2,16 +2,14 @@
 
 namespace App\Migrations\Rev0;
 
-use Springy\Database\Connection;
-
 class Migration
 {
-    public function migrate(Connection $connection)
+    public function migrate()
     {
         return true;
     }
 
-    public function rollback(Connection $connection)
+    public function rollback()
     {
         return true;
     }
