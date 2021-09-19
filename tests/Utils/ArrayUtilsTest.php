@@ -14,6 +14,11 @@ use Springy\Utils\ArrayUtils;
 
 class ArrayUtilsTest extends TestCase
 {
+    protected const CONF_SESSION_TYPE = 'config.session.type';
+    protected const A_LOGIN = 'A login';
+    protected const A_PASSWORD = 'A password';
+    protected const NAME_2 = 'Name 2';
+
     public $arrayUtils;
     public $data;
 
@@ -26,7 +31,7 @@ class ArrayUtilsTest extends TestCase
             ['key1' => 'val1', 'key2' => 'val2'],
             [
                 ['name' => 'Name 1', 'language' => 'php'],
-                ['name' => 'Name 2', 'language' => 'python'],
+                ['name' => self::NAME_2, 'language' => 'python'],
                 ['name' => 'Name 3', 'language' => 'ruby'],
             ],
             [2, 14, 5, 56, 74, 36, 23],
@@ -35,13 +40,13 @@ class ArrayUtilsTest extends TestCase
                     'db' => [
                         'mysql' => [
                             'name'  => 'mysql',
-                            'login' => 'A login',
-                            'pass'  => 'A password',
+                            'login' => self::A_LOGIN,
+                            'pass'  => self::A_PASSWORD,
                         ],
                         'postgre' => [
                             'name'  => 'postgre',
-                            'login' => 'A login',
-                            'pass'  => 'A password',
+                            'login' => self::A_LOGIN,
+                            'pass'  => self::A_PASSWORD,
                         ],
                     ],
                     'session' => [
@@ -96,7 +101,7 @@ class ArrayUtilsTest extends TestCase
 
         $this->assertEquals($expected, $actual);
 
-        $expected = ['Name 1' => 'php', 'Name 2' => 'python', 'Name 3' => 'ruby'];
+        $expected = ['Name 1' => 'php', self::NAME_2 => 'python', 'Name 3' => 'ruby'];
 
         $actual = $this->arrayUtils->pluck($list, 'language', 'name');
 
@@ -159,7 +164,7 @@ class ArrayUtilsTest extends TestCase
     {
         $list = $this->data[1];
 
-        $expected = ['name' => 'Name 2', 'language' => 'python'];
+        $expected = ['name' => self::NAME_2, 'language' => 'python'];
 
         $actual = $this->arrayUtils->firstThatPasses($list, function ($key, $val) {
             return $key == 1 && $val['language'] == 'python';
@@ -175,7 +180,7 @@ class ArrayUtilsTest extends TestCase
         $expected = 74;
 
         $actual = $this->arrayUtils->lastThatPasses($list, function ($key, $val) {
-            return $val > 50;
+            return $val > 50 && !is_null($key);
         });
 
         $this->assertEquals($expected, $actual);
@@ -188,7 +193,7 @@ class ArrayUtilsTest extends TestCase
         $expected = [56, 74];
 
         $actual = $this->arrayUtils->allThatPasses($list, function ($key, $val) {
-            return $val > 50;
+            return $val > 50 && !is_null($key);
         });
 
         $this->assertEquals($expected, array_values($actual));
@@ -198,7 +203,7 @@ class ArrayUtilsTest extends TestCase
     {
         $list = $this->data[3];
 
-        $expected = ['mysql', 'A login', 'A password', 'postgre', 'A login', 'A password'];
+        $expected = ['mysql', self::A_LOGIN, self::A_PASSWORD, 'postgre', self::A_LOGIN, self::A_PASSWORD];
 
         $actual = $this->arrayUtils->flatten($list['config']['db']);
 
@@ -224,7 +229,7 @@ class ArrayUtilsTest extends TestCase
 
         $expected = $list['config']['session']['type'];
 
-        $actual = $this->arrayUtils->dottedGet($list, 'config.session.type');
+        $actual = $this->arrayUtils->dottedGet($list, self::CONF_SESSION_TYPE);
 
         $this->assertEquals($expected, $actual);
     }
@@ -235,7 +240,7 @@ class ArrayUtilsTest extends TestCase
 
         $expected = $list['config']['session']['type'];
 
-        $actual = $this->arrayUtils->dottedPull($list, 'config.session.type');
+        $actual = $this->arrayUtils->dottedPull($list, self::CONF_SESSION_TYPE);
 
         $this->assertEquals($expected, $actual);
 
@@ -249,7 +254,7 @@ class ArrayUtilsTest extends TestCase
         //Changing
         $expected = 'cookie';
 
-        $this->arrayUtils->dottedSet($list, 'config.session.type', $expected);
+        $this->arrayUtils->dottedSet($list, self::CONF_SESSION_TYPE, $expected);
 
         $actual = $list['config']['session']['type'];
 
