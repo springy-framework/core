@@ -20,6 +20,8 @@ use Springy\Template\Template;
  */
 class TemplateTest extends TestCase
 {
+    protected const NO_NAME = 'no name';
+
     public function testSmartyTemplateDriver()
     {
         Kernel::getInstance()->setEnvironment('tpl-smarty');
@@ -27,7 +29,7 @@ class TemplateTest extends TestCase
         $template = new Template('test');
         $template->assign('test', 'Foo');
         $template->addFunction('personal', function ($options) {
-            return $options['name'] ?? 'no name';
+            return $options['name'] ?? self::NO_NAME;
         });
         $dir = config_get('template.paths.compiled');
 
@@ -46,7 +48,7 @@ class TemplateTest extends TestCase
         $template = new Template('test');
         $template->assign('test', 'Foo');
         $template->addFunction('personal', function ($text) {
-            return $text ?? 'no name';
+            return $text ?? self::NO_NAME;
         });
 
         $this->assertInstanceOf(Twig::class, $template->getTemplateDriver());
@@ -66,7 +68,7 @@ class TemplateTest extends TestCase
         $template = new Template('test');
         $template->assign('test', 'Foo');
         $template->addFunction('personal', function ($text) {
-            return $text ?? 'no name';
+            return $text ?? self::NO_NAME;
         });
 
         $this->assertInstanceOf(Mustache::class, $template->getTemplateDriver());
