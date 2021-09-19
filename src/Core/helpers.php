@@ -217,3 +217,21 @@ function memory_string(int $memory): string
         2
     ) . ' ' . $unit[$idx];
 }
+
+/**
+ * Returns a string in StudlyCaps format.
+ *
+ * @param string $value
+ *
+ * @return string
+ */
+function studly_caps(string $value): string
+{
+    $normalized = [];
+    $segments = explode('-', $value);
+    foreach ($segments as $value) {
+        $normalized[] = $value ? ucwords($value, '_') : '-';
+    }
+
+    return implode('', $normalized);
+}

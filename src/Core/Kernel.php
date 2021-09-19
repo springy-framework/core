@@ -40,13 +40,8 @@ class Kernel
     protected $startime;
     /** @var Handler the application error/exception handler */
     protected $errorHandler;
-    /** @var mixed the controller object */
-    protected $controller;
     /** @var mixed the hook object */
     protected $hook;
-
-    /// System path
-    private static $paths = [];
 
     /**
      * Constructor.
@@ -59,7 +54,7 @@ class Kernel
     protected function __construct($appConf = null)
     {
         $this->errorHandler = new Handler();
-        self::$instance = $this;
+        // self::$instance = $this;
 
         if ($appConf !== null) {
             $this->setUp($appConf);
@@ -83,83 +78,6 @@ class Kernel
         }
 
         $this->hook->shutdown();
-    }
-
-    /**
-     * Tries to discover a controller.
-     *
-     * @return bool
-     */
-    protected function discoverController(): bool
-    {
-        return false;
-    }
-
-    /**
-     * Tryes to load a full qualified name controller class.
-     *
-     * @param string $name
-     * @param array  $segments
-     *
-     * @return bool
-     */
-    protected function loadController(string $name, array $segments): bool
-    {
-        if (!class_exists($name)) {
-            return false;
-        }
-
-        // Creates the controller
-        $this->controller = new $name($segments);
-
-        return true;
-    }
-
-    /**
-     * Normalizes the array of segments to a class namespace.
-     *
-     * @param array $segments
-     *
-     * @return string
-     */
-    protected function normalizeNamePath(array $segments): string
-    {
-        $normalized = [];
-        foreach ($segments as $value) {
-            $normalized[] = $this->normalizeSegment($value);
-        }
-
-        return implode('\\', $normalized);
-    }
-
-    /**
-     * Normalizes the segment name to StudlyCaps.
-     *
-     * @param string $name
-     *
-     * @return string
-     */
-    protected function normalizeSegment(string $name): string
-    {
-        $normalized = [];
-        $segments = explode('-', $name);
-        foreach ($segments as $value) {
-            $normalized[] = $value ? ucwords($value, '_') : '-';
-        }
-
-        return implode('', $normalized);
-    }
-
-    /**
-     * Throws an error.
-     *
-     * @throws SpringyException
-     *
-     * @return void
-     */
-    protected function notFound()
-    {
-        throw new SpringyException('No controller found.');
     }
 
     /**
@@ -219,44 +137,27 @@ class Kernel
     }
 
     /**
-     * A path of the system.
-     *
-     * @param string $component the component constant.
-     * @param string $path      if defined, change the path of the component.
-     *
-     * @return string A string containing the path of the component.
-     */
-    public function path(string $component, string $path = null): string
-    {
-        if ($path !== null) {
-            self::$paths[$component] = $path;
-        }
-
-        return self::$paths[$component] ?? '';
-    }
-
-    /**
      * Runs the application.
      *
      * @param float $startime
      *
      * @return self
      */
-    public function run(float $startime = null): self
+    public function run(SystemInterface $sys, float $startime = null): self
     {
         // Can be executed once
         if ($this->startime !== null) {
-            return static::$instance;
+            return self::$instance;
         }
 
         // Overwrites the application started time if defined
         $this->startime = $startime ?? microtime(true);
 
-        if (!$this->discoverController()) {
-            $this->notFound();
+        if (!$sys->findController()) {
+            $sys->notFound();
         }
 
-        return static::$instance;
+        return self::$instance;
     }
 
     /**
@@ -335,10 +236,6 @@ class Kernel
         $this->errorHandler->setLogDir($conf['errors_log'] ?? '');
         $this->errorHandler->setUnreportable($conf['unreportable_errors'] ?? []);
         $this->errorHandler->setWebmasters($conf['errors_reporting'] ?? '');
-
-        // Define the application paths
-        // $this->path(self::PATH_WEB_ROOT, $conf['ROOT_PATH']);
-        // self::path(self::PATH_APPLICATION, $conf['APP_PATH'] ?? realpath($conf['ROOT_PATH'].'/../app'));
     }
 
     /**
@@ -351,10 +248,10 @@ class Kernel
      */
     public static function getInstance($appConf = null): self
     {
-        if (is_null(static::$instance)) {
-            new static($appConf); // @phpstan-ignore-line
+        if (is_null(self::$instance)) {
+            self::$instance = new self($appConf);
         }
 
-        return static::$instance;
+        return self::$instance;
     }
 }

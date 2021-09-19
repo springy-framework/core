@@ -15,7 +15,8 @@ namespace Springy\HTTP;
 use Closure;
 use Springy\Core\Configuration;
 use Springy\Core\Copyright;
-use Springy\Core\Kernel as MainKernel;
+use Springy\Core\SystemBase;
+use Springy\Core\SystemInterface;
 use Springy\Exceptions\HttpErrorForbidden;
 use Springy\Exceptions\HttpErrorNotFound;
 use Springy\Security\AuthDriver;
@@ -26,12 +27,14 @@ use Springy\Security\Authentication;
  *
  * @SuppressWarnings(PHPMD.CountInLoopExpression)
  */
-class Kernel extends MainKernel
+class Kernel extends SystemBase implements SystemInterface
 {
     /** @var static Kernel globally instance */
-    protected static $instance;
+    // protected static $instance;
 
+    /** @var string|null */
     protected $endpoint;
+    /** @var array */
     protected $params;
 
     public const DEFAULT_NS = 'App\\Controllers\\Web\\';
@@ -46,9 +49,9 @@ class Kernel extends MainKernel
      */
     protected function __construct($appConf = null)
     {
-        parent::__construct($appConf);
-        parent::$instance = $this;
-        self::$instance = $this;
+        // parent::__construct($appConf);
+        // parent::$instance = $this;
+        // self::$instance = $this;
     }
 
     /**
@@ -118,30 +121,6 @@ class Kernel extends MainKernel
         call_user_func([$this->controller, $this->endpoint], $this->params);
 
         return true;
-    }
-
-    /**
-     * Tries to discover a web controller from the URI segments.
-     *
-     * @return bool
-     */
-    protected function discoverController(): bool
-    {
-        $uri = URI::getInstance();
-
-        $this->setAuthDriver();
-
-        if (Request::getInstance()->isHead() && $uri->getHost() == '') {
-            $response = Response::getInstance();
-            $response->header()->pragma('no-cache');
-            $response->header()->expires('0');
-            $response->header()->cacheControl('must-revalidate, post-check=0, pre-check=0');
-            $response->header()->cacheControl('private', false);
-
-            return true;
-        }
-
-        return $this->controllerCall($uri);
     }
 
     /**
@@ -274,15 +253,20 @@ class Kernel extends MainKernel
     }
 
     /**
-     * Throws a 404 Page Not Found error.
+     * Normalizes the array of segments to a class namespace.
      *
-     * @throws HttpErrorNotFound
+     * @param array $segments
      *
-     * @return void
+     * @return string
      */
-    protected function notFound()
+    protected function normalizeNamePath(array $segments): string
     {
-        throw new HttpErrorNotFound();
+        $normalized = [];
+        foreach ($segments as $value) {
+            $normalized[] = studly_caps($value);
+        }
+
+        return implode('\\', $normalized);
     }
 
     /**
@@ -330,6 +314,42 @@ class Kernel extends MainKernel
     }
 
     /**
+     * Tries to find a web controller from the URI segments.
+     *
+     * @return bool
+     */
+    public function findController(): bool
+    {
+        $uri = URI::getInstance();
+
+        $this->setAuthDriver();
+
+        if (Request::getInstance()->isHead() && $uri->getHost() == '') {
+            $response = Response::getInstance();
+            $response->header()->pragma('no-cache');
+            $response->header()->expires('0');
+            $response->header()->cacheControl('must-revalidate, post-check=0, pre-check=0');
+            $response->header()->cacheControl('private', false);
+
+            return true;
+        }
+
+        return $this->controllerCall($uri);
+    }
+
+    /**
+     * Throws a 404 Page Not Found error.
+     *
+     * @throws HttpErrorNotFound
+     *
+     * @return void
+     */
+    public function notFound(): void
+    {
+        throw new HttpErrorNotFound();
+    }
+
+    /**
      * Starts the authentication driver instance.
      *
      * @return void
@@ -354,5 +374,19 @@ class Kernel extends MainKernel
     public function send()
     {
         Response::getInstance()->send();
+    }
+
+    /**
+     * Returns current instance.
+     *
+     * @return self
+     */
+    public static function getInstance(): self
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 }

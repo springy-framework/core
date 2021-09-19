@@ -12,7 +12,8 @@
 
 namespace Springy\Console;
 
-use Springy\Core\Kernel as MainKernel;
+use Springy\Core\SystemBase;
+use Springy\Core\SystemInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -21,10 +22,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Kernel for the console application requisition.
  */
-class Kernel extends MainKernel
+class Kernel extends SystemBase implements SystemInterface
 {
     /** @var static Kernel globally instance */
-    protected static $instance;
+    // protected static $instance;
 
     /** @var int exit status code */
     protected $exitStatus;
@@ -41,37 +42,9 @@ class Kernel extends MainKernel
      */
     protected function __construct($appConf = null)
     {
-        parent::__construct($appConf);
-        parent::$instance = $this;
-        self::$instance = $this;
-    }
-
-    /**
-     * Tries to discover a command line controller.
-     *
-     * @return bool
-     */
-    protected function discoverController(): bool
-    {
-        $this->exitStatus = 0;
-        $input = new ArgvInput();
-        $this->output = new ConsoleOutput();
-
-        if ($this->isVersionArg($input)) {
-            return true;
-        }
-
-        $command = $input->getFirstArgument() ?? '';
-        if (
-            !$this->loadController('App\\Console\\' . $this->normalizeNamePath([$command]), [])
-            && !$this->discoverInternals($command)
-        ) {
-            return false;
-        }
-
-        $this->exitStatus = $this->controller->run($input, $this->output);
-
-        return true;
+        // parent::__construct($appConf);
+        // parent::$instance = $this;
+        // self::$instance = $this;
     }
 
     /**
@@ -108,11 +81,7 @@ class Kernel extends MainKernel
      */
     protected function getAppNameVersion(): string
     {
-        return sprintf(
-            '%s <info>%s</info>',
-            $this->getApplicationName(),
-            $this->getApplicationVersion()
-        );
+        return sprintf('%s <info>%s</info>', app_name(), app_version());
     }
 
     /**
@@ -135,11 +104,49 @@ class Kernel extends MainKernel
     }
 
     /**
+     * Tries to find a command line controller.
+     *
+     * @return bool
+     */
+    public function findController(): bool
+    {
+        $this->exitStatus = 0;
+        $input = new ArgvInput();
+        $this->output = new ConsoleOutput();
+
+        if ($this->isVersionArg($input)) {
+            return true;
+        }
+
+        $command = $input->getFirstArgument() ?? '';
+        if (
+            !$this->loadController('App\\Console\\' . studly_caps($command), [])
+            && !$this->discoverInternals($command)
+        ) {
+            return false;
+        }
+
+        $this->exitStatus = $this->controller->run($input, $this->output);
+
+        return true;
+    }
+
+    /**
+     * Gets the exit code status.
+     *
+     * @return int
+     */
+    public function getExitStatus(): int
+    {
+        return $this->exitStatus;
+    }
+
+    /**
      * Prints the command not found error message.
      *
      * @return void
      */
-    protected function notFound()
+    public function notFound(): void
     {
         $this->output->writeln([
             $this->getAppNameVersion(),
@@ -152,12 +159,16 @@ class Kernel extends MainKernel
     }
 
     /**
-     * Gets the exit code status.
+     * Returns current instance.
      *
-     * @return int
+     * @return self
      */
-    public function getExitStatus(): int
+    public static function getInstance(): self
     {
-        return $this->exitStatus;
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 }
