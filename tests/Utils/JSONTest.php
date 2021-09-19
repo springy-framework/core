@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test case for Springy\Utils\JSON class.
  *
@@ -8,6 +9,7 @@
  *
  * @version    1.0.0
  */
+
 use PHPUnit\Framework\TestCase;
 use Springy\Utils\JSON;
 
@@ -33,32 +35,32 @@ class JSONTest extends TestCase
         $this->json->add('Maggie', 'Chup chup!');
         $this->assertNotEquals($this->data, $this->json->getData());
 
-        $data = ['bar' => 'Foo'];
-        $this->json->add($data);
+        $newdata = ['bar' => 'Foo'];
+        $this->json->add($newdata);
         $this->assertCount(4, $this->json->getData());
     }
 
     public function testFetch()
     {
-        $json = json_encode($this->data);
-        $this->assertEquals($json, $this->json->fetch());
+        $jsonstr = json_encode($this->data);
+        $this->assertEquals($jsonstr, $this->json->fetch());
     }
 
     public function testMerge()
     {
-        $data = ['bar' => 'Foo'];
+        $newdata = ['bar' => 'Foo'];
 
         $this->assertCount(2, $this->json->getData());
-        $this->json->merge($data);
+        $this->json->merge($newdata);
         $this->assertCount(3, $this->json->getData());
     }
 
     public function testSet()
     {
-        $data = ['foo' => 'bar'];
+        $newdata = ['foo' => 'bar'];
 
-        $this->json->setData($data);
-        $this->assertEquals($data, $this->json->getData());
+        $this->json->setData($newdata);
+        $this->assertEquals($newdata, $this->json->getData());
     }
 
     public function testHeaderStatus()
