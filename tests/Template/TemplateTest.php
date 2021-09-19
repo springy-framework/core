@@ -31,7 +31,6 @@ class TemplateTest extends TestCase
         $template->addFunction('personal', function ($options) {
             return $options['name'] ?? self::NO_NAME;
         });
-        $dir = config_get('template.paths.compiled');
 
         $this->assertInstanceOf(Smarty::class, $template->getTemplateDriver());
         $this->assertTrue($template->templateExists());
