@@ -227,7 +227,7 @@ class Debug
         }
 
         if (preg_match('/<\/body>/', $content)) {
-            return preg_replace('/<\/body>/', $htmlDebug . '</body>', $content);
+            return str_replace('</body>', $htmlDebug . '</body>', $content);
         }
 
         return preg_replace('/^(.*?)$/', $htmlDebug . '\\1', $content);

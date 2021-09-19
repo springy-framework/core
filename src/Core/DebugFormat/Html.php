@@ -27,6 +27,7 @@ class Html extends Plain
     protected function format(array $debug): string
     {
         $btcount = $debug[4] > 0 ? 'last ' . $debug[4] : 'all';
+        $cdiv = '</div>';
 
         return '<div class="springy-debug-info">'
             . '<div class="springy-debug-time"><strong>Time:</strong> '
@@ -36,7 +37,7 @@ class Html extends Plain
             . '  <a href="javascript:;" class="springy-debug-remove" title="Delete"></a></div>'
             . '<div class="springy-debug-value">'
             . $this->highligh($debug[2])
-            . '</div>'
+            . $cdiv
             . (
                 $debug[4] > 0
                 ? '<a class="spring-debug-backtrace-btn">Backtrace ('
@@ -44,9 +45,9 @@ class Html extends Plain
                     . ') <i class="springy-arrow down"></i></a>'
                     . '<div class="spring-debug-backtrace-data">'
                     . $this->backtrace($debug[3])
-                    . '</div>'
+                    . $cdiv
                 : ''
             )
-            . '</div>';
+            . $cdiv;
     }
 }

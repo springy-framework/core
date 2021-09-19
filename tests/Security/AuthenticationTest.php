@@ -22,6 +22,8 @@ require_once __DIR__ . '/../mocks/mockUser.php';
  */
 class AuthenticationTest extends TestCase
 {
+    protected const HOMER_EMAIL = 'homer@springfield.local';
+
     public $authDriver;
     public $authentication;
     public $user;
@@ -40,8 +42,8 @@ class AuthenticationTest extends TestCase
 
     public function testAttempt()
     {
-        $this->assertFalse($this->authentication->attempt('homer@springfield.local', 'Ha ha!'));
-        $this->assertTrue($this->authentication->attempt('homer@springfield.local', 'Duh!', false, false));
+        $this->assertFalse($this->authentication->attempt(self::HOMER_EMAIL, 'Ha ha!'));
+        $this->assertTrue($this->authentication->attempt(self::HOMER_EMAIL, 'Duh!', false, false));
     }
 
     public function testCheck()
@@ -81,7 +83,7 @@ class AuthenticationTest extends TestCase
 
     public function testValidete()
     {
-        $this->assertFalse($this->authentication->validate('homer@springfield.local', 'Ha ha!'));
-        $this->assertTrue($this->authentication->validate('homer@springfield.local', 'Duh!'));
+        $this->assertFalse($this->authentication->validate(self::HOMER_EMAIL, 'Ha ha!'));
+        $this->assertTrue($this->authentication->validate(self::HOMER_EMAIL, 'Duh!'));
     }
 }
