@@ -1,7 +1,19 @@
 <?php
 
+/**
+ * Mother class for system base classes.
+ *
+ * @copyright 2021 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   1.0.0
+ */
+
 namespace Springy\Core;
 
+/**
+ * SystemBase class for application.
+ */
 class SystemBase
 {
     /** @var self Request globally instance */

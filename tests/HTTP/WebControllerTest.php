@@ -13,8 +13,8 @@
 use PHPUnit\Framework\TestCase;
 use Springy\Core\Configuration;
 use Springy\HTTP\Controller;
-use Springy\HTTP\Kernel;
 use Springy\HTTP\Session;
+use Springy\HTTP\System;
 use Springy\Security\AuthDriver;
 
 require_once __DIR__ . '/../mocks/mockUser.php';
@@ -39,11 +39,11 @@ class WebControllerTest extends TestCase
             return new AuthDriver($hasher, $user);
         });
 
-        $kernel = Kernel::getInstance(__DIR__ . '/../conf/main.php');
+        $app = System::getInstance(__DIR__ . '/../conf/main.php');
 
         Session::getInstance()->configure($config);
 
-        $kernel->setAuthDriver();
+        $app->setAuthDriver();
         // Login the user
         $driver = app(USER_AUTH_DRIVE);
         $user = $driver->getIdentityById('0001');

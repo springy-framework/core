@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Kernel for the web application requisition.
+ * Web application system.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -23,11 +23,11 @@ use Springy\Security\AuthDriver;
 use Springy\Security\Authentication;
 
 /**
- * Kernel for the web application requisition.
+ * System class for the web application.
  *
  * @SuppressWarnings(PHPMD.CountInLoopExpression)
  */
-class Kernel extends SystemBase implements SystemInterface
+class System extends SystemBase implements SystemInterface
 {
     /** @var string|null */
     protected $endpoint;
@@ -44,7 +44,7 @@ class Kernel extends SystemBase implements SystemInterface
      * @param array|string $conf the array of configuration or
      *                           the full path name of the configuration file.
      */
-    protected function __construct($appConf = null)
+    protected function __construct()
     {
     }
 

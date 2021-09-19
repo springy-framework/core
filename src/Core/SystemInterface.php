@@ -1,7 +1,19 @@
 <?php
 
+/**
+ * Interface to standardize the base of the application.
+ *
+ * @copyright 2021 Fernando Val
+ * @author    Fernando Val <fernando.val@gmail.com>
+ *
+ * @version   1.0.0
+ */
+
 namespace Springy\Core;
 
+/**
+ * Interface to standardize the base of the application.
+ */
 interface SystemInterface
 {
     /**

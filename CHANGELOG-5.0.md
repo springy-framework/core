@@ -30,7 +30,7 @@
 ### Added
 
 -   Added `Springy\Console\Controller` class
--   Added `Springy\Console\Kernel` class
+-   Added `Springy\Console\System` class
 -   Added `Springy\Core\Configuration->configHost()` method
 -   Added `Springy\Core\Configuration->setEnvironment()` method
 -   Added `Springy\Core\Configuration->getPath()` method
@@ -82,11 +82,11 @@
 -   Added `Springy\Exceptions\SpringyException` class
 -   Added `Springy\HTTP\Controller` class
 -   Added `Springy\HTTP\Cookie::getInstance()` method
--   Added `Springy\HTTP\Kernel` class
 -   Added `Springy\HTTP\Request` class
 -   Added `Springy\HTTP\Response` class
 -   Added `Springy\HTTP\Session::getInstance()` method
 -   Added `Springy\HTTP\Session->configure()` method
+-   Added `Springy\HTTP\System` class
 -   Added `Springy\HTTP\URI::getInstance()` method
 -   Added `Springy\Mail\Mailer->setAlternativeBody()` method
 -   Added `Springy\Mail\Mailer->setBody()` method
@@ -254,7 +254,7 @@
 -   Removed `Springy\DB::makeDbDateTime()` method
 -   Removed `Springy\DB::rollBackAll()` method
 -   Removed `Springy\DB::transactionAllRollBack()` method
--   Removed `Springy\DB->execute()` method. See new methods `run()`, `select()`, `insert()`, `delete()` and `update()` in `Springy\Database\Connection` class.
+-   Removed `Springy\DB->execute()` method. See new methods `run()` and `select()` in `Springy\Database\Connection` class.
 -   Removed `Springy\DB->get_all()` method
 -   Removed `Springy\DB->num_rows()` method
 -   Removed `Springy\DB->errorCode()` method

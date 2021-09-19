@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Kernel for the console application requisition.
+ * Console application system.
  *
  * @copyright 2019 Fernando Val
  * @author    Fernando Val <fernando.val@gmail.com>
@@ -20,9 +20,9 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Kernel for the console application requisition.
+ * System class for the console application.
  */
-class Kernel extends SystemBase implements SystemInterface
+class System extends SystemBase implements SystemInterface
 {
     /** @var int exit status code */
     protected $exitStatus;
@@ -37,7 +37,7 @@ class Kernel extends SystemBase implements SystemInterface
      * @param array|string $conf the array of configuration or
      *                           the full path name of the configuration file.
      */
-    protected function __construct($appConf = null)
+    protected function __construct()
     {
     }
 
