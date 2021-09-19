@@ -147,7 +147,7 @@ class Migrator
 
     public function countRollbackUntil($version): int
     {
-        $applied = $this->revisions->getApplied();
+        $appliedRevs = $this->revisions->getApplied();
 
         if (is_null($version)) {
             $version = 0;
@@ -155,7 +155,7 @@ class Migrator
 
         // Count revisions to undo
         $toUndo = 0;
-        foreach ($applied as $key) {
+        foreach ($appliedRevs as $key) {
             $migration = $this->revisions->get($key);
 
             if ($migration->getVersion() < $version) {

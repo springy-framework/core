@@ -226,22 +226,16 @@ class UploadedFile extends File
         }
 
         $max = intval(ltrim($iniMax, '+'));
+        $base = 1024;
+        $multiplier = [
+            'k' => $base,
+            'm' => $base ** 2,
+            'g' => $base ** 3,
+            't' => $base ** 4,
+            'p' => $base ** 5,
+        ];
 
-        switch (substr($iniMax, -1)) {
-            case 't':
-                $max *= 1024;
-                // no break to multiply again
-            case 'g':
-                $max *= 1024;
-                // no break to multiply again
-            case 'm':
-                $max *= 1024;
-                // no break to multiply again
-            case 'k':
-                $max *= 1024;
-        }
-
-        return $max;
+        return $max * ($multiplier[substr($iniMax, -1)] ?? 1);
     }
 
     /**

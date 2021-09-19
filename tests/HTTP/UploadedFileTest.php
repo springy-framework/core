@@ -28,7 +28,7 @@ class UploadedFileTest extends TestCase
 
         $this->tmpName = $this->tmpFolder . '/php68up19';
         if (file_put_contents($this->tmpName, 'test') === false) {
-            throw new RuntimeException('Can\'t write to temporary file.');
+            throw new UnexpectedValueException('Can\'t write to temporary file.');
         }
 
         $this->mimeType = 'text/plain';

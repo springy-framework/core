@@ -74,7 +74,7 @@ class Cookie
 
         if (
             !is_array($key)
-            && preg_match('/([\w\d]+)\[([\w\d]+)\]$/i', $key, $matches)
+            && preg_match('/([a-zA-Z][\w]+)\[([a-zA-Z][\w]+)\]$/i', $key, $matches)
         ) {
             $key = [$matches[1] => $matches[2]];
         }
