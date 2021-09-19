@@ -93,7 +93,7 @@ class Model extends RowsIterator
         $strucPath = Configuration::getInstance()->get(
             'database.model_structures',
             __DIR__ . DS . 'structures'
-        ) . DS . preg_replace('/[^\\w_-]/', '', $this->table) . '.json';
+        ) . DS . preg_replace('/[^\w-]/', '', $this->table) . '.json';
         parent::__construct($strucPath);
 
         $this->embeds = [];

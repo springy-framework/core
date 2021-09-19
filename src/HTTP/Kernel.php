@@ -320,9 +320,7 @@ class Kernel extends MainKernel
     {
         $option = Configuration::getInstance()->get('application.authentication.' . $element, $default);
 
-        if (is_null($option)) {
-            return;
-        } elseif ($option instanceof Closure || is_object($option)) {
+        if ($option instanceof Closure || is_object($option)) {
             app()->bind('user.auth.' . $element, $option);
         } elseif (is_string($option)) {
             app()->bind('user.auth.' . $element, function () use ($option) {

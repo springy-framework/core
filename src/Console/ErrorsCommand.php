@@ -583,6 +583,8 @@ class ErrorsCommand extends Controller
             sprintf('Occurrences:  <info>%d</>', $error['occurrences'] ?? ''),
             sprintf('Last:         <info>%s</>', $error['date'] ?? ''),
             '',
+        ]);
+        $this->output->writeln([
             '<comment>Error Informations:</>',
             sprintf('  File:       <info>%s</>', $error['informations']['file'] ?? 'unknow'),
             sprintf('  Line:       <info>%d</>', $error['informations']['line'] ?? ''),
@@ -591,6 +593,8 @@ class ErrorsCommand extends Controller
             sprintf('  Safe mode:  <info>%s</>', $error['informations']['safe_mode'] ?? ''),
             sprintf('  Interface:  <info>%s</>', $error['informations']['sapi_name'] ?? ''),
             '',
+        ]);
+        $this->output->writeln([
             '<comment>Request:</>',
             sprintf('  Host:       <info>%s</>', $error['request']['host'] ?? ''),
             sprintf('  URI:        <info>%s</>', $error['request']['uri'] ?? ''),
@@ -598,12 +602,16 @@ class ErrorsCommand extends Controller
             sprintf('  Protocol:   <info>%s</>', $error['request']['protocol'] ?? ''),
             sprintf('  Secure:     <info>%s</>', $error['request']['secure'] ?? ''),
             '',
+        ]);
+        $this->output->writeln([
             '<comment>Client:</>',
             sprintf('  Address:    <info>%s</>', $error['client']['address'] ?? ''),
             sprintf('  Reverse:    <info>%s</>', $error['client']['reverse'] ?? ''),
             sprintf('  Referrer:   <info>%s</>', $error['client']['referrer'] ?? ''),
             sprintf('  User-agent: <info>%s</>', $error['client']['user_agent'] ?? ''),
             '',
+        ]);
+        $this->output->writeln([
             '<comment>Variables (data quantity):</>',
             sprintf(
                 '  $_GET: <info>%d</>  $_POST: <info>%d</>  $_SESSION: <info>%d</>  $_COOKIE: <info>%d</>',
