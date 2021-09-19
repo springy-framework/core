@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test case for Springy\Utils\File class.
  *
@@ -8,7 +9,7 @@
  *
  * @version   1.0.0
  */
-use PHPUnit\Framework\MockObject\RuntimeException;
+
 use PHPUnit\Framework\TestCase;
 use Springy\Utils\File;
 
@@ -23,8 +24,8 @@ class FileTest extends TestCase
 
     public function testConstructor()
     {
-        $file = new File(__FILE__);
-        $this->assertInstanceOf(File::class, $file);
+        $filename = new File(__FILE__);
+        $this->assertInstanceOf(File::class, $filename);
     }
 
     public function testGetExtension()
@@ -46,17 +47,17 @@ class FileTest extends TestCase
     {
         $path = __DIR__ . '/../tmp';
         if (!is_dir($path) && !mkdir($path)) {
-            throw new RuntimeException('Can\'t create temporary folder.');
+            throw new UnexpectedValueException('Can\'t create temporary folder.');
         }
 
         $fileName = $path . '/test.txt';
         if (file_put_contents($fileName, 'test') === false) {
-            throw new RuntimeException('Can\'t write to temporary file.');
+            throw new UnexpectedValueException('Can\'t write to temporary file.');
         }
 
         $targetName = $path . '/target.txt';
-        $file = new File($fileName);
-        $this->assertEquals($targetName, $file->moveTo($path, 'target.txt'));
+        $filecontent = new File($fileName);
+        $this->assertEquals($targetName, $filecontent->moveTo($path, 'target.txt'));
 
         if (is_file($targetName)) {
             @unlink($targetName);
