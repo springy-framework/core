@@ -23,8 +23,6 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
     public const ORDER_ASC = 'ASC';
     public const ORDER_DESC = 'DESC';
 
-    /** @var Connection the connection object */
-    protected $connection;
     /** @var array the GROUP BY columns list */
     protected $groupBy;
     /** @var Conditions the HAVING conditions statement */
@@ -51,15 +49,12 @@ class Select extends CommandBase implements OperatorComparationInterface, Operat
      */
     public function __construct(Connection $connection, string $table = null, string $alias = null)
     {
-        $this->conditions = new Where();
-        $this->connection = $connection;
+        parent::__construct($connection, $table);
         $this->having = new Conditions();
         $this->groupBy = [];
         $this->joins = [];
         $this->offset = 0;
         $this->orderBy = [];
-        $this->parameters = [];
-        $this->table = $table;
         $this->tableAlias = $alias;
         $this->rows = [];
     }

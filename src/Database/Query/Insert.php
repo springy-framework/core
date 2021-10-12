@@ -23,12 +23,8 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
     public const MYSQL_HIGH_PRIORITY = 'HIGH_PRIORITY';
     public const MYSQL_LOW_PRIORITY = 'LOW_PRIORITY';
 
-    /** @var Connection the connection object */
-    protected $connection;
     /** @var bool turns on/off error be ignored */
     protected $ignoreError;
-    /** @var array the array of parameters filled after cast to string */
-    protected $parameters;
     /** @var string priority modifier */
     protected $priority;
     /** @var array the array if values to insert */
@@ -42,11 +38,9 @@ class Insert extends CommandBase implements OperatorComparationInterface, Operat
      */
     public function __construct(Connection $connection, string $table = null)
     {
-        $this->connection = $connection;
+        parent::__construct($connection, $table);
         $this->ignoreError = false;
-        $this->parameters = [];
         $this->priority = '';
-        $this->table = $table;
         $this->values = [];
     }
 

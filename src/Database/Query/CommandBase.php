@@ -12,6 +12,7 @@
 
 namespace Springy\Database\Query;
 
+use Springy\Database\Connection;
 use Springy\Exceptions\SpringyException;
 
 /**
@@ -21,6 +22,8 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
 {
     /** @var array the list of columns */
     protected $columns = [];
+    /** @var Connection the connection object */
+    protected $connection;
     /** @var Conditions the conditions object */
     protected $conditions;
     /** @var string the table name */
@@ -35,9 +38,12 @@ class CommandBase implements OperatorComparationInterface, OperatorGroupInterfac
      *
      * @param Conditions $conditions
      */
-    public function __construct(Conditions $conditions = null)
+    public function __construct(Connection $connection, string $table = null)
     {
-        $this->conditions = $conditions ?? new Conditions();
+        $this->conditions = new Where();
+        $this->connection = $connection;
+        $this->parameters = [];
+        $this->table = $table;
     }
 
     /**
