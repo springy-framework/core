@@ -32,15 +32,14 @@ class Join extends CommandBase implements OperatorComparationInterface, Operator
      *
      * @param string     $table
      * @param string     $join
-     * @param Conditions $onCondition
+     * @param Conditions $conditions
      */
-    public function __construct(string $table, string $join = self::INNER, Conditions $onCondition = null)
+    public function __construct(string $table, string $join = self::INNER, Conditions $conditions = null)
     {
+        $this->conditions = $conditions ?? new Conditions();
         $this->table = $table;
         $this->joinType = $join;
         $this->parameters = [];
-
-        parent::__construct($onCondition);
     }
 
     /**

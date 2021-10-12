@@ -15,6 +15,9 @@ namespace Springy\Database\Query;
 use Springy\Database\Connection;
 use Springy\Exceptions\SpringyException;
 
+/**
+ * Base for dangerous SQL commands.
+ */
 class DangerousCommand extends CommandBase
 {
     /** @var string */
